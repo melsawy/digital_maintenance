@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the dm_core_feature feature.
+ */
+
+include_once 'dm_core_feature.features.inc';
