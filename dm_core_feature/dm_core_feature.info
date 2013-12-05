@@ -1,7 +1,8 @@
-name = dm_core_feature
+name = Digital maintenance core feature
 core = 7.x
 package = Digital maintenance
 dependencies[] = ctools
+dependencies[] = dm_misc
 dependencies[] = features
 dependencies[] = field_group
 dependencies[] = list
