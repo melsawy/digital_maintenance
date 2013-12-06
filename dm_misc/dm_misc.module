@@ -1,3 +1,59 @@
 <?php
 
+/**
+ * Implements hook_block_info().
+ */
+function dm_misc_block_info() {
+  $block['dm_task_top_menu'] = array(
+    'info' => t('Digital maintenance menu'),
+    'status' => 1,
+  );
+  return $block;
+}
+
+/*
+ * Implements hook_block_view().
+ */
+function dm_misc_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+  case 'dm_task_top_menu' :
+    $block['content'] = _display_dm_task_top_menu();
+    break;
+  }
+  return $block;
+}
+
+function _display_dm_task_top_menu() {
+  // Include the CTools tools that we need.
+  ctools_include('ajax');
+  ctools_include('modal');
+
+  // Add CTools' javascript to the page.
+  ctools_modal_add_js();
+  // Create our own javascript that will be used to theme a modal.
+  $sample_style = array(
+    'ctools-sample-style' => array(
+      'modalSize' => array(
+        'type' => 'fixed',
+        'width' => 500,
+        'height' => 300,
+        'addWidth' => 20,
+        'addHeight' => 15,
+      ),
+      'modalOptions' => array(
+        'opacity' => .5,
+        'background-color' => '#000',
+      ),
+      'animation' => 'fadeIn',
+      'modalTheme' => 'CToolsSampleModal',
+      'throbber' => theme('image', array('path' => ctools_image_path('ajax-loader.gif', 'ctools_ajax_sample'), 'alt' => t('Loading...'), 'title' => t('Loading'))),
+    ),
+  );
+  drupal_add_js($sample_style, 'setting');
+  $links = array();
+  $links[] = ctools_modal_text_button(t('Add Task'), 'node/add/sm-task/nojs', 'ctools-modal-ctools-sample-style');
+  $output = theme('item_list', array('items' => $links, 'title' => t('Actions')));
+  return $output;
+}
 

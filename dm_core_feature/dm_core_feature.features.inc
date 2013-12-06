@@ -19,6 +19,13 @@ function dm_core_feature_ctools_plugin_api() {
 }
 
 /**
+ * Implements hook_views_api().
+ */
+function dm_core_feature_views_api() {
+  return array("api" => "3.0");
+}
+
+/**
  * Implements hook_node_info().
  */
 function dm_core_feature_node_info() {
