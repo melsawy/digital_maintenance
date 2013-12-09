@@ -57,3 +57,10 @@ function _display_dm_task_top_menu() {
   return $output;
 }
 
+function dm_misc_form_views_exposed_form_alter(&$form, &$form_state) {
+  if ($form['#id'] == 'ddviews-exposed-form-task-list-page') {
+    //TODO
+    //alter exposed filter for task list view.
+  }
+}
+
