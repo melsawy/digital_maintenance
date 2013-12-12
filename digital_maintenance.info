@@ -1,0 +1,5 @@
+name = Digital maintenance module
+description = Handle digital maintenance misc functionality 
+package = Digital maintenance
+core = 7.x
+

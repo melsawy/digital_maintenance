@@ -1,0 +1,120 @@
+<?php
+
+
+/**
+ * Implements hook_menu().
+ */
+function digital_maintenance_menu() {
+  $items = array();
+  $items['dm-frontpage'] = array(
+    'title' => t('Digital Maintenance'),
+    'page callback' => '_display_dm_task_frontpage',
+    'access callback' => TRUE,
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['dm_createtask/%ctools_js'] = array(
+    'title' => t('Create Task'),
+    'page callback' => 'ctools_ajax_modal_createtask',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'page arguments' => array(1),
+  );
+  return $items;
+}
+
+/**
+* Implements hook_form_node_form_alter(&$form, &$form_state, $form_id).
+*/
+function digital_maintenance_form_node_form_alter(&$form, &$form_state, $form_id) {
+  if (isset($_POST['js']) || isset($_POST['ajax_html_ids'])) {
+    $form['actions']['submit']['#submit'][] = '_create_task_submit';
+  }
+}
+
+function _create_task_submit($form, &$form_state) {
+  // Call the rest of submits, because after this submit script will end.
+  $submits = $form['actions']['submit']['#submit'];
+  // Find the rest of submits.
+  foreach ($submits as $key => $item) {
+    unset($submits[$key]);
+    if ($item == '_create_task_submit') {
+      break;
+    }
+  }
+  // Call it.
+  foreach ($submits as $function) {
+    if (function_exists($function)) {
+      $function($form, $form_state);
+    }
+  }
+  // Redirect to destination, if set, or to node path.
+  if (isset($_GET['destination'])) {
+    $destination = drupal_get_destination();
+    _createtask_ajax_redirect($destination['destination']);
+  }
+  else if (isset($form_state['redirect'])) {
+    _createtask_ajax_redirect($form_state['redirect']);
+  }
+}
+
+function _createtask_ajax_redirect($path) {
+  ctools_include('modal');
+  ctools_include('ajax');
+  ctools_add_js('ajax-responder');
+  $commands[] = ctools_modal_command_dismiss();
+  $commands[] = ctools_ajax_command_redirect($path);
+  print ajax_render($commands);
+  exit();
+}
+
+function ctools_ajax_modal_createtask($ajax) {
+  $callback = 'node_add';
+  $args = array('dm_task');
+  $_GET['q'] = 'node/add/dm-task';
+  include_once(drupal_get_path('module', 'node') . '/node.pages.inc');
+  if (function_exists($callback)) {
+    $output = call_user_func_array($callback, $args);
+    if ($ajax) {
+      ctools_include('modal');
+      ctools_include('ajax');
+      if (is_array($output)) {
+        $output = drupal_render($output);
+      }
+      $title = drupal_get_title();
+      // If there are messages for the form, render them.
+      if ($messages = theme('status_messages')) {
+        $output = '<div class="messages">' . $messages . '</div>' . $output;
+      }
+      $command = array();
+      $command[] = ctools_modal_command_display($title, $output);
+      $commands = $command;
+      if (empty($commands)) {
+        $commands[] = ctools_modal_command_loading();
+        if (!empty($_GET['destination'])) {
+          $commands[] = ctools_ajax_command_redirect($_GET['destination']);
+        }
+      }
+      print ajax_render($commands);
+      exit();
+    }
+    else {
+      return $output;
+    }
+  }
+  else {
+    return MENU_NOT_FOUND;
+  }
+}
+
+function _display_dm_task_frontpage() {
+  // Include the CTools tools that we need.
+  ctools_include('ajax');
+  ctools_include('modal');
+  // create CTools' javascript to the page.
+  ctools_modal_add_js();
+  $links = array();
+  $links[] = ctools_modal_text_button(t('Create Task'), 'dm_createtask/nojs', t('Create task'));
+  $output = theme('item_list', array('items' => $links, 'title' => ''));
+  return $output;
+}
+

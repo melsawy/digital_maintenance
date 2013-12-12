@@ -4,7 +4,6 @@ package = Digital maintenance
 php = 5.2.4
 dependencies[] = ctools
 dependencies[] = date
-dependencies[] = dm_misc
 dependencies[] = features
 dependencies[] = field_group
 dependencies[] = file
