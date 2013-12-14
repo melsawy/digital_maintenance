@@ -118,3 +118,27 @@ function _display_dm_task_frontpage() {
   return $output;
 }
 
+/**
+ *
+ */
+function digital_maintenance_views_query_alter(&$view, &$query) {
+  if ($view->name == 'dm_task_list_dashboard') {
+    if (isset($view->query->where[1]['conditions'][1])) {
+      $view->query->where[1]['conditions'][1]['operator'] = 'BETWEEN';
+      $view->query->where[1]['conditions'][1]['value'] = array($_GET['name'], $_GET['to_year']);
+    }
+  }
+}
+
+function digital_maintenance_form_views_exposed_form_alter(&$form, &$form_state) {
+  if ($form['#id'] == 'views-exposed-form-dm-task-list-dashboard-page') {
+    //alter exposed filter for task list view.
+    $form['name']['#size'] = 5;
+    $form['to_year'] = array(
+      '#type' => 'textfield', 
+      '#title' => t('To'),
+      '#size' => 5,
+    );
+  }
+}
+

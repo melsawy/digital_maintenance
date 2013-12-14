@@ -81,7 +81,7 @@ function dm_core_feature_field_default_field_instances() {
     'settings' => array(
       'description_field' => 0,
       'file_directory' => '',
-      'file_extensions' => 'txt png',
+      'file_extensions' => 'txt png jpg',
       'max_filesize' => '',
       'user_register_form' => FALSE,
     ),
@@ -112,7 +112,7 @@ function dm_core_feature_field_default_field_instances() {
         'progress_indicator' => 'throbber',
       ),
       'type' => 'file_generic',
-      'weight' => 11,
+      'weight' => 12,
     ),
   );
 
@@ -190,7 +190,7 @@ function dm_core_feature_field_default_field_instances() {
         'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
       ),
       'type' => 'options_select',
-      'weight' => 7,
+      'weight' => 8,
     ),
   );
 
@@ -222,7 +222,7 @@ function dm_core_feature_field_default_field_instances() {
     ),
     'entity_type' => 'node',
     'field_name' => 'field_dm_maintenance_cost',
-    'label' => 'maintenance cost',
+    'label' => '1st time maintenance cost',
     'required' => 0,
     'settings' => array(
       'max' => '',
@@ -238,7 +238,7 @@ function dm_core_feature_field_default_field_instances() {
         'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
       ),
       'type' => 'number',
-      'weight' => 9,
+      'weight' => 10,
     ),
   );
 
@@ -277,7 +277,7 @@ function dm_core_feature_field_default_field_instances() {
         'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
       ),
       'type' => 'options_select',
-      'weight' => 8,
+      'weight' => 9,
     ),
   );
 
@@ -369,6 +369,45 @@ function dm_core_feature_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'node-dm_task-field_dm_priority'
+  $field_instances['node-dm_task-field_dm_priority'] = array(
+    'bundle' => 'dm_task',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'list',
+        'settings' => array(),
+        'type' => 'list_default',
+        'weight' => 12,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_dm_priority',
+    'label' => 'Priority',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'options',
+      'settings' => array(
+        'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
+      ),
+      'type' => 'options_buttons',
+      'weight' => 6,
+    ),
+  );
+
   // Exported field_instance: 'node-dm_task-field_dm_sub_category'
   $field_instances['node-dm_task-field_dm_sub_category'] = array(
     'bundle' => 'dm_task',
@@ -455,7 +494,7 @@ function dm_core_feature_field_default_field_instances() {
         'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
       ),
       'type' => 'number',
-      'weight' => 10,
+      'weight' => 11,
     ),
   );
 
@@ -506,22 +545,16 @@ function dm_core_feature_field_default_field_instances() {
   // Exported field_instance: 'node-dm_task-field_dm_year_to_perform_task'
   $field_instances['node-dm_task-field_dm_year_to_perform_task'] = array(
     'bundle' => 'dm_task',
+    'default_value' => NULL,
     'deleted' => 0,
     'description' => '',
     'display' => array(
       'default' => array(
         'label' => 'above',
-        'module' => 'date',
-        'settings' => array(
-          'format_type' => 'long',
-          'fromto' => 'both',
-          'multiple_from' => '',
-          'multiple_number' => '',
-          'multiple_to' => '',
-          'show_repeat_rule' => 'show',
-        ),
-        'type' => 'date_default',
-        'weight' => 12,
+        'module' => 'taxonomy',
+        'settings' => array(),
+        'type' => 'taxonomy_term_reference_link',
+        'weight' => 13,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -535,33 +568,22 @@ function dm_core_feature_field_default_field_instances() {
     'label' => 'Year to perform task',
     'required' => 0,
     'settings' => array(
-      'default_value' => 'now',
-      'default_value2' => 'same',
-      'default_value_code' => '',
-      'default_value_code2' => '',
       'user_register_form' => FALSE,
     ),
     'widget' => array(
       'active' => 1,
-      'module' => 'date',
+      'module' => 'options',
       'settings' => array(
-        'display_all_day' => 0,
-        'increment' => 15,
-        'input_format' => 'm/d/Y - H:i:s',
-        'input_format_custom' => '',
-        'label_position' => 'above',
         'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
-        'repeat_collapsed' => 0,
-        'text_parts' => array(),
-        'year_range' => '-3:+3',
       ),
-      'type' => 'date_select',
-      'weight' => 6,
+      'type' => 'options_select',
+      'weight' => 7,
     ),
   );
 
   // Translatables
   // Included for use with string extractors like potx.
+  t('1st time maintenance cost');
   t('Attachments');
   t('Body');
   t('Category');
@@ -569,10 +591,10 @@ function dm_core_feature_field_default_field_instances() {
   t('Maintenance interval');
   t('Materiale');
   t('Omfang');
+  t('Priority');
   t('Sub category');
   t('Subsequent maintenance cost ');
   t('Year to perform task');
-  t('maintenance cost');
   t('udførelse');
 
   return $field_instances;
