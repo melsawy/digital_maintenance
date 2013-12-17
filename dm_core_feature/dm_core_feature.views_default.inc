@@ -11,18 +11,171 @@ function dm_core_feature_views_default_views() {
   $export = array();
 
   $view = new view();
-  $view->name = 'dm_task_list_dashboard';
-  $view->description = '';
+  $view->name = 'dm_task_list_row';
+  $view->description = 'Display tasks for selected year';
   $view->tag = 'default';
-  $view->base_table = 'taxonomy_term_data';
-  $view->human_name = 'Task list dashboard';
+  $view->base_table = 'node';
+  $view->human_name = 'task list row';
   $view->core = 7;
   $view->api_version = '3.0';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
 
   /* Display: Master */
   $handler = $view->new_display('default', 'Master', 'default');
-  $handler->display->display_options['title'] = 'Task list';
+  $handler->display->display_options['title'] = 'task list row';
+  $handler->display->display_options['use_more_always'] = FALSE;
+  $handler->display->display_options['access']['type'] = 'perm';
+  $handler->display->display_options['cache']['type'] = 'none';
+  $handler->display->display_options['query']['type'] = 'views_query';
+  $handler->display->display_options['exposed_form']['type'] = 'basic';
+  $handler->display->display_options['pager']['type'] = 'none';
+  $handler->display->display_options['pager']['options']['offset'] = '0';
+  $handler->display->display_options['style_plugin'] = 'list';
+  $handler->display->display_options['row_plugin'] = 'fields';
+  /* Field: Content: Priority */
+  $handler->display->display_options['fields']['field_dm_priority']['id'] = 'field_dm_priority';
+  $handler->display->display_options['fields']['field_dm_priority']['table'] = 'field_data_field_dm_priority';
+  $handler->display->display_options['fields']['field_dm_priority']['field'] = 'field_dm_priority';
+  $handler->display->display_options['fields']['field_dm_priority']['label'] = '';
+  $handler->display->display_options['fields']['field_dm_priority']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_dm_priority']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['field_dm_priority']['element_wrapper_class'] = 'dm-task-priority-[field_dm_priority]';
+  /* Field: Content: Title */
+  $handler->display->display_options['fields']['title']['id'] = 'title';
+  $handler->display->display_options['fields']['title']['table'] = 'node';
+  $handler->display->display_options['fields']['title']['field'] = 'title';
+  $handler->display->display_options['fields']['title']['label'] = '';
+  $handler->display->display_options['fields']['title']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
+  $handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
+  $handler->display->display_options['fields']['title']['element_label_colon'] = FALSE;
+  /* Field: Content: 1st time maintenance cost */
+  $handler->display->display_options['fields']['field_dm_maintenance_cost']['id'] = 'field_dm_maintenance_cost';
+  $handler->display->display_options['fields']['field_dm_maintenance_cost']['table'] = 'field_data_field_dm_maintenance_cost';
+  $handler->display->display_options['fields']['field_dm_maintenance_cost']['field'] = 'field_dm_maintenance_cost';
+  $handler->display->display_options['fields']['field_dm_maintenance_cost']['label'] = '';
+  $handler->display->display_options['fields']['field_dm_maintenance_cost']['alter']['alter_text'] = TRUE;
+  $handler->display->display_options['fields']['field_dm_maintenance_cost']['alter']['text'] = '<span class="dm-task-priority-[field_dm_priority]">[field_dm_priority]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_maintenance_cost]) </span>
+';
+  $handler->display->display_options['fields']['field_dm_maintenance_cost']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['field_dm_maintenance_cost']['settings'] = array(
+    'thousand_separator' => ' ',
+    'prefix_suffix' => 1,
+  );
+  /* Sort criterion: Content: Post date */
+  $handler->display->display_options['sorts']['created']['id'] = 'created';
+  $handler->display->display_options['sorts']['created']['table'] = 'node';
+  $handler->display->display_options['sorts']['created']['field'] = 'created';
+  $handler->display->display_options['sorts']['created']['order'] = 'DESC';
+  /* Contextual filter: Content: Year to perform task (field_dm_year_to_perform_task) */
+  $handler->display->display_options['arguments']['field_dm_year_to_perform_task_tid']['id'] = 'field_dm_year_to_perform_task_tid';
+  $handler->display->display_options['arguments']['field_dm_year_to_perform_task_tid']['table'] = 'field_data_field_dm_year_to_perform_task';
+  $handler->display->display_options['arguments']['field_dm_year_to_perform_task_tid']['field'] = 'field_dm_year_to_perform_task_tid';
+  $handler->display->display_options['arguments']['field_dm_year_to_perform_task_tid']['default_action'] = 'not found';
+  $handler->display->display_options['arguments']['field_dm_year_to_perform_task_tid']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_dm_year_to_perform_task_tid']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_dm_year_to_perform_task_tid']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_dm_year_to_perform_task_tid']['summary_options']['items_per_page'] = '25';
+  /* Filter criterion: Content: Published */
+  $handler->display->display_options['filters']['status']['id'] = 'status';
+  $handler->display->display_options['filters']['status']['table'] = 'node';
+  $handler->display->display_options['filters']['status']['field'] = 'status';
+  $handler->display->display_options['filters']['status']['value'] = 1;
+  $handler->display->display_options['filters']['status']['group'] = 1;
+  $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+  /* Filter criterion: Content: Type */
+  $handler->display->display_options['filters']['type']['id'] = 'type';
+  $handler->display->display_options['filters']['type']['table'] = 'node';
+  $handler->display->display_options['filters']['type']['field'] = 'type';
+  $handler->display->display_options['filters']['type']['value'] = array(
+    'dm_task' => 'dm_task',
+  );
+
+  /* Display: Block */
+  $handler = $view->new_display('block', 'Block', 'block');
+  $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
+
+  /* Display: Attachment */
+  $handler = $view->new_display('attachment', 'Attachment', 'attachment_1');
+  $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
+  $handler->display->display_options['pager']['type'] = 'some';
+  $handler->display->display_options['defaults']['fields'] = FALSE;
+  /* Field: Content: Priority */
+  $handler->display->display_options['fields']['field_dm_priority']['id'] = 'field_dm_priority';
+  $handler->display->display_options['fields']['field_dm_priority']['table'] = 'field_data_field_dm_priority';
+  $handler->display->display_options['fields']['field_dm_priority']['field'] = 'field_dm_priority';
+  $handler->display->display_options['fields']['field_dm_priority']['label'] = '';
+  $handler->display->display_options['fields']['field_dm_priority']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_dm_priority']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['field_dm_priority']['element_wrapper_class'] = 'dm-task-priority-[field_dm_priority]';
+  /* Field: Content: Title */
+  $handler->display->display_options['fields']['title']['id'] = 'title';
+  $handler->display->display_options['fields']['title']['table'] = 'node';
+  $handler->display->display_options['fields']['title']['field'] = 'title';
+  $handler->display->display_options['fields']['title']['label'] = '';
+  $handler->display->display_options['fields']['title']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
+  $handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
+  $handler->display->display_options['fields']['title']['element_label_colon'] = FALSE;
+  /* Field: Content: Subsequent maintenance cost  */
+  $handler->display->display_options['fields']['field_dm_subsequent_cost']['id'] = 'field_dm_subsequent_cost';
+  $handler->display->display_options['fields']['field_dm_subsequent_cost']['table'] = 'field_data_field_dm_subsequent_cost';
+  $handler->display->display_options['fields']['field_dm_subsequent_cost']['field'] = 'field_dm_subsequent_cost';
+  $handler->display->display_options['fields']['field_dm_subsequent_cost']['label'] = '';
+  $handler->display->display_options['fields']['field_dm_subsequent_cost']['alter']['alter_text'] = TRUE;
+  $handler->display->display_options['fields']['field_dm_subsequent_cost']['alter']['text'] = '<span class="dm-task-priority-[field_dm_priority]">[field_dm_priority]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_subsequent_cost]) </span>';
+  $handler->display->display_options['fields']['field_dm_subsequent_cost']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['field_dm_subsequent_cost']['settings'] = array(
+    'thousand_separator' => ' ',
+    'prefix_suffix' => 1,
+  );
+  $handler->display->display_options['defaults']['arguments'] = FALSE;
+  /* Contextual filter: Content: Nid */
+  $handler->display->display_options['arguments']['nid']['id'] = 'nid';
+  $handler->display->display_options['arguments']['nid']['table'] = 'node';
+  $handler->display->display_options['arguments']['nid']['field'] = 'nid';
+  $handler->display->display_options['arguments']['nid']['default_action'] = 'not found';
+  $handler->display->display_options['arguments']['nid']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['nid']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['nid']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['nid']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['nid']['break_phrase'] = TRUE;
+  $handler->display->display_options['displays'] = array(
+    'block' => 'block',
+    'default' => 0,
+  );
+  $handler->display->display_options['attachment_position'] = 'after';
+  $translatables['dm_task_list_row'] = array(
+    t('Master'),
+    t('task list row'),
+    t('more'),
+    t('Apply'),
+    t('Reset'),
+    t('Sort by'),
+    t('Asc'),
+    t('Desc'),
+    t('<span class="dm-task-priority-[field_dm_priority]">[field_dm_priority]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_maintenance_cost]) </span>
+'),
+    t('All'),
+    t('Block'),
+    t('Attachment'),
+    t('<span class="dm-task-priority-[field_dm_priority]">[field_dm_priority]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_subsequent_cost]) </span>'),
+  );
+  $export['dm_task_list_row'] = $view;
+
+  $view = new view();
+  $view->name = 'tasks_annual_overview';
+  $view->description = '';
+  $view->tag = 'default';
+  $view->base_table = 'taxonomy_term_data';
+  $view->human_name = 'Tasks Annual Overview';
+  $view->core = 7;
+  $view->api_version = '3.0';
+  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+  /* Display: Master */
+  $handler = $view->new_display('default', 'Master', 'default');
+  $handler->display->display_options['title'] = 'Annual Overview';
   $handler->display->display_options['use_more_always'] = FALSE;
   $handler->display->display_options['access']['type'] = 'perm';
   $handler->display->display_options['cache']['type'] = 'none';
@@ -41,10 +194,10 @@ function dm_core_feature_views_default_views() {
   $handler->display->display_options['fields']['name']['id'] = 'name';
   $handler->display->display_options['fields']['name']['table'] = 'taxonomy_term_data';
   $handler->display->display_options['fields']['name']['field'] = 'name';
-  $handler->display->display_options['fields']['name']['label'] = 'Year';
+  $handler->display->display_options['fields']['name']['label'] = '';
   $handler->display->display_options['fields']['name']['alter']['word_boundary'] = FALSE;
   $handler->display->display_options['fields']['name']['alter']['ellipsis'] = FALSE;
-  $handler->display->display_options['fields']['name']['link_to_taxonomy'] = TRUE;
+  $handler->display->display_options['fields']['name']['element_label_colon'] = FALSE;
   /* Field: Taxonomy term: Term ID */
   $handler->display->display_options['fields']['tid']['id'] = 'tid';
   $handler->display->display_options['fields']['tid']['table'] = 'taxonomy_term_data';
@@ -54,7 +207,7 @@ function dm_core_feature_views_default_views() {
   $handler->display->display_options['fields']['view']['id'] = 'view';
   $handler->display->display_options['fields']['view']['table'] = 'views';
   $handler->display->display_options['fields']['view']['field'] = 'view';
-  $handler->display->display_options['fields']['view']['label'] = '';
+  $handler->display->display_options['fields']['view']['label'] = 'Tasks';
   $handler->display->display_options['fields']['view']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['view']['view'] = 'dm_task_list_row';
   $handler->display->display_options['fields']['view']['display'] = 'block';
@@ -89,10 +242,10 @@ function dm_core_feature_views_default_views() {
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
   $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
-  $handler->display->display_options['path'] = 'task-list-dashboard';
-  $translatables['dm_task_list_dashboard'] = array(
+  $handler->display->display_options['path'] = 'dm-annual-overview';
+  $translatables['tasks_annual_overview'] = array(
     t('Master'),
-    t('Task list'),
+    t('Annual Overview'),
     t('more'),
     t('Apply'),
     t('Reset'),
@@ -106,105 +259,15 @@ function dm_core_feature_views_default_views() {
     t('‹ previous'),
     t('next ›'),
     t('last »'),
-    t('Year'),
     t('Term ID'),
     t('.'),
     t(','),
+    t('Tasks'),
     t('SUM'),
     t('Showing year'),
     t('Page'),
   );
-  $export['dm_task_list_dashboard'] = $view;
-
-  $view = new view();
-  $view->name = 'dm_task_list_row';
-  $view->description = 'Display tasks for selected year';
-  $view->tag = 'default';
-  $view->base_table = 'node';
-  $view->human_name = 'task list row';
-  $view->core = 7;
-  $view->api_version = '3.0';
-  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
-
-  /* Display: Master */
-  $handler = $view->new_display('default', 'Master', 'default');
-  $handler->display->display_options['title'] = 'task list row';
-  $handler->display->display_options['use_more_always'] = FALSE;
-  $handler->display->display_options['access']['type'] = 'perm';
-  $handler->display->display_options['cache']['type'] = 'none';
-  $handler->display->display_options['query']['type'] = 'views_query';
-  $handler->display->display_options['exposed_form']['type'] = 'basic';
-  $handler->display->display_options['pager']['type'] = 'none';
-  $handler->display->display_options['pager']['options']['offset'] = '0';
-  $handler->display->display_options['style_plugin'] = 'list';
-  $handler->display->display_options['row_plugin'] = 'fields';
-  /* Field: Content: 1st time maintenance cost */
-  $handler->display->display_options['fields']['field_dm_maintenance_cost']['id'] = 'field_dm_maintenance_cost';
-  $handler->display->display_options['fields']['field_dm_maintenance_cost']['table'] = 'field_data_field_dm_maintenance_cost';
-  $handler->display->display_options['fields']['field_dm_maintenance_cost']['field'] = 'field_dm_maintenance_cost';
-  $handler->display->display_options['fields']['field_dm_maintenance_cost']['label'] = '';
-  $handler->display->display_options['fields']['field_dm_maintenance_cost']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['field_dm_maintenance_cost']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['field_dm_maintenance_cost']['settings'] = array(
-    'thousand_separator' => ' ',
-    'prefix_suffix' => 1,
-  );
-  /* Field: Content: Title */
-  $handler->display->display_options['fields']['title']['id'] = 'title';
-  $handler->display->display_options['fields']['title']['table'] = 'node';
-  $handler->display->display_options['fields']['title']['field'] = 'title';
-  $handler->display->display_options['fields']['title']['label'] = '';
-  $handler->display->display_options['fields']['title']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['title']['alter']['text'] = '[title] ([field_dm_maintenance_cost] )';
-  $handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
-  $handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
-  $handler->display->display_options['fields']['title']['element_label_colon'] = FALSE;
-  /* Sort criterion: Content: Post date */
-  $handler->display->display_options['sorts']['created']['id'] = 'created';
-  $handler->display->display_options['sorts']['created']['table'] = 'node';
-  $handler->display->display_options['sorts']['created']['field'] = 'created';
-  $handler->display->display_options['sorts']['created']['order'] = 'DESC';
-  /* Contextual filter: Content: Year to perform task (field_dm_year_to_perform_task) */
-  $handler->display->display_options['arguments']['field_dm_year_to_perform_task_tid']['id'] = 'field_dm_year_to_perform_task_tid';
-  $handler->display->display_options['arguments']['field_dm_year_to_perform_task_tid']['table'] = 'field_data_field_dm_year_to_perform_task';
-  $handler->display->display_options['arguments']['field_dm_year_to_perform_task_tid']['field'] = 'field_dm_year_to_perform_task_tid';
-  $handler->display->display_options['arguments']['field_dm_year_to_perform_task_tid']['default_action'] = 'not found';
-  $handler->display->display_options['arguments']['field_dm_year_to_perform_task_tid']['default_argument_type'] = 'fixed';
-  $handler->display->display_options['arguments']['field_dm_year_to_perform_task_tid']['summary']['number_of_records'] = '0';
-  $handler->display->display_options['arguments']['field_dm_year_to_perform_task_tid']['summary']['format'] = 'default_summary';
-  $handler->display->display_options['arguments']['field_dm_year_to_perform_task_tid']['summary_options']['items_per_page'] = '25';
-  /* Filter criterion: Content: Published */
-  $handler->display->display_options['filters']['status']['id'] = 'status';
-  $handler->display->display_options['filters']['status']['table'] = 'node';
-  $handler->display->display_options['filters']['status']['field'] = 'status';
-  $handler->display->display_options['filters']['status']['value'] = 1;
-  $handler->display->display_options['filters']['status']['group'] = 1;
-  $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
-  /* Filter criterion: Content: Type */
-  $handler->display->display_options['filters']['type']['id'] = 'type';
-  $handler->display->display_options['filters']['type']['table'] = 'node';
-  $handler->display->display_options['filters']['type']['field'] = 'type';
-  $handler->display->display_options['filters']['type']['value'] = array(
-    'dm_task' => 'dm_task',
-  );
-
-  /* Display: Block */
-  $handler = $view->new_display('block', 'Block', 'block');
-  $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
-  $translatables['dm_task_list_row'] = array(
-    t('Master'),
-    t('task list row'),
-    t('more'),
-    t('Apply'),
-    t('Reset'),
-    t('Sort by'),
-    t('Asc'),
-    t('Desc'),
-    t('[title] ([field_dm_maintenance_cost] )'),
-    t('All'),
-    t('Block'),
-  );
-  $export['dm_task_list_row'] = $view;
+  $export['tasks_annual_overview'] = $view;
 
   return $export;
 }
