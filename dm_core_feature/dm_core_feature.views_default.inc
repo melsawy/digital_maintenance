@@ -49,13 +49,20 @@ function dm_core_feature_views_default_views() {
   $handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
   $handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
   $handler->display->display_options['fields']['title']['element_label_colon'] = FALSE;
+  /* Field: Content: Type */
+  $handler->display->display_options['fields']['field_dm_task_type']['id'] = 'field_dm_task_type';
+  $handler->display->display_options['fields']['field_dm_task_type']['table'] = 'field_data_field_dm_task_type';
+  $handler->display->display_options['fields']['field_dm_task_type']['field'] = 'field_dm_task_type';
+  $handler->display->display_options['fields']['field_dm_task_type']['label'] = '';
+  $handler->display->display_options['fields']['field_dm_task_type']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_dm_task_type']['element_label_colon'] = FALSE;
   /* Field: Content: 1st time maintenance cost */
   $handler->display->display_options['fields']['field_dm_maintenance_cost']['id'] = 'field_dm_maintenance_cost';
   $handler->display->display_options['fields']['field_dm_maintenance_cost']['table'] = 'field_data_field_dm_maintenance_cost';
   $handler->display->display_options['fields']['field_dm_maintenance_cost']['field'] = 'field_dm_maintenance_cost';
   $handler->display->display_options['fields']['field_dm_maintenance_cost']['label'] = '';
   $handler->display->display_options['fields']['field_dm_maintenance_cost']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['field_dm_maintenance_cost']['alter']['text'] = '<span class="dm-task-priority-[field_dm_priority]">[field_dm_priority]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_maintenance_cost]) </span>
+  $handler->display->display_options['fields']['field_dm_maintenance_cost']['alter']['text'] = '<span class="dm-task-priority-[field_dm_priority]">[field_dm_priority]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_maintenance_cost]) </span> <span class="dm-task-type"> | [field_dm_task_type] </span>
 ';
   $handler->display->display_options['fields']['field_dm_maintenance_cost']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['field_dm_maintenance_cost']['settings'] = array(
@@ -118,13 +125,20 @@ function dm_core_feature_views_default_views() {
   $handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
   $handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
   $handler->display->display_options['fields']['title']['element_label_colon'] = FALSE;
+  /* Field: Content: Type */
+  $handler->display->display_options['fields']['field_dm_task_type']['id'] = 'field_dm_task_type';
+  $handler->display->display_options['fields']['field_dm_task_type']['table'] = 'field_data_field_dm_task_type';
+  $handler->display->display_options['fields']['field_dm_task_type']['field'] = 'field_dm_task_type';
+  $handler->display->display_options['fields']['field_dm_task_type']['label'] = '';
+  $handler->display->display_options['fields']['field_dm_task_type']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_dm_task_type']['element_label_colon'] = FALSE;
   /* Field: Content: Subsequent maintenance cost  */
   $handler->display->display_options['fields']['field_dm_subsequent_cost']['id'] = 'field_dm_subsequent_cost';
   $handler->display->display_options['fields']['field_dm_subsequent_cost']['table'] = 'field_data_field_dm_subsequent_cost';
   $handler->display->display_options['fields']['field_dm_subsequent_cost']['field'] = 'field_dm_subsequent_cost';
   $handler->display->display_options['fields']['field_dm_subsequent_cost']['label'] = '';
   $handler->display->display_options['fields']['field_dm_subsequent_cost']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['field_dm_subsequent_cost']['alter']['text'] = '<span class="dm-task-priority-[field_dm_priority]">[field_dm_priority]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_subsequent_cost]) </span>';
+  $handler->display->display_options['fields']['field_dm_subsequent_cost']['alter']['text'] = '<span class="dm-task-priority-[field_dm_priority]">[field_dm_priority]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_subsequent_cost]) </span> <span class="dm-task-type"> | [field_dm_task_type] </span>';
   $handler->display->display_options['fields']['field_dm_subsequent_cost']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['field_dm_subsequent_cost']['settings'] = array(
     'thousand_separator' => ' ',
@@ -155,12 +169,12 @@ function dm_core_feature_views_default_views() {
     t('Sort by'),
     t('Asc'),
     t('Desc'),
-    t('<span class="dm-task-priority-[field_dm_priority]">[field_dm_priority]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_maintenance_cost]) </span>
+    t('<span class="dm-task-priority-[field_dm_priority]">[field_dm_priority]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_maintenance_cost]) </span> <span class="dm-task-type"> | [field_dm_task_type] </span>
 '),
     t('All'),
     t('Block'),
     t('Attachment'),
-    t('<span class="dm-task-priority-[field_dm_priority]">[field_dm_priority]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_subsequent_cost]) </span>'),
+    t('<span class="dm-task-priority-[field_dm_priority]">[field_dm_priority]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_subsequent_cost]) </span> <span class="dm-task-type"> | [field_dm_task_type] </span>'),
   );
   $export['dm_task_list_row'] = $view;
 

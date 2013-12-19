@@ -26,6 +26,14 @@ function digital_maintenance_menu() {
 * Implements hook_form_FORM_ID_alter().
 */
 function digital_maintenance_form_dm_task_node_form_alter(&$form, &$form_state, $form_id) {
+  $form['field_dm_sub_category_prefix']['#prefix'] = '<div class="container-inline dm-group-subcategory-fields">';
+  $form['field_dm_sub_category']['#suffix'] = '</div>';
+  $form['field_dm_sub_category'][LANGUAGE_NONE][0]['value']['#title'] = NULL;
+  //Hide type/title fields and set their values via hook_node_presave().
+  //@see digital_maintenance_node_presave().
+  $form['field_dm_task_type']['#access'] = FALSE;
+  //$form['title']['#required'] = FALSE;
+  //$form['title']['#access'] = FALSE;
   if (isset($_POST['js']) || isset($_POST['ajax_html_ids'])) {
     $form['actions']['submit']['#submit'][] = '_create_task_submit';
   }
@@ -232,4 +240,55 @@ function _dm_get_maintenance_cost($year = 'ALL') {
     return $result[$year];
   }
   return array();
+}
+
+/**
+ * Implements of hook_node_validate().
+ */
+function digital_maintenance_node_validate($node, $form, &$form_state) {
+  if ($node->type == 'dm_task') {
+    //Validation for sub category to be on format [$category_value].[value]
+    $cat = $node->field_dm_category[LANGUAGE_NONE][0]['value'];
+    $subcat_prefix = $node->field_dm_sub_category_prefix[LANGUAGE_NONE][0]['value'];
+    if(!empty($cat) && !empty($subcat_prefix)) {
+      $prefix_values = explode('.', $subcat_prefix);
+      if (count($prefix_values) < 2 || $prefix_values[0] != $cat) {
+        form_set_error('field_dm_sub_category_prefix', t('Sub category value should be on format @value.[value].', array('@value' => $cat)));
+      }
+    }
+    //Validation for Maintenance/Inspection tasks
+    $minterval = $node->field_dm_maintenance_interval[LANGUAGE_NONE][0]['value'];
+    if ($minterval) {
+      //User should add maintenance cost and subsequent maintenance cost
+      if (!$node->field_dm_maintenance_cost[LANGUAGE_NONE][0]['value']) {
+        form_set_error('field_dm_maintenance_cost', t('Maintenance cost field is required'));
+      }
+      if (!$node->field_dm_subsequent_cost[LANGUAGE_NONE][0]['value']) {
+        form_set_error('field_dm_subsequent_cost', t('Subsequent maintenance cost field is required'));
+      }
+    }
+  }
+}
+
+/**
+ * Implements of hook_node_presave().
+ */
+function digital_maintenance_node_presave($node) {
+  if ($node->type == 'dm_task') {
+    //Set unique node title value [category + current timestamp]
+    //$field = field_info_field('field_dm_category');
+    //$allowed_values = list_allowed_values($field);
+    //$node->title = $allowed_values[$node->field_dm_category[LANGUAGE_NONE][0]['value']];
+    //Set task type based on maintenance interval field.
+    if (isset($node->field_dm_maintenance_interval[LANGUAGE_NONE][0])) {
+      //Task is Maintenance
+      $node->field_dm_task_type[LANGUAGE_NONE][0]['value'] = 0;
+    }
+    else {
+      //Task is Inspection
+      $node->field_dm_task_type[LANGUAGE_NONE][0]['value'] = 1;
+      //Remove costs as task is Inspection.
+      $node->field_dm_maintenance_cost[LANGUAGE_NONE][0]['value'] = $node->field_dm_subsequent_cost[LANGUAGE_NONE][0]['value'] = 0;
+    }
+  }
 }
