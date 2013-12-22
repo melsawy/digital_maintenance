@@ -34,6 +34,17 @@ function digital_maintenance_form_dm_task_node_form_alter(&$form, &$form_state, 
   $form['field_dm_task_type']['#access'] = FALSE;
   //$form['title']['#required'] = FALSE;
   //$form['title']['#access'] = FALSE;
+  //Set allowed values for year to perform task +10 from current year.
+  $current_year = date('Y');
+  $query = db_select('taxonomy_vocabulary', 'tv');
+  $query->join('taxonomy_term_data', 'td', 'tv.vid = td.vid');
+  $query->fields('td', array('tid', 'name'));
+  $query->condition('tv.machine_name', 'dm_year_to_perform_task');
+  $query->condition('td.name', array($current_year, $current_year + 10), 'BETWEEN');
+  $query->orderBy('td.name');
+  $options = $query->execute()->fetchAllKeyed(0, 1);
+  $options = array('_none' => '- Select a value -') + $options;
+  $form['field_dm_year_to_perform_task'][LANGUAGE_NONE]['#options'] = $options;
   if (isset($_POST['js']) || isset($_POST['ajax_html_ids'])) {
     $form['actions']['submit']['#submit'][] = '_create_task_submit';
   }

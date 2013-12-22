@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * Create Years to perform task values
+ * +10 years from current year.
+ */
+function digital_maintenance_update_7001() {
+  //It's a taxonomy term to be easy listing annual year view.
+  //Max value for maintenece interval 10 years.
+  //Year to perform task +10 year from current year.
+  //so will set taxonmy until +20 to dispaly all tasks on annual interview.
+  $current_year = date('Y');
+  $end_year = $current_year + 20; 
+  $vid = db_query("SELECT vid FROM {taxonomy_vocabulary} WHERE machine_name = 'dm_year_to_perform_task'")->fetchField();
+  for ($current_year; $current_year <= $end_year ; $current_year++) {
+    $term = new stdclass();
+    $term->vid = $vid;
+    $term->name = $current_year;
+    taxonomy_term_save($term);
+  }
+} 
