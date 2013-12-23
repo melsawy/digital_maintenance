@@ -58,10 +58,26 @@ function dm_core_feature_field_default_field_bases() {
     'module' => 'list',
     'settings' => array(
       'allowed_values' => array(
-        1 => '1.area1',
-        2 => '2.area2',
-        3 => '3.area3',
-        4 => '4.area4',
+        1 => 'TAGVÆRK',
+        2 => 'KÆLDER / FUNDERING',
+        3 => 'FACADER / SOKKEL',
+        4 => 'VINDUER',
+        5 => 'UDVENDIGE DØRE',
+        6 => 'TRAPPER',
+        7 => 'PORTE / GENNEMGANGE',
+        8 => 'ETAGEADSKILLELSER',
+        9 => 'WC / BAD',
+        10 => 'KØKKENER',
+        11 => 'VARMEANLÆG',
+        12 => 'AFLØB',
+        13 => 'KLOAK',
+        14 => 'VANDINSTALLATION',
+        15 => 'GASINSTALLATION',
+        16 => 'VENTILATION',
+        17 => 'EL / SVAGSTRØM',
+        18 => 'ØVRIGE OMBYGNINGSARBEJDER',
+        19 => 'PRIVATE FRIAREALER',
+        20 => 'BYGGEPLADS OG UFORUDSETE UDGIFTER',
       ),
       'allowed_values_function' => '',
     ),
@@ -351,6 +367,33 @@ function dm_core_feature_field_default_field_bases() {
     'settings' => array(),
     'translatable' => 0,
     'type' => 'number_integer',
+  );
+
+  // Exported field_base: 'field_dm_task_status'
+  $field_bases['field_dm_task_status'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_dm_task_status',
+    'foreign keys' => array(),
+    'indexes' => array(
+      'value' => array(
+        0 => 'value',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'list',
+    'settings' => array(
+      'allowed_values' => array(
+        1 => 'Not started',
+        2 => 'In progress',
+        3 => 'Finished',
+      ),
+      'allowed_values_function' => '',
+    ),
+    'translatable' => 0,
+    'type' => 'list_integer',
   );
 
   // Exported field_base: 'field_dm_task_type'

@@ -40,7 +40,9 @@ function digital_maintenance_block_view($delta = '') {
 }
 
 function _dm_show_top_links() {
-   // Include the CTools tools that we need.
+  //Add dm css/js
+  drupal_add_css(drupal_get_path('module', 'digital_maintenance') . '/css/digital_maintenance.css');
+  // Include the CTools tools that we need.
   ctools_include('ajax');
   ctools_include('modal');
   // create CTools' javascript to the page.
@@ -198,6 +200,8 @@ function digital_maintenance_form_views_exposed_form_alter(&$form, &$form_state)
   //will alter views query to add this value to query
   //@see digital_maintenance_views_query_alter().
   if ($form['#id'] == 'views-exposed-form-tasks-annual-overview-page') {
+    $form['#prefix'] = '<div class="container-inline">';
+    $form['#suffix'] = '</div>';
     $form['name']['#size'] = 5;
     $form['to_year'] = array(
       '#type' => 'textfield', 
@@ -219,7 +223,6 @@ function digital_maintenance_views_pre_render(&$view) {
       $total_cost = 0;
       $total_cost += isset($mcosts[$row->taxonomy_term_data_name]) ? $mcosts[$row->taxonomy_term_data_name]->mcost : 0;
       $total_cost += isset($scosts[$row->taxonomy_term_data_name]) ? $scosts[$row->taxonomy_term_data_name]->scost : 0;
-      //$row->taxonomy_term_data_description = isset($scosts[$row->taxonomy_term_data_name]) ? $scosts[$row->taxonomy_term_data_name]->scost : NULL;
       $row->taxonomy_term_data_description = $total_cost;
     }
   }

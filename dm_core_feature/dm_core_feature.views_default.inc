@@ -32,14 +32,14 @@ function dm_core_feature_views_default_views() {
   $handler->display->display_options['pager']['options']['offset'] = '0';
   $handler->display->display_options['style_plugin'] = 'list';
   $handler->display->display_options['row_plugin'] = 'fields';
-  /* Field: Content: Priority */
-  $handler->display->display_options['fields']['field_dm_priority']['id'] = 'field_dm_priority';
-  $handler->display->display_options['fields']['field_dm_priority']['table'] = 'field_data_field_dm_priority';
-  $handler->display->display_options['fields']['field_dm_priority']['field'] = 'field_dm_priority';
-  $handler->display->display_options['fields']['field_dm_priority']['label'] = '';
-  $handler->display->display_options['fields']['field_dm_priority']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['field_dm_priority']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['field_dm_priority']['element_wrapper_class'] = 'dm-task-priority-[field_dm_priority]';
+  /* Field: Content: Task status */
+  $handler->display->display_options['fields']['field_dm_task_status']['id'] = 'field_dm_task_status';
+  $handler->display->display_options['fields']['field_dm_task_status']['table'] = 'field_data_field_dm_task_status';
+  $handler->display->display_options['fields']['field_dm_task_status']['field'] = 'field_dm_task_status';
+  $handler->display->display_options['fields']['field_dm_task_status']['label'] = '';
+  $handler->display->display_options['fields']['field_dm_task_status']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_dm_task_status']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['field_dm_task_status']['type'] = 'list_key';
   /* Field: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
@@ -62,11 +62,11 @@ function dm_core_feature_views_default_views() {
   $handler->display->display_options['fields']['field_dm_maintenance_cost']['field'] = 'field_dm_maintenance_cost';
   $handler->display->display_options['fields']['field_dm_maintenance_cost']['label'] = '';
   $handler->display->display_options['fields']['field_dm_maintenance_cost']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['field_dm_maintenance_cost']['alter']['text'] = '<span class="dm-task-priority-[field_dm_priority]">[field_dm_priority]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_maintenance_cost]) </span> <span class="dm-task-type"> | [field_dm_task_type] </span>
+  $handler->display->display_options['fields']['field_dm_maintenance_cost']['alter']['text'] = '<span class="dm-task-status dm-task-status-[field_dm_task_status]"></span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_maintenance_cost]) </span> <span class="dm-task-type"> | [field_dm_task_type] </span>
 ';
   $handler->display->display_options['fields']['field_dm_maintenance_cost']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['field_dm_maintenance_cost']['settings'] = array(
-    'thousand_separator' => ' ',
+    'thousand_separator' => '.',
     'prefix_suffix' => 1,
   );
   /* Sort criterion: Content: Post date */
@@ -108,14 +108,14 @@ function dm_core_feature_views_default_views() {
   $handler->display->display_options['pager']['type'] = 'none';
   $handler->display->display_options['pager']['options']['offset'] = '0';
   $handler->display->display_options['defaults']['fields'] = FALSE;
-  /* Field: Content: Priority */
-  $handler->display->display_options['fields']['field_dm_priority']['id'] = 'field_dm_priority';
-  $handler->display->display_options['fields']['field_dm_priority']['table'] = 'field_data_field_dm_priority';
-  $handler->display->display_options['fields']['field_dm_priority']['field'] = 'field_dm_priority';
-  $handler->display->display_options['fields']['field_dm_priority']['label'] = '';
-  $handler->display->display_options['fields']['field_dm_priority']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['field_dm_priority']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['field_dm_priority']['element_wrapper_class'] = 'dm-task-priority-[field_dm_priority]';
+  /* Field: Content: Task status */
+  $handler->display->display_options['fields']['field_dm_task_status']['id'] = 'field_dm_task_status';
+  $handler->display->display_options['fields']['field_dm_task_status']['table'] = 'field_data_field_dm_task_status';
+  $handler->display->display_options['fields']['field_dm_task_status']['field'] = 'field_dm_task_status';
+  $handler->display->display_options['fields']['field_dm_task_status']['label'] = '';
+  $handler->display->display_options['fields']['field_dm_task_status']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_dm_task_status']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['field_dm_task_status']['type'] = 'list_key';
   /* Field: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
@@ -138,10 +138,10 @@ function dm_core_feature_views_default_views() {
   $handler->display->display_options['fields']['field_dm_subsequent_cost']['field'] = 'field_dm_subsequent_cost';
   $handler->display->display_options['fields']['field_dm_subsequent_cost']['label'] = '';
   $handler->display->display_options['fields']['field_dm_subsequent_cost']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['field_dm_subsequent_cost']['alter']['text'] = '<span class="dm-task-priority-[field_dm_priority]">[field_dm_priority]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_subsequent_cost]) </span> <span class="dm-task-type"> | [field_dm_task_type] </span>';
+  $handler->display->display_options['fields']['field_dm_subsequent_cost']['alter']['text'] = '<span class="dm-task-status dm-task-status-[field_dm_task_status]"></span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_subsequent_cost]) </span> <span class="dm-task-type"> | [field_dm_task_type] </span>';
   $handler->display->display_options['fields']['field_dm_subsequent_cost']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['field_dm_subsequent_cost']['settings'] = array(
-    'thousand_separator' => ' ',
+    'thousand_separator' => '.',
     'prefix_suffix' => 1,
   );
   $handler->display->display_options['defaults']['arguments'] = FALSE;
@@ -169,12 +169,12 @@ function dm_core_feature_views_default_views() {
     t('Sort by'),
     t('Asc'),
     t('Desc'),
-    t('<span class="dm-task-priority-[field_dm_priority]">[field_dm_priority]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_maintenance_cost]) </span> <span class="dm-task-type"> | [field_dm_task_type] </span>
+    t('<span class="dm-task-status dm-task-status-[field_dm_task_status]"></span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_maintenance_cost]) </span> <span class="dm-task-type"> | [field_dm_task_type] </span>
 '),
     t('All'),
     t('Block'),
     t('Attachment'),
-    t('<span class="dm-task-priority-[field_dm_priority]">[field_dm_priority]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_subsequent_cost]) </span> <span class="dm-task-type"> | [field_dm_task_type] </span>'),
+    t('<span class="dm-task-status dm-task-status-[field_dm_task_status]"></span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_subsequent_cost]) </span> <span class="dm-task-type"> | [field_dm_task_type] </span>'),
   );
   $export['dm_task_list_row'] = $view;
 
@@ -201,15 +201,16 @@ function dm_core_feature_views_default_views() {
   $handler->display->display_options['pager']['options']['offset'] = '0';
   $handler->display->display_options['pager']['options']['id'] = '0';
   $handler->display->display_options['pager']['options']['quantity'] = '9';
-  $handler->display->display_options['pager']['options']['expose']['items_per_page'] = TRUE;
   $handler->display->display_options['pager']['options']['expose']['items_per_page_label'] = 'Number of years';
   $handler->display->display_options['pager']['options']['expose']['items_per_page_options_all'] = TRUE;
-  $handler->display->display_options['style_plugin'] = 'table';
+  $handler->display->display_options['style_plugin'] = 'default';
+  $handler->display->display_options['style_options']['row_class'] = 'dm-annual-overview-row';
+  $handler->display->display_options['row_plugin'] = 'fields';
   /* Field: Taxonomy term: Name */
   $handler->display->display_options['fields']['name']['id'] = 'name';
   $handler->display->display_options['fields']['name']['table'] = 'taxonomy_term_data';
   $handler->display->display_options['fields']['name']['field'] = 'name';
-  $handler->display->display_options['fields']['name']['label'] = 'Year';
+  $handler->display->display_options['fields']['name']['label'] = '';
   $handler->display->display_options['fields']['name']['alter']['word_boundary'] = FALSE;
   $handler->display->display_options['fields']['name']['alter']['ellipsis'] = FALSE;
   $handler->display->display_options['fields']['name']['element_label_colon'] = FALSE;
@@ -217,13 +218,16 @@ function dm_core_feature_views_default_views() {
   $handler->display->display_options['fields']['tid']['id'] = 'tid';
   $handler->display->display_options['fields']['tid']['table'] = 'taxonomy_term_data';
   $handler->display->display_options['fields']['tid']['field'] = 'tid';
+  $handler->display->display_options['fields']['tid']['label'] = '';
   $handler->display->display_options['fields']['tid']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['tid']['element_label_colon'] = FALSE;
   /* Field: Global: View */
   $handler->display->display_options['fields']['view']['id'] = 'view';
   $handler->display->display_options['fields']['view']['table'] = 'views';
   $handler->display->display_options['fields']['view']['field'] = 'view';
-  $handler->display->display_options['fields']['view']['label'] = 'Tasks';
+  $handler->display->display_options['fields']['view']['label'] = '';
   $handler->display->display_options['fields']['view']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['view']['empty'] = 'No tasks found';
   $handler->display->display_options['fields']['view']['view'] = 'dm_task_list_row';
   $handler->display->display_options['fields']['view']['display'] = 'block';
   $handler->display->display_options['fields']['view']['arguments'] = '[!tid]';
@@ -231,7 +235,9 @@ function dm_core_feature_views_default_views() {
   $handler->display->display_options['fields']['description']['id'] = 'description';
   $handler->display->display_options['fields']['description']['table'] = 'taxonomy_term_data';
   $handler->display->display_options['fields']['description']['field'] = 'description';
-  $handler->display->display_options['fields']['description']['label'] = 'SUM';
+  $handler->display->display_options['fields']['description']['label'] = 'Samlet';
+  $handler->display->display_options['fields']['description']['element_wrapper_class'] = 'container-inline';
+  $handler->display->display_options['fields']['description']['empty'] = '0';
   /* Filter criterion: Taxonomy vocabulary: Machine name */
   $handler->display->display_options['filters']['machine_name']['id'] = 'machine_name';
   $handler->display->display_options['filters']['machine_name']['table'] = 'taxonomy_vocabulary';
@@ -274,12 +280,10 @@ function dm_core_feature_views_default_views() {
     t('‹ previous'),
     t('next ›'),
     t('last »'),
-    t('Year'),
-    t('Term ID'),
     t('.'),
     t(','),
-    t('Tasks'),
-    t('SUM'),
+    t('No tasks found'),
+    t('Samlet'),
     t('Showing year'),
     t('Page'),
   );

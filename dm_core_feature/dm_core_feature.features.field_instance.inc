@@ -595,6 +595,45 @@ function dm_core_feature_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'node-dm_task-field_dm_task_status'
+  $field_instances['node-dm_task-field_dm_task_status'] = array(
+    'bundle' => 'dm_task',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'list',
+        'settings' => array(),
+        'type' => 'list_default',
+        'weight' => 17,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_dm_task_status',
+    'label' => 'Task status',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'options',
+      'settings' => array(
+        'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
+      ),
+      'type' => 'options_select',
+      'weight' => 16,
+    ),
+  );
+
   // Exported field_instance: 'node-dm_task-field_dm_task_type'
   $field_instances['node-dm_task-field_dm_task_type'] = array(
     'bundle' => 'dm_task',
@@ -736,6 +775,7 @@ function dm_core_feature_field_default_field_instances() {
   t('Sub category title');
   t('Subsequent maintenance cost ');
   t('Task description');
+  t('Task status');
   t('Type');
   t('Year to perform task');
   t('udførelse');
