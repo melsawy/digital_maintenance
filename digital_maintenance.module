@@ -6,12 +6,6 @@
  */
 function digital_maintenance_menu() {
   $items = array();
-  $items['dm-frontpage'] = array(
-    'title' => t('Digital Maintenance'),
-    'page callback' => '_display_dm_task_frontpage',
-    'access callback' => TRUE,
-    'type' => MENU_NORMAL_ITEM,
-  );
   $items['dm_createtask/%ctools_js'] = array(
     'title' => t('Create Task'),
     'page callback' => 'ctools_ajax_modal_createtask',
@@ -22,6 +16,50 @@ function digital_maintenance_menu() {
   return $items;
 }
 
+/**
+ * Implements of hook_block_info().
+ */
+function digital_maintenance_block_info() {
+  $blocks['dm_top_menu_links'] = array(
+    'info' => t('Show digital maintenance top links'),
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function digital_maintenance_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'dm_top_menu_links':
+      $block['content'] = _dm_show_top_links();
+      break;
+  }
+  return $block;
+}
+
+function _dm_show_top_links() {
+   // Include the CTools tools that we need.
+  ctools_include('ajax');
+  ctools_include('modal');
+  // create CTools' javascript to the page.
+  ctools_modal_add_js();
+  $links = array();
+  $links[] = ctools_modal_text_button(t('Create New Task'), 'dm_createtask/nojs', t('Create task'));
+  $form['dm_views'] = array(
+    '#type' => 'select',
+    '#title' => t('Views: '),
+    '#options' => array(t('Budget'), t('Task list')),
+    '#prefix' => '<div class="container-inline">',
+    '#suffix' => '</div>',
+  );
+  $links[] = drupal_render($form);
+  //$links[] = l(t('Vis Stamdata'), '<front>');
+  //$links[] = l(t('schaffolding'), '<front>');
+  $output = theme('item_list', array('items' => $links, 'title' => '', 'attributes' => array('class' => 'dm-top-links')));
+  return $output;
+}
 /**
 * Implements hook_form_FORM_ID_alter().
 */
@@ -123,19 +161,6 @@ function ctools_ajax_modal_createtask($ajax) {
   else {
     return MENU_NOT_FOUND;
   }
-}
-
-function _display_dm_task_frontpage() {
-  // Include the CTools tools that we need.
-  ctools_include('ajax');
-  ctools_include('modal');
-  // create CTools' javascript to the page.
-  ctools_modal_add_js();
-  $links = array();
-  $links[] = ctools_modal_text_button(t('Create Task'), 'dm_createtask/nojs', t('Create task'));
-  $links[] = l(t('Annual Overview'), 'dm-annual-overview');
-  $output = theme('item_list', array('items' => $links, 'title' => ''));
-  return $output;
 }
 
 /**

@@ -1,0 +1,29 @@
+
+
+ul.dm-top-links {
+  background-color: #1F1F1F;
+  height: 77px;
+  color: #FFF;
+  padding: 0px !important;
+  margin: 0px !important;
+}
+.dm-top-links li {
+  height: 55px;
+  list-style: none outside none;
+  padding: 10px !important;
+  float: left;
+}
+.dm-top-links li.first a {
+  background: url("images/create_task.png") no-repeat scroll 0 0 #1f1f1f;
+  border: 1px solid;
+  display: block;
+  padding: 19px 17px 15px 80px;
+  color: #FFFFFF !important;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.dm-top-links li.first {
+  background-color: #171717;
+}
+
