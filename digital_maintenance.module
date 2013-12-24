@@ -21,7 +21,10 @@ function digital_maintenance_menu() {
  */
 function digital_maintenance_block_info() {
   $blocks['dm_top_menu_links'] = array(
-    'info' => t('Show digital maintenance top links'),
+    'info' => t('Show Digital Maintenance Links'),
+  );
+  $blocks['dm_expense'] = array(
+    'info' => t('Show Expense'),
   );
   return $blocks;
 }
@@ -35,8 +38,28 @@ function digital_maintenance_block_view($delta = '') {
     case 'dm_top_menu_links':
       $block['content'] = _dm_show_top_links();
       break;
+    case 'dm_expense':
+      $block['content'] = _dm_show_expense();
+      break;
   }
   return $block;
+}
+
+function _dm_show_expense() {
+  $items = array();
+  $mcost = _dm_get_maintenance_cost();
+  //MAX VALUE
+  $max = max($mcost);
+  $year = array_search($max, $mcost);
+  $items[] = '<div class="dm-expense-value">' . $max . '</div><div class="dm-expense-text">'. t('Highest expense @year', array('@year' => $year)) . '</div>';
+  //MIN VALUE
+  $min = min($mcost);
+  $year = array_search($min, $mcost);
+  $items[] = '<div class="dm-expense-value">' . $min . '</div><div class="dm-expense-text">'. t('Highest expense @year', array('@year' => $year)) . '</div>';
+  //AVG VALUE
+  $avg = array_sum($mcost)/count($mcost);
+  $items[] = '<div class="dm-expense-value">' . ceil($avg) . '</div><div class="dm-expense-text">'. t('Average annual expense') . '</div>';
+  return theme('item_list', array('items' => $items, 'title' => '', 'attributes' => array('class' => 'dm-expense-data')));
 }
 
 function _dm_show_top_links() {
@@ -260,7 +283,7 @@ function digital_maintenance_views_pre_render(&$view) {
     $mcosts = _dm_get_maintenance_cost();
     foreach($view->result as &$row) {
       $total_cost = 0;
-      $total_cost += isset($mcosts[$row->taxonomy_term_data_name]) ? $mcosts[$row->taxonomy_term_data_name]->mcost : 0;
+      $total_cost += isset($mcosts[$row->taxonomy_term_data_name]) ? $mcosts[$row->taxonomy_term_data_name] : 0;
       $total_cost += isset($scosts[$row->taxonomy_term_data_name]) ? $scosts[$row->taxonomy_term_data_name]->scost : 0;
       $row->taxonomy_term_data_description = $total_cost;
     }
@@ -310,7 +333,7 @@ function _dm_get_maintenance_cost($year = 'ALL') {
   $query->addExpression("SUM(mc.field_dm_maintenance_cost_value)", 'mcost');
   $query->groupBy('name');
   $query->orderBy('name');
-  $result = $query->execute()->fetchAllAssoc('name');
+  $result = $query->execute()->fetchAllKeyed(0, 1);
   if ($year == 'ALL') {
     return $result;
   }

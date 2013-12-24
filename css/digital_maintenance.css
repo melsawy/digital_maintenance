@@ -100,3 +100,25 @@ ul.dm-top-links {
   position: relative;
   top: -30px;
 }
+.pane-digital-maintenance-dm-expense {
+  background-color: #aaca41;
+  text-align: center;
+  width: 257px;
+  text-transform: uppercase;
+  color: #FFF;
+}
+
+ul.dm-expense-data {
+  margin: 0px 34px;
+}
+ul.dm-expense-data li {
+  list-style: none;
+  padding: 8px 0;
+  border-bottom: 1px solid #87b200;
+  line-height: 2em;
+  white-space: nowrap;
+}
+.dm-expense-value {
+  font-size: 2em;
+  font-weight: bold;
+}

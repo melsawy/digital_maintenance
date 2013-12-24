@@ -90,6 +90,27 @@ drupal_add_css(drupal_get_path(\'module\', \'digital_maintenance\') . \'/css/dig
     $display->panels['bottom'][0] = 'new-1';
     $pane = new stdClass();
     $pane->pid = 'new-2';
+    $pane->panel = 'left_above';
+    $pane->type = 'block';
+    $pane->subtype = 'digital_maintenance-dm_expense';
+    $pane->shown = TRUE;
+    $pane->access = array();
+    $pane->configuration = array(
+      'override_title' => 0,
+      'override_title_text' => '',
+    );
+    $pane->cache = array();
+    $pane->style = array(
+      'settings' => NULL,
+    );
+    $pane->css = array();
+    $pane->extras = array();
+    $pane->position = 0;
+    $pane->locks = array();
+    $display->content['new-2'] = $pane;
+    $display->panels['left_above'][0] = 'new-2';
+    $pane = new stdClass();
+    $pane->pid = 'new-3';
     $pane->panel = 'top';
     $pane->type = 'block';
     $pane->subtype = 'digital_maintenance-dm_top_menu_links';
@@ -107,8 +128,8 @@ drupal_add_css(drupal_get_path(\'module\', \'digital_maintenance\') . \'/css/dig
     $pane->extras = array();
     $pane->position = 0;
     $pane->locks = array();
-    $display->content['new-2'] = $pane;
-    $display->panels['top'][0] = 'new-2';
+    $display->content['new-3'] = $pane;
+    $display->panels['top'][0] = 'new-3';
   $display->hide_title = PANELS_TITLE_FIXED;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;
