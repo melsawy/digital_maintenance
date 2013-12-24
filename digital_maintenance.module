@@ -47,8 +47,47 @@ function _dm_show_top_links() {
   ctools_include('modal');
   // create CTools' javascript to the page.
   ctools_modal_add_js();
+  // Create our own javascript that will be used to theme a modal.
+  $sample_style = array(
+    'ctools-dm-style' => array(
+      'modalSize' => array(
+        /*
+        'type' => 'scale',
+        'width' => .5,
+        'height' => '100%',
+        'addWidth' => 200,
+        'addHeight' => 0,
+         */
+        // How much to remove from the inner content to make space for the
+        // theming.
+        'contentRight' => 25,
+        'contentBottom' => 45,
+        'type' => 'fixed',
+        'width' => 500,
+        'height' => 500,
+        'addWidth' => 20,
+        'addHeight' => 0,
+      ),
+      'modalOptions' => array(
+        'opacity' => .5,
+        'background-color' => '#000',
+      ),
+      'animation' => 'fadeIn',
+      'modalTheme' => 'CToolsSampleModal',
+      'throbber' => theme('image', array('path' => ctools_image_path('ajax-loader.gif', 'digital_maintenance'), 'alt' => t('Loading...'), 'title' => t('Loading'))),
+    ),
+  );
+
+  drupal_add_js($sample_style, 'setting');
+
+  // Since we have our js, css and images in well-known named directories,
+  // CTools makes it easy for us to just use them without worrying about
+  // using drupal_get_path() and all that ugliness.
+  ctools_add_js('ctools-ajax-dm', 'digital_maintenance');
+  ctools_add_css('ctools-ajax-dm', 'digital_maintenance');
+
   $links = array();
-  $links[] = ctools_modal_text_button(t('Create New Task'), 'dm_createtask/nojs', t('Create task'));
+  $links[] = ctools_modal_text_button(t('Create New Task'), 'dm_createtask/nojs', t('Create New Task'), 'ctools-modal-ctools-dm-style');
   $form['dm_views'] = array(
     '#type' => 'select',
     '#title' => t('Views: '),
