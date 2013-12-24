@@ -43,6 +43,7 @@ ul.dm-top-links {
 }
 .dm-annual-overview-row .views-field-name {
   font-size: 3em;
+  margin-top: 25px;
 }
 .dm-annual-overview-row .views-field-description {
   float: right;
@@ -80,14 +81,7 @@ ul.dm-top-links {
 .dm-task-status-3 {
   background: green;
 }
-
-.page-dm-annual-overview #page-title {
-  width: 200px;
-}
 .page-dm-annual-overview .view-filters {
-  clear: both;
-  display: block;
-  float: right;
   margin-top: -43px;
   color: #595959;
 }
@@ -95,9 +89,6 @@ ul.dm-top-links {
   color: #86B300;
 }
 .page-dm-annual-overview #edit-submit-tasks-annual-overview {
-  left: 92px;
-  position: relative;
-  top: -20px;
   background: url("images/apply.png") no-repeat scroll 0 0 transparent;
   border-radius: 0px;
   text-indent: -1000em;
@@ -107,7 +98,7 @@ ul.dm-top-links {
 }
 
 .page-dm-annual-overview .form-item-to-year {
-  left: -49px;
+  left: -145px;
   position: relative;
-  top: -20px;
+  top: -27px;
 }
