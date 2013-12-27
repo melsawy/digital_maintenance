@@ -27,17 +27,22 @@ function dm_testpage() {
 function _dm_show_cost_overxyears() {
   $field = field_info_field('field_dm_category');
   $allowed_values = list_allowed_values($field);
-  $results = db_query('
-    SELECT td.name as year, n.nid, n.title, mc.field_dm_maintenance_cost_value mcost, fc.field_dm_category_value as category, cp.field_dm_sub_category_prefix_value as category_prefix, fp.field_dm_priority_value as priority
-    FROM node n 
-    INNER JOIN field_data_field_dm_category fc ON n.nid = fc.entity_id 
-    INNER JOIN field_data_field_dm_year_to_perform_task pt ON n.nid = pt.entity_id 
-    INNER JOIN taxonomy_term_data td ON td.tid = pt.field_dm_year_to_perform_task_tid 
-    INNER JOIN field_data_field_dm_maintenance_cost mc ON n.nid = mc.entity_id
-    INNER JOIN field_data_field_dm_sub_category_prefix cp ON n.nid = cp.entity_id
-    INNER JOIN field_data_field_dm_priority fp ON n.nid = fp.entity_id
-    ORDER BY fc.field_dm_category_value
-    ')->fetchAllAssoc('nid');
+  $query = db_select('node', 'n');
+  $query = $query->extend('PagerDefault')->limit(20);
+  $query->fields('n', array('nid', 'title'));
+  $query->addField('td', 'name', 'year');
+  $query->addField('mc', 'field_dm_maintenance_cost_value', 'mcost');
+  $query->addField('fc', 'field_dm_category_value', 'category');
+  $query->addField('cp', 'field_dm_sub_category_prefix_value', 'category_prefix');
+  $query->addField('fp', 'field_dm_priority_value', 'priority');
+  $query->join('field_data_field_dm_category', 'fc', 'n.nid = fc.entity_id');
+  $query->join('field_data_field_dm_year_to_perform_task', 'pt', 'n.nid = pt.entity_id');
+  $query->join('taxonomy_term_data', 'td', 'td.tid = pt.field_dm_year_to_perform_task_tid');
+  $query->join('field_data_field_dm_maintenance_cost', ' mc', 'n.nid = mc.entity_id');
+  $query->join('field_data_field_dm_sub_category_prefix', 'cp', 'n.nid = cp.entity_id');
+  $query->join('field_data_field_dm_priority', 'fp', 'n.nid = fp.entity_id');
+  $query->orderBy('fc.field_dm_category_value');
+  $results = $query->execute()->fetchAllAssoc('nid');
   $all_category = array();
   foreach($results as $data) {
     $all_category[$data->category][$data->nid] = $data;
@@ -98,7 +103,9 @@ function _dm_show_cost_overxyears() {
   $row[] = '';
   $row[] = $total;
   $rows[] = $row;
-  return theme('table', array('header' => $header, 'rows' => $rows));
+  $output = theme('table', array('header' => $header, 'rows' => $rows));
+  $output .= theme('pager');
+  return $output;
 }
 
 /**

@@ -117,7 +117,7 @@ function dm_core_feature_field_default_field_instances() {
         'progress_indicator' => 'throbber',
       ),
       'type' => 'file_generic',
-      'weight' => 14,
+      'weight' => 15,
     ),
   );
 
@@ -199,6 +199,45 @@ function dm_core_feature_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'node-dm_task-field_dm_inspection_interval'
+  $field_instances['node-dm_task-field_dm_inspection_interval'] = array(
+    'bundle' => 'dm_task',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'list',
+        'settings' => array(),
+        'type' => 'list_default',
+        'weight' => 18,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_dm_inspection_interval',
+    'label' => 'Inspection interval',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'options',
+      'settings' => array(
+        'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
+      ),
+      'type' => 'options_select',
+      'weight' => 12,
+    ),
+  );
+
   // Exported field_instance: 'node-dm_task-field_dm_maintenance_cost'
   $field_instances['node-dm_task-field_dm_maintenance_cost'] = array(
     'bundle' => 'dm_task',
@@ -243,7 +282,7 @@ function dm_core_feature_field_default_field_instances() {
         'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
       ),
       'type' => 'number',
-      'weight' => 12,
+      'weight' => 13,
     ),
   );
 
@@ -591,7 +630,7 @@ function dm_core_feature_field_default_field_instances() {
         'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
       ),
       'type' => 'number',
-      'weight' => 13,
+      'weight' => 14,
     ),
   );
 
@@ -630,7 +669,7 @@ function dm_core_feature_field_default_field_instances() {
         'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
       ),
       'type' => 'options_select',
-      'weight' => 16,
+      'weight' => 17,
     ),
   );
 
@@ -673,7 +712,7 @@ function dm_core_feature_field_default_field_instances() {
         'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
       ),
       'type' => 'options_select',
-      'weight' => 15,
+      'weight' => 16,
     ),
   );
 
@@ -766,6 +805,7 @@ function dm_core_feature_field_default_field_instances() {
   t('Attachments');
   t('Category');
   t('Expected lifetime');
+  t('Inspection interval');
   t('Maintenance interval');
   t('Materiale');
   t('Omfang');

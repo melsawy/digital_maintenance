@@ -149,6 +149,40 @@ function dm_core_feature_field_default_field_bases() {
     'type' => 'list_integer',
   );
 
+  // Exported field_base: 'field_dm_inspection_interval'
+  $field_bases['field_dm_inspection_interval'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_dm_inspection_interval',
+    'foreign keys' => array(),
+    'indexes' => array(
+      'value' => array(
+        0 => 'value',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'list',
+    'settings' => array(
+      'allowed_values' => array(
+        1 => 'every year',
+        2 => 'every 2nd year',
+        3 => 'every 3rd year',
+        4 => 'every 4th year',
+        5 => 'every 5th year',
+        6 => 'every 6th year',
+        7 => 'every 7th year',
+        8 => 'every 8th year',
+        9 => 'every 9th year',
+        10 => 'every 10th year',
+      ),
+      'allowed_values_function' => '',
+    ),
+    'translatable' => 0,
+    'type' => 'list_integer',
+  );
+
   // Exported field_base: 'field_dm_maintenance_cost'
   $field_bases['field_dm_maintenance_cost'] = array(
     'active' => 1,
