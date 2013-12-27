@@ -13,7 +13,92 @@ function digital_maintenance_menu() {
     'type' => MENU_CALLBACK,
     'page arguments' => array(1),
   );
+  $items['dm_testpage'] = array(
+    'title' => t('Test Page'),
+    'page callback' => 'dm_testpage',
+    'access callback' => TRUE,
+  );
   return $items;
+}
+
+function dm_testpage() {
+  return _dm_show_cost_overxyears();
+}
+function _dm_show_cost_overxyears() {
+  $field = field_info_field('field_dm_category');
+  $allowed_values = list_allowed_values($field);
+  $results = db_query('
+    SELECT td.name as year, n.nid, n.title, mc.field_dm_maintenance_cost_value mcost, fc.field_dm_category_value as category, cp.field_dm_sub_category_prefix_value as category_prefix, fp.field_dm_priority_value as priority
+    FROM node n 
+    INNER JOIN field_data_field_dm_category fc ON n.nid = fc.entity_id 
+    INNER JOIN field_data_field_dm_year_to_perform_task pt ON n.nid = pt.entity_id 
+    INNER JOIN taxonomy_term_data td ON td.tid = pt.field_dm_year_to_perform_task_tid 
+    INNER JOIN field_data_field_dm_maintenance_cost mc ON n.nid = mc.entity_id
+    INNER JOIN field_data_field_dm_sub_category_prefix cp ON n.nid = cp.entity_id
+    INNER JOIN field_data_field_dm_priority fp ON n.nid = fp.entity_id
+    ORDER BY fc.field_dm_category_value
+    ')->fetchAllAssoc('nid');
+  $all_category = array();
+  foreach($results as $data) {
+    $all_category[$data->category][$data->nid] = $data;
+  }
+  $fheader = array(t('#  Category'), t('Priority'), t('Prev'));
+  //List 7 years from current one
+  $i = 0;
+  $cyear = date('Y');
+  while($i < 7) {
+    $mheader[] = $cyear + $i;
+    $i++;
+  } 
+  $lheader = array(t('Next'), t('SUM'));
+  $header = array_merge($fheader, $mheader, $lheader);
+  $rows = array();
+  $colsum = array();
+  $total = 0;
+  foreach($all_category as $key => $result) {
+  //add row for category title
+  $row = array();
+  $row[] = array('data' => $allowed_values[$key], 'colspan' => count($header));
+  $rows[] = $row;
+  foreach ($result as $data) {
+    $row = array();
+    $title = $data->category_prefix .' '. $data->title;
+    $priority = $data->priority;
+    foreach ($mheader as $year) {
+      if ($data->year == $year) {
+        $cost = $data->mcost;
+      }
+      else {
+        $cost = 0;
+      }
+      $row[] = $cost;
+      //add colsum
+      if (isset($colsum[$year])) {
+        $colsum[$year] = $colsum[$year] + $cost;
+      }
+      else {
+        $colsum[$year] = $cost;
+      }
+    }
+    $sum = array_sum($row);
+    $total += $sum;
+    array_unshift($row, $title, $priority, '');
+    $row[] = '';
+    $row[] = $sum;
+    $rows[] = $row;
+  }
+  }
+  //Add last row[TOTAL]
+  $row = array();
+  $row[] = array('data' => t('Total'), 'colspan' => 3);
+  foreach ($mheader as $year) {
+    $row[] = $colsum[$year];
+  }
+  //add total sum
+  $row[] = '';
+  $row[] = $total;
+  $rows[] = $row;
+  return theme('table', array('header' => $header, 'rows' => $rows));
 }
 
 /**
@@ -25,6 +110,9 @@ function digital_maintenance_block_info() {
   );
   $blocks['dm_expense'] = array(
     'info' => t('Show Expense'),
+  );
+  $blocks['dm_cost_overxyears'] = array(
+    'info' => t('Show Cost over X years'),
   );
   return $blocks;
 }
@@ -40,6 +128,9 @@ function digital_maintenance_block_view($delta = '') {
       break;
     case 'dm_expense':
       $block['content'] = _dm_show_expense();
+      break;
+    case 'dm_cost_overxyears':
+      $block['content'] = _dm_show_cost_overxyears();
       break;
   }
   return $block;
