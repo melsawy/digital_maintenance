@@ -93,12 +93,6 @@ function _dm_show_cost_overxyears() {
     $mheader[] = array('data' => $dyear , 'class' => array('data-year', 'data-year-'. $dyear));
     $i++;
   }
-  // Include the CTools tools that we need.
-  ctools_include('ajax');
-  ctools_include('modal');
-
-  // Add CTools' javascript to the page.
-  ctools_modal_add_js();
   $next = array('data' => t('Next'), 'class' => array('dm-year-next'));
   $lheader = array($next, t('SUM'));
   $header = array_merge($fheader, $mheader, $lheader);
@@ -115,7 +109,7 @@ function _dm_show_cost_overxyears() {
       $row = array();
       $sum = 0;
       $title = $data->category_prefix .' '. $data->title;
-      $priority = $data->priority;
+      $priority = _dm_priority_html($data->priority);
       foreach ($mheader as $hdata) {
         $year = $hdata['data'];
         if ($data->year == $year) {
@@ -539,4 +533,17 @@ function digital_maintenance_node_presave($node) {
       $node->field_dm_maintenance_cost[LANGUAGE_NONE][0]['value'] = $node->field_dm_subsequent_cost[LANGUAGE_NONE][0]['value'] = 0;
     }
   }
+}
+
+function _dm_priority_html($p) {
+  $output = array();
+  for ($i = 0; $i < 3; $i++) {
+    if ($i <= $p ) {
+      $output[] = '<span class="dm-task-priority dm-task-priority-1"></span>';
+    }
+    else {
+      $output[] = '<span class="dm-task-priority dm-task-priority-0"></span>';
+    }
+  }
+  return implode('', $output);
 }
