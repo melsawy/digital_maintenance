@@ -13,6 +13,13 @@ function digital_maintenance_menu() {
     'type' => MENU_CALLBACK,
     'page arguments' => array(1),
   );
+  $items['dm_costs_oxy/%/%'] = array(
+    'title' => 'Hello World',
+    'page callback' => 'ctools_ajax_cost_oxy',
+    'page arguments' => array(1, 2),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  ); 
   $items['dm_testpage'] = array(
     'title' => t('Test Page'),
     'page callback' => 'dm_testpage',
@@ -21,9 +28,35 @@ function digital_maintenance_menu() {
   return $items;
 }
 
+function ctools_ajax_cost_oxy($action, $lyear) {
+  $year = ($action == 'next') ? $lyear + 1 : $lyear - 1;
+  $oxy_nids = $_POST['oxy_nids'];
+  //$oxy_nids = array(40, 41, 42, 39, 38);
+  $query = db_select('taxonomy_term_data', 'td');
+  $query->join('field_data_field_dm_year_to_perform_task', 'pt', 'td.tid = pt.field_dm_year_to_perform_task_tid');
+  $query->join('field_data_field_dm_maintenance_cost', 'mc', 'pt.entity_id = mc.entity_id');
+  $query->addField('pt', 'entity_id', 'nid');
+  $query->addField('mc', 'field_dm_maintenance_cost_value', 'mcost');
+  $query->condition('td.name', $year);
+  $query->condition('pt.entity_id', $oxy_nids, 'IN');
+  $result = $query->execute()->fetchAllKeyed(0, 1);
+  $output["th.data-year-$lyear"] = "'<th class='data-year data-year-$year'>$year</th>'";
+  foreach ($oxy_nids as $nid) {
+    if (array_key_exists($nid, $result)) {
+      $cost = $result['nid'];
+    }
+    else {
+      $cost = 0;
+    }
+    $output["'tr.data-nid-$nid td.data-year-$lyear'"] = "'<td class='data-year data-year-$year'>$cost</td>'";
+  }
+  drupal_json_output($output);
+}
+
 function dm_testpage() {
   return _dm_show_cost_overxyears();
 }
+
 function _dm_show_cost_overxyears() {
   $field = field_info_field('field_dm_category');
   $allowed_values = list_allowed_values($field);
@@ -43,67 +76,83 @@ function _dm_show_cost_overxyears() {
   $query->join('field_data_field_dm_priority', 'fp', 'n.nid = fp.entity_id');
   $query->orderBy('fc.field_dm_category_value');
   $results = $query->execute()->fetchAllAssoc('nid');
+  $oxy_nids = array_keys($results);
+  drupal_add_js("var oxy_nids = ". json_encode(array_keys($results)) .";", 'inline');
   $all_category = array();
   foreach($results as $data) {
     $all_category[$data->category][$data->nid] = $data;
   }
-  $fheader = array(t('#  Category'), t('Priority'), t('Prev'));
+  $prev = array('data' => t('Prev'), 'class' => array('dm-year-prev'));
+  $fheader = array(t('#  Category'), t('Priority'), $prev);
   //List 7 years from current one
   $i = 0;
   $cyear = date('Y');
   while($i < 7) {
-    $mheader[] = $cyear + $i;
+    $dyear = $cyear + $i;
+    //$mheader[] = $dyear;
+    $mheader[] = array('data' => $dyear , 'class' => array('data-year', 'data-year-'. $dyear));
     $i++;
-  } 
-  $lheader = array(t('Next'), t('SUM'));
+  }
+  // Include the CTools tools that we need.
+  ctools_include('ajax');
+  ctools_include('modal');
+
+  // Add CTools' javascript to the page.
+  ctools_modal_add_js();
+  $next = array('data' => t('Next'), 'class' => array('dm-year-next'));
+  $lheader = array($next, t('SUM'));
   $header = array_merge($fheader, $mheader, $lheader);
   $rows = array();
   $colsum = array();
   $total = 0;
   foreach($all_category as $key => $result) {
-  //add row for category title
-  $row = array();
-  $row[] = array('data' => $allowed_values[$key], 'colspan' => count($header));
-  $rows[] = $row;
-  foreach ($result as $data) {
+    //add row for category title
     $row = array();
-    $title = $data->category_prefix .' '. $data->title;
-    $priority = $data->priority;
-    foreach ($mheader as $year) {
-      if ($data->year == $year) {
-        $cost = $data->mcost;
+    $row[] = array('data' => $allowed_values[$key], 'colspan' => count($header) - 1);
+    $row[] = array('data' => '', 'class' => array('dm-sum-task-empty'));
+    $rows[] = array('data' => $row, 'class' => array('dm-category-title'));
+    foreach ($result as $data) {
+      $row = array();
+      $sum = 0;
+      $title = $data->category_prefix .' '. $data->title;
+      $priority = $data->priority;
+      foreach ($mheader as $hdata) {
+        $year = $hdata['data'];
+        if ($data->year == $year) {
+          $cost = $data->mcost;
+        }
+        else {
+          $cost = 0;
+        }
+        $sum += $cost;
+        $row[] = array('data' => $cost, 'class' => array('data-year', 'data-year-'. $year));
+        //add colsum
+        if (isset($colsum[$year])) {
+          $colsum[$year] = $colsum[$year] + $cost;
+        }
+        else {
+          $colsum[$year] = $cost;
+        }
       }
-      else {
-        $cost = 0;
-      }
-      $row[] = $cost;
-      //add colsum
-      if (isset($colsum[$year])) {
-        $colsum[$year] = $colsum[$year] + $cost;
-      }
-      else {
-        $colsum[$year] = $cost;
-      }
+      $total += $sum;
+      array_unshift($row, $title, $priority, '');
+      $row[] = '';
+      $row[] = array('data' => $sum, 'class' => array('dm-sum-task', 'dm-sum-nid-'.$data->nid));
+      $rows[] = array('data' => $row, 'class' => array('data-task', 'data-nid-'. $data->nid));
     }
-    $sum = array_sum($row);
-    $total += $sum;
-    array_unshift($row, $title, $priority, '');
-    $row[] = '';
-    $row[] = $sum;
-    $rows[] = $row;
-  }
   }
   //Add last row[TOTAL]
   $row = array();
-  $row[] = array('data' => t('Total'), 'colspan' => 3);
-  foreach ($mheader as $year) {
+  $row[] = array('data' => t('Total'), 'colspan' => 3, 'class' => array('dm-oxy-total-label'));
+  foreach ($mheader as $hdata) {
+    $year = $hdata['data'];
     $row[] = $colsum[$year];
   }
   //add total sum
   $row[] = '';
-  $row[] = $total;
-  $rows[] = $row;
-  $output = theme('table', array('header' => $header, 'rows' => $rows));
+  $row[] = array('data' => $total, 'class' => array('dm-overalltotal'));
+  $rows[] = array('data' => $row, 'class' => array('dm-oxy-total-row'));
+  $output = theme('table', array('header' => $header, 'rows' => $rows, '#attributes' => array('class' => array('dm-oxy-tasks'))));
   $output .= theme('pager');
   return $output;
 }

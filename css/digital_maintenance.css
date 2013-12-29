@@ -122,3 +122,38 @@ ul.dm-expense-data li {
   font-size: 2em;
   font-weight: bold;
 }
+.pane-digital-maintenance-dm-cost-overxyears .table thead th.dm-year-prev,
+.pane-digital-maintenance-dm-cost-overxyears .table thead th.dm-year-next {
+  cursor: pointer;
+}
+.pane-digital-maintenance-dm-cost-overxyears .table thead tr {
+  background-color: #1F1F1F;
+  color: #FFFFFF;
+}
+
+.pane-digital-maintenance-dm-cost-overxyears .table thead tr {
+  background-color: #1F1F1F;
+  color: #FFFFFF;
+}
+
+.pane-digital-maintenance-dm-cost-overxyears .table tr.dm-category-title td {
+  background-color: #D1D1D1;
+}
+
+.pane-digital-maintenance-dm-cost-overxyears .table tr.dm-oxy-total-row td.dm-overalltotal,
+.pane-digital-maintenance-dm-cost-overxyears .table tr td.dm-sum-task {
+  background-color: #a9cf22;
+  color: #FFF;
+  text-align: center;
+}
+.pane-digital-maintenance-dm-cost-overxyears .table tr td.dm-sum-task-empty {
+  background-color: #8aa91d;
+}
+.pane-digital-maintenance-dm-cost-overxyears .table tr.dm-oxy-total-row {
+  border-top: 2px solid #999999;
+  font-weight: bold;
+}
+.pane-digital-maintenance-dm-cost-overxyears .table tr.dm-oxy-total-row td{
+  background-color: #f2f2f2;
+  padding: 17px 0;
+}
