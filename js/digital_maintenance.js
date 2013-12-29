@@ -1,6 +1,5 @@
 
 jQuery(function() {
-  
   jQuery('th.dm-year-next').click(function() {
     year = jQuery(this).prev().text();
     prev_year = year - 6;
@@ -8,7 +7,7 @@ jQuery(function() {
       type: "POST",
     dataType: 'json',
     data: {'oxy_nids' : oxy_nids},
-    url: "/boligweb/dm_costs_oxy/next/"+year,
+    url: "/dm_costs_oxy/next/"+year,
     success: function (data) {
       jQuery.each( data, function( key, val ) {
         jQuery(key).after(val);
