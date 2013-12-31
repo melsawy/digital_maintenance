@@ -13,7 +13,7 @@ jQuery(function() {
       type: "POST",
     dataType: 'json',
     data: {'oxy_nids' : oxy_nids},
-    url: "/boligweb/dm_costs_oxy/next/"+year,
+    url: "/dm_costs_oxy/next/"+year,
     success: function (data) {
       jQuery.each( data, function( key, val ) {
         jQuery(key).after(val);
@@ -38,7 +38,7 @@ jQuery(function() {
       type: "POST",
     dataType: 'json',
     data: {'oxy_nids' : oxy_nids},
-    url: "/boligweb/dm_costs_oxy/prev/"+year,
+    url: "/dm_costs_oxy/prev/"+year,
     success: function (data) {
       jQuery('.data-year-'+next_year).remove();
       jQuery.each( data, function( key, val ) {
