@@ -31,25 +31,34 @@ function digital_maintenance_menu() {
 function ctools_ajax_cost_oxy($action, $lyear) {
   $year = ($action == 'next') ? $lyear + 1 : $lyear - 1;
   $oxy_nids = $_POST['oxy_nids'];
-  //$oxy_nids = array(40, 41, 42, 39, 38);
+  $or = db_or();
+  $or->condition('td.name', $year);
+  $or->where('(mi.field_dm_maintenance_interval_value + td.name) = :year', array(':year' => $year));
   $query = db_select('taxonomy_term_data', 'td');
   $query->join('field_data_field_dm_year_to_perform_task', 'pt', 'td.tid = pt.field_dm_year_to_perform_task_tid');
   $query->join('field_data_field_dm_maintenance_cost', 'mc', 'pt.entity_id = mc.entity_id');
+  $query->join('field_data_field_dm_maintenance_interval', 'mi', 'pt.entity_id=mi.entity_id');
+  $query->join('field_data_field_dm_subsequent_cost', 'sc', 'pt.entity_id=sc.entity_id');
   $query->addField('pt', 'entity_id', 'nid');
-  $query->addField('mc', 'field_dm_maintenance_cost_value', 'mcost');
-  $query->condition('td.name', $year);
+  $query->addExpression('if (td.name = :year, mc.field_dm_maintenance_cost_value, sc.field_dm_subsequent_cost_value)', 'mcost', 
+    array(':year' => $year));
+  $query->condition($or);
   $query->condition('pt.entity_id', $oxy_nids, 'IN');
   $result = $query->execute()->fetchAllKeyed(0, 1);
   $output["th.data-year-$lyear"] = "'<th class='data-year data-year-$year'>$year</th>'";
+  $total = 0;
   foreach ($oxy_nids as $nid) {
     if (array_key_exists($nid, $result)) {
-      $cost = $result['nid'];
+      $cost = $result[$nid];
     }
     else {
       $cost = 0;
     }
+    $total += $cost;
     $output["'tr.data-nid-$nid td.data-year-$lyear'"] = "'<td class='data-year data-year-$year'>$cost</td>'";
   }
+  //add Total for col.
+  $output["'tr.dm-oxy-total-row td.data-year-$lyear'"] = "'<td class='data-year data-year-$year'>$total</td>'";
   drupal_json_output($output);
 }
 
@@ -68,12 +77,16 @@ function _dm_show_cost_overxyears() {
   $query->addField('fc', 'field_dm_category_value', 'category');
   $query->addField('cp', 'field_dm_sub_category_prefix_value', 'category_prefix');
   $query->addField('fp', 'field_dm_priority_value', 'priority');
+  $query->addExpression('td.name + mi.field_dm_maintenance_interval_value', 'myear');
+  $query->addField('sc', 'field_dm_subsequent_cost_value', 'scost'); 
   $query->join('field_data_field_dm_category', 'fc', 'n.nid = fc.entity_id');
   $query->join('field_data_field_dm_year_to_perform_task', 'pt', 'n.nid = pt.entity_id');
   $query->join('taxonomy_term_data', 'td', 'td.tid = pt.field_dm_year_to_perform_task_tid');
   $query->join('field_data_field_dm_maintenance_cost', ' mc', 'n.nid = mc.entity_id');
   $query->join('field_data_field_dm_sub_category_prefix', 'cp', 'n.nid = cp.entity_id');
   $query->join('field_data_field_dm_priority', 'fp', 'n.nid = fp.entity_id');
+  $query->join('field_data_field_dm_maintenance_interval', 'mi', 'n.nid = mi.entity_id');
+  $query->join('field_data_field_dm_subsequent_cost', 'sc', 'n.nid = sc.entity_id');
   $query->orderBy('fc.field_dm_category_value');
   $results = $query->execute()->fetchAllAssoc('nid');
   $oxy_nids = array_keys($results);
@@ -82,7 +95,7 @@ function _dm_show_cost_overxyears() {
   foreach($results as $data) {
     $all_category[$data->category][$data->nid] = $data;
   }
-  $prev = array('data' => t('Prev'), 'class' => array('dm-year-prev'));
+  $prev = array('data' => '<div class="dm-apply"></div><div class="dm-loading">/div>', 'class' => array('dm-year-prev'));
   $fheader = array(t('#  Category'), t('Priority'), $prev);
   //List 7 years from current one
   $i = 0;
@@ -93,13 +106,13 @@ function _dm_show_cost_overxyears() {
     $mheader[] = array('data' => $dyear , 'class' => array('data-year', 'data-year-'. $dyear));
     $i++;
   }
-  $next = array('data' => t('Next'), 'class' => array('dm-year-next'));
+  $next = array('data' => '<div class="dm-apply"></div><div class="dm-loading"></div>', 'class' => array('dm-year-next'));
   $lheader = array($next, t('SUM'));
   $header = array_merge($fheader, $mheader, $lheader);
   $rows = array();
   $colsum = array();
   $total = 0;
-  foreach($all_category as $key => $result) {
+  foreach ($all_category as $key => $result) {
     //add row for category title
     $row = array();
     $row[] = array('data' => $allowed_values[$key], 'colspan' => count($header) - 1);
@@ -114,6 +127,9 @@ function _dm_show_cost_overxyears() {
         $year = $hdata['data'];
         if ($data->year == $year) {
           $cost = $data->mcost;
+        }
+        elseif ($data->myear == $year) {
+          $cost = $data->scost;
         }
         else {
           $cost = 0;
@@ -140,7 +156,7 @@ function _dm_show_cost_overxyears() {
   $row[] = array('data' => t('Total'), 'colspan' => 3, 'class' => array('dm-oxy-total-label'));
   foreach ($mheader as $hdata) {
     $year = $hdata['data'];
-    $row[] = $colsum[$year];
+    $row[] = array('data' => $colsum[$year], 'class' => array('data-year-'.$year));
   }
   //add total sum
   $row[] = '';

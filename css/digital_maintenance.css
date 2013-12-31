@@ -121,6 +121,21 @@ ul.dm-expense-data li {
   font-size: 2em;
   font-weight: bold;
 }
+.pane-digital-maintenance-dm-cost-overxyears .table thead th div.dm-loading {
+  background: url("../images/loading-large.gif") no-repeat scroll 0 0 transparent;
+  width: 24px;
+  height: 24px;
+}
+.pane-digital-maintenance-dm-cost-overxyears .table thead th.dm-year-prev div.dm-apply {
+  background: url("images/prev.png") no-repeat scroll 0 0 transparent;
+  width: 30px;
+  height: 37px;
+}
+.pane-digital-maintenance-dm-cost-overxyears .table thead th.dm-year-next div.dm-apply {
+  background: url("images/next.png") no-repeat scroll 0 0 transparent;
+  width: 30px;
+  height: 37px;
+}
 .pane-digital-maintenance-dm-cost-overxyears .table thead th.dm-year-prev,
 .pane-digital-maintenance-dm-cost-overxyears .table thead th.dm-year-next {
   cursor: pointer;
@@ -162,4 +177,5 @@ span.dm-task-priority-1 {
 span.dm-task-priority-0 {
   background-color: #dfe1e0;
 }
+
 

@@ -1,13 +1,19 @@
 
 jQuery(function() {
-  jQuery('th.dm-year-next').click(function() {
-    year = jQuery(this).prev().text();
+  
+  jQuery('th.dm-year-next div.dm-loading').hide();
+  jQuery('th.dm-year-prev div.dm-loading').hide();
+  
+  jQuery('th.dm-year-next div.dm-apply').click(function() {
+    jQuery('th.dm-year-next div.dm-loading').show();
+    jQuery('th.dm-year-next div.dm-apply').hide();
+    year = jQuery(this).parent().prev().text();
     prev_year = year - 6;
     jQuery.ajax({
       type: "POST",
     dataType: 'json',
     data: {'oxy_nids' : oxy_nids},
-    url: "/dm_costs_oxy/next/"+year,
+    url: "/boligweb/dm_costs_oxy/next/"+year,
     success: function (data) {
       jQuery.each( data, function( key, val ) {
         jQuery(key).after(val);
@@ -15,27 +21,38 @@ jQuery(function() {
       jQuery('.data-year-'+prev_year).remove();
       //re-calculate row sum
       _sm_tasks_row();
+    },
+    complete: function() {
+      jQuery('th.dm-year-next div.dm-loading').hide();
+      jQuery('th.dm-year-next div.dm-apply').show();
     }
     });
   });
 
   jQuery('th.dm-year-prev').click(function() {
+    jQuery('th.dm-year-prev div.dm-loading').show();
+    jQuery('th.dm-year-prev div.dm-apply').hide();
     year = parseInt(jQuery(this).next().text());
     next_year = year + 6;
     jQuery.ajax({
       type: "POST",
     dataType: 'json',
     data: {'oxy_nids' : oxy_nids},
-    url: "/dm_costs_oxy/prev/"+year,
+    url: "/boligweb/dm_costs_oxy/prev/"+year,
     success: function (data) {
+      jQuery('.data-year-'+next_year).remove();
       jQuery.each( data, function( key, val ) {
         jQuery(key).before(val);
       });
+      //re-calculate row sum
+      _sm_tasks_row();
+    },
+    complete: function() {
+      jQuery('th.dm-year-prev div.dm-loading').hide();
+      jQuery('th.dm-year-prev div.dm-apply').show();
     }
+
     });
-    jQuery('.data-year-'+next_year).remove();
-    //re-calculate row sum
-    _sm_tasks_row();
   });
 
 
