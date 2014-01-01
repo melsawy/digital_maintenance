@@ -20,11 +20,6 @@ function digital_maintenance_menu() {
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   ); 
-  $items['dm_testpage'] = array(
-    'title' => t('Test Page'),
-    'page callback' => 'dm_testpage',
-    'access callback' => TRUE,
-  );
   return $items;
 }
 
@@ -61,9 +56,31 @@ function ctools_ajax_cost_oxy($action, $lyear) {
   drupal_json_output($output);
 }
 
-function dm_testpage() {
-  return _dm_show_cost_overxyears();
+function dm_draw_x_year_graph($data) {
+  $keys = array_keys($data);
+  foreach($keys as $k) {
+    $header[$k] = "$k";
+  }
+  $settings = array();
+  $settings['chart']['chartOne'] = array(
+    'header' => $header,
+    'rows' => array($data),
+    'columns' => array(t('Total cost')),
+    'chartType' => 'AreaChart',//GOOGLE_CHART_TOOLS_DEFAULT_CHART,
+    'containerId' =>  'area_chart',
+    'options' => array( // Optionals.
+      //'curveType' => "function",
+      'forceIFrame' => FALSE,
+      'title' => '',
+      'width' => 800,
+      'height' => 400,
+      'colors' => array('#87B200'),
+    )
+  );
+  draw_chart($settings);
+  return '<div id="area_chart"></div>';
 }
+
 
 function _dm_show_cost_overxyears() {
   $field = field_info_field('field_dm_category');
@@ -232,7 +249,10 @@ function _dm_show_expense() {
   //AVG VALUE
   $avg = array_sum($cost)/$x_year;
   $items[] = '<div class="dm-expense-value">' . ceil($avg) . '</div><div class="dm-expense-text">'. t('Average annual expense') . '</div>';
-  return theme('item_list', array('items' => $items, 'title' => '', 'attributes' => array('class' => 'dm-expense-data')));
+  $output = '<div class="dm-expense-container">' .
+    theme('item_list', array('items' => $items, 'title' => '', 'attributes' => array('class' => 'dm-expense-data'))) .'</div>';
+  $output .= dm_draw_x_year_graph($cost);
+  return $output;
 }
 
 function _dm_show_top_links() {

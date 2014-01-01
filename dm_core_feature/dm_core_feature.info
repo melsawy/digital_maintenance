@@ -9,6 +9,7 @@ dependencies[] = digital_maintenance
 dependencies[] = features
 dependencies[] = field_group
 dependencies[] = file
+dependencies[] = google_chart_tools
 dependencies[] = list
 dependencies[] = number
 dependencies[] = options
