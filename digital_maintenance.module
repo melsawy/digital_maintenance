@@ -14,7 +14,7 @@ function digital_maintenance_menu() {
     'page arguments' => array(1),
   );
   $items['dm_costs_oxy/%/%'] = array(
-    'title' => 'Hello World',
+    'title' => t('Calculate cost for specific year'),
     'page callback' => 'ctools_ajax_cost_oxy',
     'page arguments' => array(1, 2),
     'access callback' => TRUE,
@@ -31,25 +31,24 @@ function digital_maintenance_menu() {
 function ctools_ajax_cost_oxy($action, $lyear) {
   $year = ($action == 'next') ? $lyear + 1 : $lyear - 1;
   $oxy_nids = $_POST['oxy_nids'];
-  $or = db_or();
-  $or->condition('td.name', $year);
-  $or->where('(mi.field_dm_maintenance_interval_value + td.name) = :year', array(':year' => $year));
   $query = db_select('taxonomy_term_data', 'td');
   $query->join('field_data_field_dm_year_to_perform_task', 'pt', 'td.tid = pt.field_dm_year_to_perform_task_tid');
   $query->join('field_data_field_dm_maintenance_cost', 'mc', 'pt.entity_id = mc.entity_id');
   $query->join('field_data_field_dm_maintenance_interval', 'mi', 'pt.entity_id=mi.entity_id');
   $query->join('field_data_field_dm_subsequent_cost', 'sc', 'pt.entity_id=sc.entity_id');
   $query->addField('pt', 'entity_id', 'nid');
-  $query->addExpression('if (td.name = :year, mc.field_dm_maintenance_cost_value, sc.field_dm_subsequent_cost_value)', 'mcost', 
-    array(':year' => $year));
-  $query->condition($or);
+  $query->addField('td', 'name', 'year');
+  $query->addField('mc', 'field_dm_maintenance_cost_value', 'mcost');
+  $query->addField('sc', 'field_dm_subsequent_cost_value', 'scost');
   $query->condition('pt.entity_id', $oxy_nids, 'IN');
-  $result = $query->execute()->fetchAllKeyed(0, 1);
+  $query->condition('td.name', $year, '<=');
+  $query->where('MOD((:year - td.name), mi.field_dm_maintenance_interval_value) = 0', array(':year' => $year));
+  $result = $query->execute()->fetchAllAssoc('nid');
   $output["th.data-year-$lyear"] = "'<th class='data-year data-year-$year'>$year</th>'";
   $total = 0;
   foreach ($oxy_nids as $nid) {
     if (array_key_exists($nid, $result)) {
-      $cost = $result[$nid];
+      $cost =  ($result[$nid]->year == $year) ? $result[$nid]->mcost : $result[$nid]->scost;
     }
     else {
       $cost = 0;
@@ -69,6 +68,22 @@ function dm_testpage() {
 function _dm_show_cost_overxyears() {
   $field = field_info_field('field_dm_category');
   $allowed_values = list_allowed_values($field);
+  //Prepare table header
+  //prev and next will be bind with onclick action
+  //add loading class to prev and next to show while executing ajax request 
+  $prev = array('data' => '<div class="dm-apply"></div><div class="dm-loading"></div>', 'class' => array('dm-year-prev'));
+  $fheader = array(t('#  Category'), t('Priority'), $prev);
+  //List x years from current one
+  $x_year = variable_get('dm_x_year_period', 7);
+  $cyear = date('Y');
+  $eyear = $cyear + $x_year;
+  for ($i = $cyear; $i < $eyear; $i++) {
+    $mheader[] = array('data' => $i , 'class' => array('data-year', 'data-year-'. $i));
+  }
+  $next = array('data' => '<div class="dm-apply"></div><div class="dm-loading"></div>', 'class' => array('dm-year-next'));
+  $lheader = array($next, t('SUM'));
+  $header = array_merge($fheader, $mheader, $lheader);
+  //Built query to collect table rows
   $query = db_select('node', 'n');
   $query = $query->extend('PagerDefault')->limit(20);
   $query->fields('n', array('nid', 'title'));
@@ -77,7 +92,6 @@ function _dm_show_cost_overxyears() {
   $query->addField('fc', 'field_dm_category_value', 'category');
   $query->addField('cp', 'field_dm_sub_category_prefix_value', 'category_prefix');
   $query->addField('fp', 'field_dm_priority_value', 'priority');
-  $query->addExpression('td.name + mi.field_dm_maintenance_interval_value', 'myear');
   $query->addField('sc', 'field_dm_subsequent_cost_value', 'scost'); 
   $query->join('field_data_field_dm_category', 'fc', 'n.nid = fc.entity_id');
   $query->join('field_data_field_dm_year_to_perform_task', 'pt', 'n.nid = pt.entity_id');
@@ -88,27 +102,21 @@ function _dm_show_cost_overxyears() {
   $query->join('field_data_field_dm_maintenance_interval', 'mi', 'n.nid = mi.entity_id');
   $query->join('field_data_field_dm_subsequent_cost', 'sc', 'n.nid = sc.entity_id');
   $query->orderBy('fc.field_dm_category_value');
+  //add column for each year on our x_year period
+  //use MOD to list define maintenance task on each col.
+  foreach ($mheader as $h) {
+    $year = $h['data'];
+    $query->addExpression("MOD(($year - td.name), mi.field_dm_maintenance_interval_value)", "y_$year");
+  }
   $results = $query->execute()->fetchAllAssoc('nid');
   $oxy_nids = array_keys($results);
   drupal_add_js("var oxy_nids = ". json_encode(array_keys($results)) .";", 'inline');
+  //rebuild query result array to group all rows with same category
   $all_category = array();
   foreach($results as $data) {
     $all_category[$data->category][$data->nid] = $data;
   }
-  $prev = array('data' => '<div class="dm-apply"></div><div class="dm-loading">/div>', 'class' => array('dm-year-prev'));
-  $fheader = array(t('#  Category'), t('Priority'), $prev);
-  //List 7 years from current one
-  $i = 0;
-  $cyear = date('Y');
-  while($i < 7) {
-    $dyear = $cyear + $i;
-    //$mheader[] = $dyear;
-    $mheader[] = array('data' => $dyear , 'class' => array('data-year', 'data-year-'. $dyear));
-    $i++;
-  }
-  $next = array('data' => '<div class="dm-apply"></div><div class="dm-loading"></div>', 'class' => array('dm-year-next'));
-  $lheader = array($next, t('SUM'));
-  $header = array_merge($fheader, $mheader, $lheader);
+   //Add tables row
   $rows = array();
   $colsum = array();
   $total = 0;
@@ -118,18 +126,17 @@ function _dm_show_cost_overxyears() {
     $row[] = array('data' => $allowed_values[$key], 'colspan' => count($header) - 1);
     $row[] = array('data' => '', 'class' => array('dm-sum-task-empty'));
     $rows[] = array('data' => $row, 'class' => array('dm-category-title'));
+    //add category tasks.
     foreach ($result as $data) {
       $row = array();
       $sum = 0;
-      $title = $data->category_prefix .' '. $data->title;
+      $title = '<div class="dm-cat-prefix"></div>'. $data->category_prefix .' '. $data->title;
       $priority = _dm_priority_html($data->priority);
       foreach ($mheader as $hdata) {
         $year = $hdata['data'];
-        if ($data->year == $year) {
-          $cost = $data->mcost;
-        }
-        elseif ($data->myear == $year) {
-          $cost = $data->scost;
+        if ($data->{"y_$year"} == 0 && $year >= $data->year) {
+          //get maintenance or subsequent cost
+          $cost = ($year == $data->year) ? $data->mcost : $data->scost;
         }
         else {
           $cost = 0;
@@ -203,18 +210,27 @@ function digital_maintenance_block_view($delta = '') {
 }
 
 function _dm_show_expense() {
-  $items = array();
+  $items = $cost = array();
   $mcost = _dm_get_maintenance_cost();
+  $cyear = date('Y');
+  $x_year = variable_get('dm_x_year_period', 7);
+  $eyear = $cyear + $x_year;
+  for ($i = $cyear; $i < $eyear; $i++) {
+    $scost = _dm_get_subsequent_cost($i);
+    $y_cost = isset($mcost[$i]) ? $mcost[$i] : 0;
+    $y_cost += isset($scost->scost) ? $scost->scost : 0;
+    $cost[$i] = $y_cost;
+  }
   //MAX VALUE
-  $max = max($mcost);
-  $year = array_search($max, $mcost);
+  $max = max($cost);
+  $year = array_search($max, $cost);
   $items[] = '<div class="dm-expense-value">' . $max . '</div><div class="dm-expense-text">'. t('Highest expense @year', array('@year' => $year)) . '</div>';
   //MIN VALUE
-  $min = min($mcost);
-  $year = array_search($min, $mcost);
-  $items[] = '<div class="dm-expense-value">' . $min . '</div><div class="dm-expense-text">'. t('Highest expense @year', array('@year' => $year)) . '</div>';
+  $min = min($cost);
+  $year = array_search($min, $cost);
+  $items[] = '<div class="dm-expense-value">' . $min . '</div><div class="dm-expense-text">'. t('Lowest expense @year', array('@year' => $year)) . '</div>';
   //AVG VALUE
-  $avg = array_sum($mcost)/count($mcost);
+  $avg = array_sum($cost)/$x_year;
   $items[] = '<div class="dm-expense-value">' . ceil($avg) . '</div><div class="dm-expense-text">'. t('Average annual expense') . '</div>';
   return theme('item_list', array('items' => $items, 'title' => '', 'attributes' => array('class' => 'dm-expense-data')));
 }
@@ -457,24 +473,16 @@ function digital_maintenance_views_pre_render(&$view) {
 function _dm_get_subsequent_cost($year = 'ALL') {
   //TODO: cache query result for 5 min at least.
   $query = db_select('taxonomy_term_data', 'td');
-  $query->join('field_data_field_dm_year_to_perform_task', 'ypt', 'td.tid = ypt.field_dm_year_to_perform_task_tid');
-  $query->join('field_data_field_dm_maintenance_interval', 'mi', 'ypt.entity_id = mi.entity_id');
-  $query->join('field_data_field_dm_subsequent_cost', 'sc', 'ypt.entity_id = sc.entity_id');
-  //$query->join('node', 'n', 'ypt.entity_id = n.nid');
-  $query->addExpression("mi.field_dm_maintenance_interval_value + td.name", 'dm_year');
-  //$query->addExpression("GROUP_CONCAT(CONCAT('l(\"', n.title, '\", \"node/', n.nid, '\")') SEPARATOR ',')", 'node_links');
-  $query->addExpression("GROUP_CONCAT(ypt.entity_id SEPARATOR ',')", 'nids');
-  $query->addExpression("SUM(sc.field_dm_subsequent_cost_value)", 'scost');
-  $query->groupBy('dm_year');
-  $query->orderBy('dm_year');
-  $result = $query->execute()->fetchAllAssoc('dm_year');
-  if ($year == 'ALL') {
-    return $result;
-  }
-  if(isset($result[$year])) {
-    return $result[$year];
-  }
-  return array();
+  $query->join('field_data_field_dm_year_to_perform_task', 'pt', 'td.tid = pt.field_dm_year_to_perform_task_tid');
+  $query->join('field_data_field_dm_maintenance_cost', 'mc', 'pt.entity_id = mc.entity_id');
+  $query->join('field_data_field_dm_maintenance_interval', 'mi', 'pt.entity_id=mi.entity_id');
+  $query->join('field_data_field_dm_subsequent_cost', 'sc', 'pt.entity_id=sc.entity_id');
+  $query->addExpression('SUM(sc.field_dm_subsequent_cost_value)', 'scost');
+  $query->addExpression("GROUP_CONCAT(pt.entity_id SEPARATOR ',')", 'nids');
+  $query->condition('td.name', $year, '<');
+  $query->where('MOD((:year - td.name), mi.field_dm_maintenance_interval_value) = 0', array(':year' => $year));
+  $result = $query->execute()->fetchObject();
+  return $result;
 }
 
 /**
