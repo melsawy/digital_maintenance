@@ -55,6 +55,11 @@ jQuery(function() {
     });
   });
 
+  //Select tasklist view
+  jQuery('.dm-taskview-list .form-select').change(function() {
+    url = Drupal.settings.basePath + jQuery(this).val();
+    jQuery(location).attr('href',url);
+  });
 
 });
 
