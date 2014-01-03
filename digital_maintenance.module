@@ -479,16 +479,16 @@ function digital_maintenance_views_query_alter(&$view, &$query) {
       $view->query->where[1]['conditions'][1]['value'] = array($_GET['name'], $_GET['to_year']);
     }
   }
-  if ($view->name == 'dm_task_list_row' && $view->current_display == 'attachment_1') {
-    //append to tasks list all tasks[with Year to perform task + Maintenance interval] that match displayed annual year
-    //for example if I have a tasks that have year to perform task = 2013 and Maintenance interval = 1 
-    //so I should display this task when listing annual year = 2014
+  if ($view->name == 'dm_task_list_row' && in_array($view->current_display, array('attachment_1', 'attachment_2'))) {
     $key_id = current(array_keys($view->query->where[0]['conditions'][0]['value']));
-    $tid = $view->query->where[0]['conditions'][0]['value'][$key_id];
-    $term_data = entity_load('taxonomy_term', array($tid));
-    $year = $term_data[$tid]->name;
-    //$scosts = _dm_get_subsequent_cost();
-    $tasks_nids = isset($scosts[$year]) ? explode(',', $scosts[$year]->nids) : array(0);
+    $year = $view->query->where[0]['conditions'][0]['value'][$key_id];
+    $tasks = _dm_get_subsequent_cost($year, 'tasks');
+    if ($view->current_display == 'attachment_1') {
+      $tasks_nids = count($tasks['mtasks']) ? $tasks['mtasks'] : array(0);
+    }
+    else {
+      $tasks_nids = count($tasks['itasks']) ? $tasks['itasks'] : array(0);
+    }
     $view->query->where[0]['conditions'][0]['field'] = "node.nid IN($key_id)";
     $view->query->where[0]['conditions'][0]['value'][$key_id] = $tasks_nids;
   }
@@ -520,12 +520,11 @@ function digital_maintenance_form_views_exposed_form_alter(&$form, &$form_state)
 function digital_maintenance_views_pre_render(&$view) {
   if ($view->name == 'tasks_annual_overview') {
     //override taxonomy description to list SUM on tasks cost.
-    //$scosts = _dm_get_subsequent_cost();
     $mcosts = _dm_get_maintenance_cost();
     foreach($view->result as &$row) {
-      $total_cost = 0;
-      $total_cost += isset($mcosts[$row->taxonomy_term_data_name]) ? $mcosts[$row->taxonomy_term_data_name] : 0;
-      $total_cost += isset($scosts[$row->taxonomy_term_data_name]) ? $scosts[$row->taxonomy_term_data_name]->scost : 0;
+      $scost = _dm_get_subsequent_cost($row->taxonomy_term_data_name);
+      $total_cost = isset($mcosts[$row->taxonomy_term_data_name]) ? $mcosts[$row->taxonomy_term_data_name] : 0;
+      $total_cost += isset($scost->scost) ? $scost->scost : 0;
       $row->taxonomy_term_data_description = $total_cost;
     }
   }
@@ -535,22 +534,46 @@ function digital_maintenance_views_pre_render(&$view) {
  * 'scost' => sum of subsequent cost to all corresponding tasks.
  * 'nids' => tasks nids separated by ','
  */
-function _dm_get_subsequent_cost($year) {
+function _dm_get_subsequent_cost($year, $type = 'mcost') {
   //TODO: cache query result for 5 min at least.
   $query = db_select('taxonomy_term_data', 'td');
   $query->join('field_data_field_dm_year_to_perform_task', 'pt', 'td.tid = pt.field_dm_year_to_perform_task_tid');
   $query->join('field_data_field_dm_maintenance_cost', 'mc', 'pt.entity_id = mc.entity_id');
   $query->join('field_data_field_dm_maintenance_interval', 'mi', 'pt.entity_id=mi.entity_id');
   $query->join('field_data_field_dm_subsequent_cost', 'sc', 'pt.entity_id=sc.entity_id');
-  $query->addExpression('SUM(sc.field_dm_subsequent_cost_value)', 'scost');
-  $query->addExpression("GROUP_CONCAT(pt.entity_id SEPARATOR ',')", 'nids');
   $query->condition('td.name', $year, '<');
-  $query->where('MOD((:year - td.name), mi.field_dm_maintenance_interval_value) = 0', array(':year' => $year));
   if (isset($_GET['schaffolding'])) {
     $query->join('field_data_field_dm_scaffolding_needed', 'sn', 'pt.entity_id = sn.entity_id');
     $query->condition('sn.field_dm_scaffolding_needed_value', 1);
   }
-  $result = $query->execute()->fetchObject();
+  if ($type == 'mcost') {
+    $query->addExpression('SUM(sc.field_dm_subsequent_cost_value)', 'scost');
+    $query->addExpression("GROUP_CONCAT(pt.entity_id SEPARATOR ',')", 'nids');
+    $query->where('MOD((:year - td.name), mi.field_dm_maintenance_interval_value) = 0', array(':year' => $year));
+    $result = $query->execute()->fetchObject();
+  }
+  else {
+    $query->join('field_data_field_dm_inspection_interval', 'ii', 'pt.entity_id = ii.entity_id');
+    $query->addField('pt', 'entity_id', 'nid');
+    $query->addExpression('MOD((:year - td.name), mi.field_dm_maintenance_interval_value)', 'mmod', array(':year' => $year));
+    //$query->addExpression('MOD((:year - td.name), ii.field_dm_inspection_interval_value)', 'imod', array(':year' => $year));
+    $or = db_or();
+    $or->where('MOD((:year - td.name), mi.field_dm_maintenance_interval_value) = 0', array(':year' => $year));
+    $or->where('MOD((:year - td.name), ii.field_dm_inspection_interval_value) = 0', array(':year' => $year));
+    $query->condition($or);
+    $result = $query->execute()->fetchAll();
+    $mtasks = $itasks = array();
+    foreach ($result as $row) {
+      if ($row->mmod == 0) {
+        $mtasks[] = $row->nid;
+      }
+      else {
+        $itasks[] = $row->nid;
+      }
+    }
+    $result['mtasks'] = $mtasks;
+    $result['itasks'] = $itasks;
+  }
   return $result;
 }
 
