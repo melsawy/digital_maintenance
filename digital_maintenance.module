@@ -102,7 +102,7 @@ function dm_draw_x_year_graph($data) {
       //'curveType' => "function",
       'forceIFrame' => FALSE,
       'title' => '',
-      'width' => 800,
+      'width' => 600,
       'height' => 355,
       'colors' => array('#87B200'),
     )

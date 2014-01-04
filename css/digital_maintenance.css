@@ -102,7 +102,7 @@ span.dm-task-status-3 {
 .pane-digital-maintenance-dm-expense .dm-expense-container {
   background-color: #aaca41;
   text-align: center;
-  width: 257px;
+  width: 225px;
   text-transform: uppercase;
   color: #FFF;
 }
@@ -111,7 +111,7 @@ span.dm-task-status-3 {
   margin-right: 75px;
 }
 ul.dm-expense-data {
-  margin: 0px 34px;
+  margin: 0px;
 }
 ul.dm-expense-data li {
   list-style: none;
