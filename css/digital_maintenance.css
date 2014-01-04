@@ -99,14 +99,17 @@ span.dm-task-status-3 {
   position: relative;
   top: -30px;
 }
-.pane-digital-maintenance-dm-expense {
+.pane-digital-maintenance-dm-expense .dm-expense-container {
   background-color: #aaca41;
   text-align: center;
   width: 257px;
   text-transform: uppercase;
   color: #FFF;
 }
-
+.pane-digital-maintenance-dm-expense .dm-graph-container {
+  float: right;
+  margin-right: 75px;
+}
 ul.dm-expense-data {
   margin: 0px 34px;
 }

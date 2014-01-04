@@ -285,9 +285,10 @@ function _dm_show_expense() {
   //AVG VALUE
   $avg = array_sum($cost)/$x_year;
   $items[] = '<div class="dm-expense-value">' . ceil($avg) . '</div><div class="dm-expense-text">'. t('Average annual expense') . '</div>';
-  $output = '<div class="dm-expense-container">' .
-    theme('item_list', array('items' => $items, 'title' => '', 'attributes' => array('class' => 'dm-expense-data'))) .'</div>';
+  $output = '';
   $output .= dm_draw_x_year_graph($cost);
+  $output .= '<div class="dm-expense-container">' .
+    theme('item_list', array('items' => $items, 'title' => '', 'attributes' => array('class' => 'dm-expense-data'))) .'</div>';
   return $output;
 }
 
