@@ -12,6 +12,7 @@ function digital_maintenance_menu() {
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
     'page arguments' => array(1),
+    'file' => 'digital_maintenance.pages.inc',
   );
   $items['dm_costs_oxy/%/%'] = array(
     'title' => t('Calculate cost for specific year'),
@@ -19,6 +20,7 @@ function digital_maintenance_menu() {
     'page arguments' => array(1, 2),
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
+    'file' => 'digital_maintenance.pages.inc',
   ); 
   $items['dm_masterdata/%ctools_js'] = array(
     'title' => t('Stamdata'),
@@ -26,94 +28,302 @@ function digital_maintenance_menu() {
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
     'page arguments' => array(1),
+    'file' => 'digital_maintenance.pages.inc',
+  );
+  $items['dm_graph/%ctools_js/%/%'] = array(
+    'title' => t('Show graph'),
+    'page callback' => 'ctools_ajax_show_graph',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'page arguments' => array(1, 2, 3),
+    'file' => 'digital_maintenance.pages.inc',
   );
   return $items;
 }
 
-function ctools_ajax_modal_stamdata($ajax) {
-  if ($ajax) {
-    ctools_include('modal');
-    ctools_include('ajax');
-    $title = t('Master data');
-    $output = t('x year period: @years years', array('@years' => variable_get('dm_x_year_period', 7)));
-    $command = array();
-    $command[] = ctools_modal_command_display($title, $output);
-    $commands = $command;
-    if (empty($commands)) {
-      $commands[] = ctools_modal_command_loading();
-      if (!empty($_GET['destination'])) {
-        $commands[] = ctools_ajax_command_redirect($_GET['destination']);
-      }
-    }
-    print ajax_render($commands);
-    exit();
-  }
-  else {
-    return $output;
+/**
+* Implements hook_form_FORM_ID_alter().
+*/
+function digital_maintenance_form_dm_task_node_form_alter(&$form, &$form_state, $form_id) {
+  $form['field_dm_sub_category_prefix']['#prefix'] = '<div class="container-inline dm-group-subcategory-fields">';
+  $form['field_dm_sub_category']['#suffix'] = '</div>';
+  $form['field_dm_sub_category'][LANGUAGE_NONE][0]['value']['#title'] = NULL;
+  //Hide type/title fields and set their values via hook_node_presave().
+  //@see digital_maintenance_node_presave().
+  $form['field_dm_task_type']['#access'] = FALSE;
+  //$form['title']['#required'] = FALSE;
+  //$form['title']['#access'] = FALSE;
+  //Set allowed values for year to perform task +10 from current year.
+  $current_year = date('Y');
+  $query = db_select('taxonomy_vocabulary', 'tv');
+  $query->join('taxonomy_term_data', 'td', 'tv.vid = td.vid');
+  $query->fields('td', array('tid', 'name'));
+  $query->condition('tv.machine_name', 'dm_year_to_perform_task');
+  $query->condition('td.name', array($current_year, $current_year + 10), 'BETWEEN');
+  $query->orderBy('td.name');
+  $options = $query->execute()->fetchAllKeyed(0, 1);
+  $options = array('_none' => '- Select a value -') + $options;
+  $form['field_dm_year_to_perform_task'][LANGUAGE_NONE]['#options'] = $options;
+  if (isset($_POST['js']) || isset($_POST['ajax_html_ids'])) {
+    $form['actions']['submit']['#submit'][] = '_create_task_submit';
   }
 }
 
-function ctools_ajax_cost_oxy($action, $lyear) {
-  $year = ($action == 'next') ? $lyear + 1 : $lyear - 1;
-  $oxy_nids = $_POST['oxy_nids'];
-  $query = db_select('taxonomy_term_data', 'td');
-  $query->join('field_data_field_dm_year_to_perform_task', 'pt', 'td.tid = pt.field_dm_year_to_perform_task_tid');
-  $query->join('field_data_field_dm_maintenance_cost', 'mc', 'pt.entity_id = mc.entity_id');
-  $query->join('field_data_field_dm_maintenance_interval', 'mi', 'pt.entity_id=mi.entity_id');
-  $query->join('field_data_field_dm_subsequent_cost', 'sc', 'pt.entity_id=sc.entity_id');
-  $query->addField('pt', 'entity_id', 'nid');
-  $query->addField('td', 'name', 'year');
-  $query->addField('mc', 'field_dm_maintenance_cost_value', 'mcost');
-  $query->addField('sc', 'field_dm_subsequent_cost_value', 'scost');
-  $query->condition('pt.entity_id', $oxy_nids, 'IN');
-  $query->condition('td.name', $year, '<=');
-  $query->where('MOD((:year - td.name), mi.field_dm_maintenance_interval_value) = 0', array(':year' => $year));
-  $result = $query->execute()->fetchAllAssoc('nid');
-  $output["th.data-year-$lyear"] = "'<th class='data-year data-year-$year'>$year</th>'";
-  $total = 0;
-  foreach ($oxy_nids as $nid) {
-    if (array_key_exists($nid, $result)) {
-      $cost =  ($result[$nid]->year == $year) ? $result[$nid]->mcost : $result[$nid]->scost;
+
+/**
+ * Implements of hook_views_query_alter().
+ */
+function digital_maintenance_views_query_alter(&$view, &$query) {
+  if ($view->name == 'tasks_annual_overview') {
+    //change exposed task list filter to be BETWEEN instead on original = operator.
+    if (isset($view->query->where[1]['conditions'][1])) {
+      $view->query->where[1]['conditions'][1]['operator'] = 'BETWEEN';
+      $view->query->where[1]['conditions'][1]['value'] = array($_GET['name'], $_GET['to_year']);
+    }
+  }
+  if ($view->name == 'dm_task_list_row' && in_array($view->current_display, array('attachment_1', 'attachment_2'))) {
+    $key_id = current(array_keys($view->query->where[0]['conditions'][0]['value']));
+    $year = $view->query->where[0]['conditions'][0]['value'][$key_id];
+    $tasks = _dm_get_subsequent_cost($year, 'tasks');
+    if ($view->current_display == 'attachment_1') {
+      $tasks_nids = count($tasks['mtasks']) ? $tasks['mtasks'] : array(0);
     }
     else {
-      $cost = 0;
+      $tasks_nids = count($tasks['itasks']) ? $tasks['itasks'] : array(0);
     }
-    $total += $cost;
-    $output["'tr.data-nid-$nid td.data-year-$lyear'"] = "'<td class='data-year data-year-$year'>$cost</td>'";
+    $view->query->where[0]['conditions'][0]['field'] = "node.nid IN($key_id)";
+    $view->query->where[0]['conditions'][0]['value'][$key_id] = $tasks_nids;
   }
-  //add Total for col.
-  $output["'tr.dm-oxy-total-row td.data-year-$lyear'"] = "'<td class='data-year data-year-$year'>$total</td>'";
-  drupal_json_output($output);
 }
 
-function dm_draw_x_year_graph($data) {
-  $keys = array_keys($data);
-  foreach($keys as $k) {
-    $header[$k] = "$k";
+/**
+ * Implements of hook_form_alter().
+ */
+function digital_maintenance_form_views_exposed_form_alter(&$form, &$form_state) {
+  //alter exposed filter for task list view to add [to] field.
+  //original exposed filter expose on text filed
+  //will alter views query to add this value to query
+  //@see digital_maintenance_views_query_alter().
+  if ($form['#id'] == 'views-exposed-form-tasks-annual-overview-page') {
+    $form['#prefix'] = '<div class="container-inline">';
+    $form['#suffix'] = '</div>';
+    $form['name']['#size'] = 5;
+    $form['to_year'] = array(
+      '#type' => 'textfield', 
+      '#title' => t('To'),
+      '#size' => 5,
+    );
   }
-  $settings = array();
-  $settings['chart']['chartOne'] = array(
-    'header' => $header,
-    'rows' => array($data),
-    'columns' => array(t('Total cost')),
-    'chartType' => 'AreaChart',//GOOGLE_CHART_TOOLS_DEFAULT_CHART,
-    'containerId' =>  'area_chart',
-    'options' => array( // Optionals.
-      //'curveType' => "function",
-      'forceIFrame' => FALSE,
-      'title' => '',
-      'width' => 600,
-      'height' => 355,
-      'colors' => array('#87B200'),
-    )
+}
+
+/**
+ * Implements of hook_views_pre_render().
+ */
+function digital_maintenance_views_pre_render(&$view) {
+  if ($view->name == 'tasks_annual_overview') {
+    //override taxonomy description to list SUM on tasks cost.
+    $mcosts = _dm_get_maintenance_cost();
+    foreach($view->result as &$row) {
+      $scost = _dm_get_subsequent_cost($row->taxonomy_term_data_name);
+      $total_cost = isset($mcosts[$row->taxonomy_term_data_name]) ? $mcosts[$row->taxonomy_term_data_name] : 0;
+      $total_cost += isset($scost->scost) ? $scost->scost : 0;
+      $row->taxonomy_term_data_description = $total_cost;
+    }
+  }
+}
+
+/**
+ * Implements of hook_node_validate().
+ */
+function digital_maintenance_node_validate($node, $form, &$form_state) {
+  if ($node->type == 'dm_task') {
+    //Validation for sub category to be on format [$category_value].[value]
+    $cat = $node->field_dm_category[LANGUAGE_NONE][0]['value'];
+    $subcat_prefix = $node->field_dm_sub_category_prefix[LANGUAGE_NONE][0]['value'];
+    if(!empty($cat) && !empty($subcat_prefix)) {
+      $prefix_values = explode('.', $subcat_prefix);
+      if (count($prefix_values) < 2 || $prefix_values[0] != $cat) {
+        form_set_error('field_dm_sub_category_prefix', t('Sub category value should be on format @value.[value].', array('@value' => $cat)));
+      }
+    }
+    //Validation for Maintenance/Inspection tasks
+    $minterval = $node->field_dm_maintenance_interval[LANGUAGE_NONE][0]['value'];
+    if ($minterval) {
+      //User should add maintenance cost and subsequent maintenance cost
+      if (!$node->field_dm_maintenance_cost[LANGUAGE_NONE][0]['value']) {
+        form_set_error('field_dm_maintenance_cost', t('Maintenance cost field is required'));
+      }
+      if (!$node->field_dm_subsequent_cost[LANGUAGE_NONE][0]['value']) {
+        form_set_error('field_dm_subsequent_cost', t('Subsequent maintenance cost field is required'));
+      }
+    }
+  }
+}
+
+/**
+ * Implements of hook_node_presave().
+ */
+function digital_maintenance_node_presave($node) {
+  if ($node->type == 'dm_task') {
+    //Set unique node title value [category + current timestamp]
+    //$field = field_info_field('field_dm_category');
+    //$allowed_values = list_allowed_values($field);
+    //$node->title = $allowed_values[$node->field_dm_category[LANGUAGE_NONE][0]['value']];
+    //Set task type based on maintenance interval field.
+    if (isset($node->field_dm_maintenance_interval[LANGUAGE_NONE][0])) {
+      //Task is Maintenance
+      $node->field_dm_task_type[LANGUAGE_NONE][0]['value'] = 0;
+    }
+    else {
+      //Task is Inspection
+      $node->field_dm_task_type[LANGUAGE_NONE][0]['value'] = 1;
+      //Remove costs as task is Inspection.
+      $node->field_dm_maintenance_cost[LANGUAGE_NONE][0]['value'] = $node->field_dm_subsequent_cost[LANGUAGE_NONE][0]['value'] = 0;
+    }
+  }
+}
+
+/**
+ * Implements of hook_block_info().
+ */
+function digital_maintenance_block_info() {
+  $blocks['dm_top_menu_links'] = array(
+    'info' => t('Show Digital Maintenance Links'),
   );
-  draw_chart($settings);
-  return '<div class="dm-graph-container">
-    <div id="area_chart"></div>
-    </div>';
+  $blocks['dm_expense'] = array(
+    'info' => t('Show Expense'),
+  );
+  $blocks['dm_cost_overxyears'] = array(
+    'info' => t('Show Cost over X years'),
+  );
+  return $blocks;
 }
 
+/**
+ * Implements hook_block_view().
+ */
+function digital_maintenance_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'dm_top_menu_links':
+      $block['content'] = _dm_show_top_links();
+      break;
+    case 'dm_expense':
+      $block['content'] = _dm_show_expense();
+      break;
+    case 'dm_cost_overxyears':
+      $block['content'] = _dm_show_cost_overxyears();
+      break;
+  }
+  return $block;
+}
 
+/** Blocks Content */
+
+function _dm_show_top_links() {
+  //Add dm css/js
+  drupal_add_css(drupal_get_path('module', 'digital_maintenance') . '/css/digital_maintenance.css');
+  drupal_add_js(drupal_get_path('module', 'digital_maintenance') . '/js/digital_maintenance.js');
+  // Include the CTools tools that we need.
+  ctools_include('ajax');
+  ctools_include('modal');
+  // create CTools' javascript to the page.
+  ctools_modal_add_js();
+  // Create our own javascript that will be used to theme a modal.
+  $sample_style = array(
+    'ctools-dm-style' => array(
+      'modalSize' => array(
+        /*
+        'type' => 'scale',
+        'width' => .5,
+        'height' => '100%',
+        'addWidth' => 200,
+        'addHeight' => 0,
+         */
+        // How much to remove from the inner content to make space for the
+        // theming.
+        'contentRight' => 25,
+        'contentBottom' => 45,
+        'type' => 'fixed',
+        'width' => 500,
+        'height' => 500,
+        'addWidth' => 20,
+        'addHeight' => 0,
+      ),
+      'modalOptions' => array(
+        'opacity' => .5,
+        'background-color' => '#000',
+      ),
+      'animation' => 'fadeIn',
+      'modalTheme' => 'CToolsSampleModal',
+      'throbber' => theme('image', array('path' => ctools_image_path('ajax-loader.gif', 'digital_maintenance'), 'alt' => t('Loading...'), 'title' => t('Loading'))),
+    ),
+  );
+
+  drupal_add_js($sample_style, 'setting');
+  // Since we have our js, css and images in well-known named directories,
+  // CTools makes it easy for us to just use them without worrying about
+  // using drupal_get_path() and all that ugliness.
+  ctools_add_js('ctools-ajax-dm', 'digital_maintenance');
+  ctools_add_css('ctools-ajax-dm', 'digital_maintenance');
+
+  $links = array();
+  $links[] = ctools_modal_text_button(t('Create New Task'), 'dm_createtask/nojs', t('Create New Task'), 'ctools-modal-ctools-dm-style');
+  $form['dm_views'] = array(
+    '#type' => 'select',
+    '#title' => t('Views: '),
+    '#options' => array('dm-frontpage' => t('Budget'), 'dm-annual-overview' => t('Task list')),
+    '#value' => arg(0),
+    '#prefix' => '<div class="container-inline dm-taskview-list">',
+    '#suffix' => '</div>',
+  );
+  $links[] = drupal_render($form);
+  //empty diff for number of year on task list view.
+  $links[] = '<div class="dm-num-year"></div>';
+  $links[] = ctools_modal_text_button(t('Vis Stamdata'), 'dm_masterdata/nojs', t('Vis Stamdata'), 'ctools-modal-ctools-dm-style');
+  $l_query = array('schaffolding' => 1);
+  $sf_class = 'dm-schaffolding-no'; 
+  if (isset($_GET['schaffolding'])) {
+    $l_query = array(); 
+    $sf_class = 'dm-schaffolding-yes'; 
+  }
+  $links[] = l(t('schaffolding'), arg(0), array('attributes' => array('class' => array($sf_class)),
+    'query' => $l_query));
+
+  $output = theme('item_list', array('items' => $links, 'title' => '', 'attributes' => array('class' => 'dm-top-links')));
+  return $output;
+}
+
+/**
+ *
+ */
+function _dm_show_expense() {
+  $items = array();
+  $syear = date('Y');
+  $x_year = variable_get('dm_x_year_period', 7);
+  $eyear = $syear + $x_year;
+  $cost = _dm_years_cost_range($syear, $eyear);
+  //MAX VALUE
+  $max = max($cost);
+  $year = array_search($max, $cost);
+  $items[] = '<div class="dm-expense-value">' . $max . '</div><div class="dm-expense-text">'. t('Highest expense @year', array('@year' => $year)) . '</div>';
+  //MIN VALUE
+  $min = min($cost);
+  $year = array_search($min, $cost);
+  $items[] = '<div class="dm-expense-value">' . $min . '</div><div class="dm-expense-text">'. t('Lowest expense @year', array('@year' => $year)) . '</div>';
+  //AVG VALUE
+  $avg = array_sum($cost)/$x_year;
+  $items[] = '<div class="dm-expense-value">' . ceil($avg) . '</div><div class="dm-expense-text">'. t('Average annual expense') . '</div>';
+  $output = '';
+  $output .= '<div class="dm-graph-container">' . dm_draw_x_year_graph($cost, $syear, $eyear) .'</div>';
+  $output .= '<div class="dm-expense-container">' .
+    theme('item_list', array('items' => $items, 'title' => '', 'attributes' => array('class' => 'dm-expense-data'))) .'</div>';
+  return $output;
+}
+
+/**
+ *
+ */
 function _dm_show_cost_overxyears() {
   $field = field_info_field('field_dm_category');
   $allowed_values = list_allowed_values($field);
@@ -227,308 +437,55 @@ function _dm_show_cost_overxyears() {
   return $output;
 }
 
+/** Helper functions */
 /**
- * Implements of hook_block_info().
+ *
  */
-function digital_maintenance_block_info() {
-  $blocks['dm_top_menu_links'] = array(
-    'info' => t('Show Digital Maintenance Links'),
-  );
-  $blocks['dm_expense'] = array(
-    'info' => t('Show Expense'),
-  );
-  $blocks['dm_cost_overxyears'] = array(
-    'info' => t('Show Cost over X years'),
-  );
-  return $blocks;
-}
-
-/**
- * Implements hook_block_view().
- */
-function digital_maintenance_block_view($delta = '') {
-  $block = array();
-  switch ($delta) {
-    case 'dm_top_menu_links':
-      $block['content'] = _dm_show_top_links();
-      break;
-    case 'dm_expense':
-      $block['content'] = _dm_show_expense();
-      break;
-    case 'dm_cost_overxyears':
-      $block['content'] = _dm_show_cost_overxyears();
-      break;
+function dm_draw_x_year_graph($data, $syear, $eyear) {
+  $keys = array_keys($data);
+  foreach($keys as $k) {
+    $header[$k] = "$k";
   }
-  return $block;
+  $settings = array();
+  $settings['chart']['chartOne'] = array(
+    'header' => $header,
+    'rows' => array($data),
+    'columns' => array(t('Total cost')),
+    'chartType' => 'AreaChart',//GOOGLE_CHART_TOOLS_DEFAULT_CHART,
+    'containerId' =>  'area_chart',
+    'options' => array( // Optionals.
+      //'curveType' => "function",
+      'forceIFrame' => FALSE,
+      'title' => '',
+      'width' => 600,
+      'height' => 355,
+      'colors' => array('#87B200'),
+    )
+  );
+  draw_chart($settings);
+  $prev = ctools_ajax_text_button(t('Prev'), 'dm_graph/nojs/prev/'. $syear, t('Show Graph"'));
+  $next = ctools_ajax_text_button(t('Next'), 'dm_graph/nojs/next/'. $eyear, t('Show Graph"'));
+  return '
+    <div>'. $prev .'</div>
+    <div id="area_chart"></div>
+    <div>'. $next .'</div>
+    ';
 }
 
-function _dm_show_expense() {
-  $items = $cost = array();
+/**
+ * Function to collect total cost for each year
+ * result contain range of years [start year - end year]
+ */
+function _dm_years_cost_range($syear, $eyear) {
+  $cost = array();
   $mcost = _dm_get_maintenance_cost();
-  $cyear = date('Y');
-  $x_year = variable_get('dm_x_year_period', 7);
-  $eyear = $cyear + $x_year;
-  for ($i = $cyear; $i < $eyear; $i++) {
+  for ($i = $syear; $i < $eyear; $i++) {
     $scost = _dm_get_subsequent_cost($i);
     $y_cost = isset($mcost[$i]) ? $mcost[$i] : 0;
     $y_cost += isset($scost->scost) ? $scost->scost : 0;
     $cost[$i] = $y_cost;
   }
-  //MAX VALUE
-  $max = max($cost);
-  $year = array_search($max, $cost);
-  $items[] = '<div class="dm-expense-value">' . $max . '</div><div class="dm-expense-text">'. t('Highest expense @year', array('@year' => $year)) . '</div>';
-  //MIN VALUE
-  $min = min($cost);
-  $year = array_search($min, $cost);
-  $items[] = '<div class="dm-expense-value">' . $min . '</div><div class="dm-expense-text">'. t('Lowest expense @year', array('@year' => $year)) . '</div>';
-  //AVG VALUE
-  $avg = array_sum($cost)/$x_year;
-  $items[] = '<div class="dm-expense-value">' . ceil($avg) . '</div><div class="dm-expense-text">'. t('Average annual expense') . '</div>';
-  $output = '';
-  $output .= dm_draw_x_year_graph($cost);
-  $output .= '<div class="dm-expense-container">' .
-    theme('item_list', array('items' => $items, 'title' => '', 'attributes' => array('class' => 'dm-expense-data'))) .'</div>';
-  return $output;
-}
-
-function _dm_show_top_links() {
-  //Add dm css/js
-  drupal_add_css(drupal_get_path('module', 'digital_maintenance') . '/css/digital_maintenance.css');
-  drupal_add_js(drupal_get_path('module', 'digital_maintenance') . '/js/digital_maintenance.js');
-  // Include the CTools tools that we need.
-  ctools_include('ajax');
-  ctools_include('modal');
-  // create CTools' javascript to the page.
-  ctools_modal_add_js();
-  // Create our own javascript that will be used to theme a modal.
-  $sample_style = array(
-    'ctools-dm-style' => array(
-      'modalSize' => array(
-        /*
-        'type' => 'scale',
-        'width' => .5,
-        'height' => '100%',
-        'addWidth' => 200,
-        'addHeight' => 0,
-         */
-        // How much to remove from the inner content to make space for the
-        // theming.
-        'contentRight' => 25,
-        'contentBottom' => 45,
-        'type' => 'fixed',
-        'width' => 500,
-        'height' => 500,
-        'addWidth' => 20,
-        'addHeight' => 0,
-      ),
-      'modalOptions' => array(
-        'opacity' => .5,
-        'background-color' => '#000',
-      ),
-      'animation' => 'fadeIn',
-      'modalTheme' => 'CToolsSampleModal',
-      'throbber' => theme('image', array('path' => ctools_image_path('ajax-loader.gif', 'digital_maintenance'), 'alt' => t('Loading...'), 'title' => t('Loading'))),
-    ),
-  );
-
-  drupal_add_js($sample_style, 'setting');
-
-  // Since we have our js, css and images in well-known named directories,
-  // CTools makes it easy for us to just use them without worrying about
-  // using drupal_get_path() and all that ugliness.
-  ctools_add_js('ctools-ajax-dm', 'digital_maintenance');
-  ctools_add_css('ctools-ajax-dm', 'digital_maintenance');
-
-  $links = array();
-  $links[] = ctools_modal_text_button(t('Create New Task'), 'dm_createtask/nojs', t('Create New Task'), 'ctools-modal-ctools-dm-style');
-  $form['dm_views'] = array(
-    '#type' => 'select',
-    '#title' => t('Views: '),
-    '#options' => array('dm-frontpage' => t('Budget'), 'dm-annual-overview' => t('Task list')),
-    '#value' => arg(0),
-    '#prefix' => '<div class="container-inline dm-taskview-list">',
-    '#suffix' => '</div>',
-  );
-  $links[] = drupal_render($form);
-  //empty diff for number of year on task list view.
-  $links[] = '<div class="dm-num-year"></div>';
-  $links[] = ctools_modal_text_button(t('Vis Stamdata'), 'dm_masterdata/nojs', t('Vis Stamdata'), 'ctools-modal-ctools-dm-style');
-  $l_query = array('schaffolding' => 1);
-  $sf_class = 'dm-schaffolding-no'; 
-  if (isset($_GET['schaffolding'])) {
-    $l_query = array(); 
-    $sf_class = 'dm-schaffolding-yes'; 
-  }
-  $links[] = l(t('schaffolding'), arg(0), array('attributes' => array('class' => array($sf_class)),
-    'query' => $l_query));
-
-  $output = theme('item_list', array('items' => $links, 'title' => '', 'attributes' => array('class' => 'dm-top-links')));
-  return $output;
-}
-/**
-* Implements hook_form_FORM_ID_alter().
-*/
-function digital_maintenance_form_dm_task_node_form_alter(&$form, &$form_state, $form_id) {
-  $form['field_dm_sub_category_prefix']['#prefix'] = '<div class="container-inline dm-group-subcategory-fields">';
-  $form['field_dm_sub_category']['#suffix'] = '</div>';
-  $form['field_dm_sub_category'][LANGUAGE_NONE][0]['value']['#title'] = NULL;
-  //Hide type/title fields and set their values via hook_node_presave().
-  //@see digital_maintenance_node_presave().
-  $form['field_dm_task_type']['#access'] = FALSE;
-  //$form['title']['#required'] = FALSE;
-  //$form['title']['#access'] = FALSE;
-  //Set allowed values for year to perform task +10 from current year.
-  $current_year = date('Y');
-  $query = db_select('taxonomy_vocabulary', 'tv');
-  $query->join('taxonomy_term_data', 'td', 'tv.vid = td.vid');
-  $query->fields('td', array('tid', 'name'));
-  $query->condition('tv.machine_name', 'dm_year_to_perform_task');
-  $query->condition('td.name', array($current_year, $current_year + 10), 'BETWEEN');
-  $query->orderBy('td.name');
-  $options = $query->execute()->fetchAllKeyed(0, 1);
-  $options = array('_none' => '- Select a value -') + $options;
-  $form['field_dm_year_to_perform_task'][LANGUAGE_NONE]['#options'] = $options;
-  if (isset($_POST['js']) || isset($_POST['ajax_html_ids'])) {
-    $form['actions']['submit']['#submit'][] = '_create_task_submit';
-  }
-}
-
-function _create_task_submit($form, &$form_state) {
-  // Call the rest of submits, because after this submit script will end.
-  $submits = $form['actions']['submit']['#submit'];
-  // Find the rest of submits.
-  foreach ($submits as $key => $item) {
-    unset($submits[$key]);
-    if ($item == '_create_task_submit') {
-      break;
-    }
-  }
-  // Call it.
-  foreach ($submits as $function) {
-    if (function_exists($function)) {
-      $function($form, $form_state);
-    }
-  }
-  // Redirect to destination, if set, or to node path.
-  if (isset($_GET['destination'])) {
-    $destination = drupal_get_destination();
-    _createtask_ajax_redirect($destination['destination']);
-  }
-  else if (isset($form_state['redirect'])) {
-    _createtask_ajax_redirect($form_state['redirect']);
-  }
-}
-
-function _createtask_ajax_redirect($path) {
-  ctools_include('modal');
-  ctools_include('ajax');
-  ctools_add_js('ajax-responder');
-  $commands[] = ctools_modal_command_dismiss();
-  $commands[] = ctools_ajax_command_redirect($path);
-  print ajax_render($commands);
-  exit();
-}
-
-function ctools_ajax_modal_createtask($ajax) {
-  $callback = 'node_add';
-  $args = array('dm_task');
-  $_GET['q'] = 'node/add/dm-task';
-  include_once(drupal_get_path('module', 'node') . '/node.pages.inc');
-  if (function_exists($callback)) {
-    $output = call_user_func_array($callback, $args);
-    if ($ajax) {
-      ctools_include('modal');
-      ctools_include('ajax');
-      if (is_array($output)) {
-        $output = drupal_render($output);
-      }
-      $title = drupal_get_title();
-      // If there are messages for the form, render them.
-      if ($messages = theme('status_messages')) {
-        $output = '<div class="messages">' . $messages . '</div>' . $output;
-      }
-      $command = array();
-      $command[] = ctools_modal_command_display($title, $output);
-      $commands = $command;
-      if (empty($commands)) {
-        $commands[] = ctools_modal_command_loading();
-        if (!empty($_GET['destination'])) {
-          $commands[] = ctools_ajax_command_redirect($_GET['destination']);
-        }
-      }
-      print ajax_render($commands);
-      exit();
-    }
-    else {
-      return $output;
-    }
-  }
-  else {
-    return MENU_NOT_FOUND;
-  }
-}
-
-/**
- * Implements of hook_views_query_alter().
- */
-function digital_maintenance_views_query_alter(&$view, &$query) {
-  if ($view->name == 'tasks_annual_overview') {
-    //change exposed task list filter to be BETWEEN instead on original = operator.
-    if (isset($view->query->where[1]['conditions'][1])) {
-      $view->query->where[1]['conditions'][1]['operator'] = 'BETWEEN';
-      $view->query->where[1]['conditions'][1]['value'] = array($_GET['name'], $_GET['to_year']);
-    }
-  }
-  if ($view->name == 'dm_task_list_row' && in_array($view->current_display, array('attachment_1', 'attachment_2'))) {
-    $key_id = current(array_keys($view->query->where[0]['conditions'][0]['value']));
-    $year = $view->query->where[0]['conditions'][0]['value'][$key_id];
-    $tasks = _dm_get_subsequent_cost($year, 'tasks');
-    if ($view->current_display == 'attachment_1') {
-      $tasks_nids = count($tasks['mtasks']) ? $tasks['mtasks'] : array(0);
-    }
-    else {
-      $tasks_nids = count($tasks['itasks']) ? $tasks['itasks'] : array(0);
-    }
-    $view->query->where[0]['conditions'][0]['field'] = "node.nid IN($key_id)";
-    $view->query->where[0]['conditions'][0]['value'][$key_id] = $tasks_nids;
-  }
-}
-
-/**
- * Implements of hook_form_alter().
- */
-function digital_maintenance_form_views_exposed_form_alter(&$form, &$form_state) {
-  //alter exposed filter for task list view to add [to] field.
-  //original exposed filter expose on text filed
-  //will alter views query to add this value to query
-  //@see digital_maintenance_views_query_alter().
-  if ($form['#id'] == 'views-exposed-form-tasks-annual-overview-page') {
-    $form['#prefix'] = '<div class="container-inline">';
-    $form['#suffix'] = '</div>';
-    $form['name']['#size'] = 5;
-    $form['to_year'] = array(
-      '#type' => 'textfield', 
-      '#title' => t('To'),
-      '#size' => 5,
-    );
-  }
-}
-
-/**
- * Implements of hook_views_pre_render().
- */
-function digital_maintenance_views_pre_render(&$view) {
-  if ($view->name == 'tasks_annual_overview') {
-    //override taxonomy description to list SUM on tasks cost.
-    $mcosts = _dm_get_maintenance_cost();
-    foreach($view->result as &$row) {
-      $scost = _dm_get_subsequent_cost($row->taxonomy_term_data_name);
-      $total_cost = isset($mcosts[$row->taxonomy_term_data_name]) ? $mcosts[$row->taxonomy_term_data_name] : 0;
-      $total_cost += isset($scost->scost) ? $scost->scost : 0;
-      $row->taxonomy_term_data_description = $total_cost;
-    }
-  }
+  return $cost;
 }
 
 /**
@@ -605,56 +562,6 @@ function _dm_get_maintenance_cost($year = 'ALL') {
   return array();
 }
 
-/**
- * Implements of hook_node_validate().
- */
-function digital_maintenance_node_validate($node, $form, &$form_state) {
-  if ($node->type == 'dm_task') {
-    //Validation for sub category to be on format [$category_value].[value]
-    $cat = $node->field_dm_category[LANGUAGE_NONE][0]['value'];
-    $subcat_prefix = $node->field_dm_sub_category_prefix[LANGUAGE_NONE][0]['value'];
-    if(!empty($cat) && !empty($subcat_prefix)) {
-      $prefix_values = explode('.', $subcat_prefix);
-      if (count($prefix_values) < 2 || $prefix_values[0] != $cat) {
-        form_set_error('field_dm_sub_category_prefix', t('Sub category value should be on format @value.[value].', array('@value' => $cat)));
-      }
-    }
-    //Validation for Maintenance/Inspection tasks
-    $minterval = $node->field_dm_maintenance_interval[LANGUAGE_NONE][0]['value'];
-    if ($minterval) {
-      //User should add maintenance cost and subsequent maintenance cost
-      if (!$node->field_dm_maintenance_cost[LANGUAGE_NONE][0]['value']) {
-        form_set_error('field_dm_maintenance_cost', t('Maintenance cost field is required'));
-      }
-      if (!$node->field_dm_subsequent_cost[LANGUAGE_NONE][0]['value']) {
-        form_set_error('field_dm_subsequent_cost', t('Subsequent maintenance cost field is required'));
-      }
-    }
-  }
-}
-
-/**
- * Implements of hook_node_presave().
- */
-function digital_maintenance_node_presave($node) {
-  if ($node->type == 'dm_task') {
-    //Set unique node title value [category + current timestamp]
-    //$field = field_info_field('field_dm_category');
-    //$allowed_values = list_allowed_values($field);
-    //$node->title = $allowed_values[$node->field_dm_category[LANGUAGE_NONE][0]['value']];
-    //Set task type based on maintenance interval field.
-    if (isset($node->field_dm_maintenance_interval[LANGUAGE_NONE][0])) {
-      //Task is Maintenance
-      $node->field_dm_task_type[LANGUAGE_NONE][0]['value'] = 0;
-    }
-    else {
-      //Task is Inspection
-      $node->field_dm_task_type[LANGUAGE_NONE][0]['value'] = 1;
-      //Remove costs as task is Inspection.
-      $node->field_dm_maintenance_cost[LANGUAGE_NONE][0]['value'] = $node->field_dm_subsequent_cost[LANGUAGE_NONE][0]['value'] = 0;
-    }
-  }
-}
 
 /**
  * return HTML to simplify prority theming.
