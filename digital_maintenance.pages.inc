@@ -168,3 +168,20 @@ function ctools_ajax_modal_stamdata($ajax) {
   }
 }
 
+function _dm_generate_pdf($syear) {
+  // Checking mPDF library existence.
+  if (pdf_using_mpdf_library_exist() == TRUE) {
+    $pdf_filename = 'budget-'. date('Y-m-d');
+    $years = array('syear' => $syear);
+    $view = _dm_show_cost_overxyears($years);
+    $html = drupal_render($view);
+    _pdf_using_mpdf_generator($view, $pdf_filename);
+  }
+  else {
+    drupal_set_message(t('mPDF library is not included. Please check your "sites/all/libraries" directory or " /sites/your-domain-name/libraries/ directory " or "!default_module_path" directory.', array(
+      '!default_module_path' => drupal_get_path('module', 'pdf_using_mpdf'),
+    )), 'warning');
+    drupal_goto(urlencode('node') . '/' . $node->nid);
+    return;
+  }
+}

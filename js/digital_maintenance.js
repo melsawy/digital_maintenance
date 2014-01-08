@@ -25,6 +25,8 @@ jQuery(function() {
     complete: function() {
       jQuery('th.dm-year-next div.dm-loading').hide();
       jQuery('th.dm-year-next div.dm-apply').show();
+      pdf_year = prev_year + 1;
+      _update_pdf_link(pdf_year);
     }
     });
   });
@@ -50,6 +52,8 @@ jQuery(function() {
     complete: function() {
       jQuery('th.dm-year-prev div.dm-loading').hide();
       jQuery('th.dm-year-prev div.dm-apply').show();
+      pdf_year = year - 1;
+      _update_pdf_link(pdf_year);
     }
 
     });
@@ -74,4 +78,8 @@ function _sm_tasks_row() {
     jQuery(this).find('td.dm-sum-task').text(task_sum);
   });
   jQuery(".table td.dm-overalltotal").text(total);
+}
+
+function _update_pdf_link(year) {
+  jQuery('.dm-generate-pdf a').attr('href', '/dm_pdf/budget/'+year);
 }

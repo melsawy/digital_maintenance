@@ -184,5 +184,6 @@ span.dm-task-priority-1 {
 span.dm-task-priority-0 {
   background-color: #dfe1e0;
 }
-
-
+div.dm-generate-pdf {
+  float: right;
+}

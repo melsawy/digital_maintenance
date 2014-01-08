@@ -38,6 +38,14 @@ function digital_maintenance_menu() {
     'page arguments' => array(1, 2, 3),
     'file' => 'digital_maintenance.pages.inc',
   );
+  $items['dm_pdf/budget/%'] = array(
+    'title' => t('Generate PDF'),
+    'page callback' => '_dm_generate_pdf',
+    'page arguments' => array(2),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'digital_maintenance.pages.inc',
+  );
   return $items;
 }
 
@@ -314,7 +322,9 @@ function _dm_show_expense() {
   //AVG VALUE
   $avg = array_sum($cost)/$x_year;
   $items[] = '<div class="dm-expense-value">' . ceil($avg) . '</div><div class="dm-expense-text">'. t('Average annual expense') . '</div>';
+  $pdf_link = l(t('Generate PDF'), 'dm_pdf/budget/'. $syear);
   $output = '';
+  $output .= '<div class="dm-generate-pdf">'. $pdf_link .'</div>';
   $output .= '<div class="dm-graph-container">' . dm_draw_x_year_graph($cost, $syear, $eyear) .'</div>';
   $output .= '<div class="dm-expense-container">' .
     theme('item_list', array('items' => $items, 'title' => '', 'attributes' => array('class' => 'dm-expense-data'))) .'</div>';
@@ -324,7 +334,11 @@ function _dm_show_expense() {
 /**
  *
  */
-function _dm_show_cost_overxyears() {
+function _dm_show_cost_overxyears($years = array()) {
+  //List x years from current one
+  $x_year = variable_get('dm_x_year_period', 7);
+  $syear = isset($years['syear']) ? $years['syear'] : date('Y');
+  $eyear = $syear + $x_year;
   $field = field_info_field('field_dm_category');
   $allowed_values = list_allowed_values($field);
   //Prepare table header
@@ -332,11 +346,7 @@ function _dm_show_cost_overxyears() {
   //add loading class to prev and next to show while executing ajax request 
   $prev = array('data' => '<div class="dm-apply"></div><div class="dm-loading"></div>', 'class' => array('dm-year-prev'));
   $fheader = array(t('#  Category'), t('Priority'), $prev);
-  //List x years from current one
-  $x_year = variable_get('dm_x_year_period', 7);
-  $cyear = date('Y');
-  $eyear = $cyear + $x_year;
-  for ($i = $cyear; $i < $eyear; $i++) {
+  for ($i = $syear; $i < $eyear; $i++) {
     $mheader[] = array('data' => $i , 'class' => array('data-year', 'data-year-'. $i));
   }
   $next = array('data' => '<div class="dm-apply"></div><div class="dm-loading"></div>', 'class' => array('dm-year-next'));
@@ -344,7 +354,7 @@ function _dm_show_cost_overxyears() {
   $header = array_merge($fheader, $mheader, $lheader);
   //Built query to collect table rows
   $query = db_select('node', 'n');
-  $query = $query->extend('PagerDefault')->limit(20);
+  //$query = $query->extend('PagerDefault')->limit(20);
   $query->fields('n', array('nid', 'title'));
   $query->addField('td', 'name', 'year');
   $query->addField('mc', 'field_dm_maintenance_cost_value', 'mcost');
@@ -433,7 +443,7 @@ function _dm_show_cost_overxyears() {
   $row[] = array('data' => $total, 'class' => array('dm-overalltotal'));
   $rows[] = array('data' => $row, 'class' => array('dm-oxy-total-row'));
   $output = theme('table', array('header' => $header, 'rows' => $rows, '#attributes' => array('class' => array('dm-oxy-tasks'))));
-  $output .= theme('pager');
+  //$output .= theme('pager');
   return $output;
 }
 
