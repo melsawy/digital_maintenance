@@ -259,6 +259,14 @@ return \'all\';';
   $handler->display->display_options['style_plugin'] = 'default';
   $handler->display->display_options['style_options']['row_class'] = 'dm-annual-overview-row';
   $handler->display->display_options['row_plugin'] = 'fields';
+  /* Header: Global: Text area */
+  $handler->display->display_options['header']['area']['id'] = 'area';
+  $handler->display->display_options['header']['area']['table'] = 'views';
+  $handler->display->display_options['header']['area']['field'] = 'area';
+  $handler->display->display_options['header']['area']['content'] = '<?php
+print l(t(\'Generate PDF\'), \'dm_pdf/annual_overview\');
+?>';
+  $handler->display->display_options['header']['area']['format'] = 'php_code';
   /* Field: Taxonomy term: Term ID */
   $handler->display->display_options['fields']['tid']['id'] = 'tid';
   $handler->display->display_options['fields']['tid']['table'] = 'taxonomy_term_data';
@@ -351,6 +359,16 @@ return \'all\';';
   $handler = $view->new_display('page', 'Page', 'page');
   $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
   $handler->display->display_options['path'] = 'dm-annual-overview';
+
+  /* Display: PDF version */
+  $handler = $view->new_display('block', 'PDF version', 'block_1');
+  $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
+  $handler->display->display_options['defaults']['pager'] = FALSE;
+  $handler->display->display_options['pager']['type'] = 'none';
+  $handler->display->display_options['pager']['options']['offset'] = '0';
+  $handler->display->display_options['defaults']['header'] = FALSE;
+  $handler->display->display_options['defaults']['filter_groups'] = FALSE;
+  $handler->display->display_options['defaults']['filters'] = FALSE;
   $translatables['tasks_annual_overview'] = array(
     t('Master'),
     t('Annual Overview'),
@@ -367,6 +385,9 @@ return \'all\';';
     t('‹ previous'),
     t('next ›'),
     t('last »'),
+    t('<?php
+print l(t(\'Generate PDF\'), \'dm_pdf/annual_overview\');
+?>'),
     t('.'),
     t(','),
     t('No tasks found'),
@@ -376,6 +397,7 @@ return \'all\';';
     t('Samlet'),
     t('Showing year'),
     t('Page'),
+    t('PDF version'),
   );
   $export['tasks_annual_overview'] = $view;
 

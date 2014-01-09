@@ -46,6 +46,13 @@ function digital_maintenance_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'digital_maintenance.pages.inc',
   );
+  $items['dm_pdf/annual_overview'] = array(
+    'title' => t('Generate PDF'),
+    'page callback' => '_dm_generate_pdf_annual_overview',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'digital_maintenance.pages.inc',
+  );
   return $items;
 }
 
@@ -442,7 +449,7 @@ function _dm_show_cost_overxyears($years = array()) {
   $row[] = '';
   $row[] = array('data' => $total, 'class' => array('dm-overalltotal'));
   $rows[] = array('data' => $row, 'class' => array('dm-oxy-total-row'));
-  $output = theme('table', array('header' => $header, 'rows' => $rows, '#attributes' => array('class' => array('dm-oxy-tasks'))));
+  $output = theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('class' => array('dm-oxy-tasks-budget'))));
   //$output .= theme('pager');
   return $output;
 }

@@ -181,7 +181,23 @@ function _dm_generate_pdf($syear) {
     drupal_set_message(t('mPDF library is not included. Please check your "sites/all/libraries" directory or " /sites/your-domain-name/libraries/ directory " or "!default_module_path" directory.', array(
       '!default_module_path' => drupal_get_path('module', 'pdf_using_mpdf'),
     )), 'warning');
-    drupal_goto(urlencode('node') . '/' . $node->nid);
+    drupal_goto('<front>');
+    return;
+  }
+}
+
+function _dm_generate_pdf_annual_overview() {
+  // Checking mPDF library existence.
+  if (pdf_using_mpdf_library_exist() == TRUE) {
+    $pdf_filename = 'annual-overview-'. date('Y-m-d');
+    $view = views_embed_view('tasks_annual_overview', 'block_1');
+    _pdf_using_mpdf_generator($view, $pdf_filename);
+  }
+  else {
+    drupal_set_message(t('mPDF library is not included. Please check your "sites/all/libraries" directory or " /sites/your-domain-name/libraries/ directory " or "!default_module_path" directory.', array(
+      '!default_module_path' => drupal_get_path('module', 'pdf_using_mpdf'),
+    )), 'warning');
+    drupal_goto('<front>');
     return;
   }
 }

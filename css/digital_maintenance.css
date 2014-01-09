@@ -128,53 +128,53 @@ ul.dm-expense-data li {
   font-size: 2em;
   font-weight: bold;
 }
-.pane-digital-maintenance-dm-cost-overxyears .table thead th div.dm-loading {
+table.dm-oxy-tasks-budget thead th div.dm-loading {
   background: url("../images/loading-large.gif") no-repeat scroll 0 0 transparent;
   width: 24px;
   height: 24px;
 }
-.pane-digital-maintenance-dm-cost-overxyears .table thead th.dm-year-prev div.dm-apply {
+table.dm-oxy-tasks-budget thead th.dm-year-prev div.dm-apply {
   background: url("images/prev.png") no-repeat scroll 0 0 transparent;
   width: 30px;
   height: 37px;
 }
-.pane-digital-maintenance-dm-cost-overxyears .table thead th.dm-year-next div.dm-apply {
+table.dm-oxy-tasks-budget thead th.dm-year-next div.dm-apply {
   background: url("images/next.png") no-repeat scroll 0 0 transparent;
   width: 30px;
   height: 37px;
 }
-.pane-digital-maintenance-dm-cost-overxyears .table thead th.dm-year-prev,
-.pane-digital-maintenance-dm-cost-overxyears .table thead th.dm-year-next {
+table.dm-oxy-tasks-budget thead th.dm-year-prev,
+table.dm-oxy-tasks-budget thead th.dm-year-next {
   cursor: pointer;
 }
-.pane-digital-maintenance-dm-cost-overxyears .table thead tr {
+table.dm-oxy-tasks-budget thead tr {
   background-color: #1F1F1F;
   color: #FFFFFF;
 }
 
-.pane-digital-maintenance-dm-cost-overxyears .table thead tr {
+table.dm-oxy-tasks-budget thead tr {
   background-color: #1F1F1F;
   color: #FFFFFF;
 }
 
-.pane-digital-maintenance-dm-cost-overxyears .table tr.dm-category-title td {
+table.dm-oxy-tasks-budget tr.dm-category-title td {
   background-color: #D1D1D1;
 }
 
-.pane-digital-maintenance-dm-cost-overxyears .table tr.dm-oxy-total-row td.dm-overalltotal,
-.pane-digital-maintenance-dm-cost-overxyears .table tr td.dm-sum-task {
+table.dm-oxy-tasks-budget tr.dm-oxy-total-row td.dm-overalltotal,
+table.dm-oxy-tasks-budget tr td.dm-sum-task {
   background-color: #a9cf22;
   color: #FFF;
   text-align: center;
 }
-.pane-digital-maintenance-dm-cost-overxyears .table tr td.dm-sum-task-empty {
+table.dm-oxy-tasks-budget tr td.dm-sum-task-empty {
   background-color: #8aa91d;
 }
-.pane-digital-maintenance-dm-cost-overxyears .table tr.dm-oxy-total-row {
+table.dm-oxy-tasks-budget tr.dm-oxy-total-row {
   border-top: 2px solid #999999;
   font-weight: bold;
 }
-.pane-digital-maintenance-dm-cost-overxyears .table tr.dm-oxy-total-row td{
+table.dm-oxy-tasks-budget tr.dm-oxy-total-row td{
   background-color: #f2f2f2;
   padding: 17px 0;
 }
