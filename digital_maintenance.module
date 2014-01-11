@@ -53,7 +53,31 @@ function digital_maintenance_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'digital_maintenance.pages.inc',
   );
+  $items['node/%node/posts'] = array(
+    'title' => t('Posts'),
+    'page callback' => '_dm_task_posts',
+    'page arguments' => array(1),
+    'access callback' => '_dm_show_task_tabs',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'digital_maintenance.pages.inc',
+  );
+  $items['dm_comment/%ctools_js/%node'] = array(
+    'title' => t('Post comment'),
+    'page callback' => 'ctools_ajax_post_comment',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'page arguments' => array(1, 2),
+    'file' => 'digital_maintenance.pages.inc',
+  );
   return $items;
+}
+
+function _dm_show_task_tabs($node) {
+  if ($node->type == 'dm_task') {
+    return TRUE;
+  }
+  return FALSE;
 }
 
 /**
@@ -82,6 +106,36 @@ function digital_maintenance_form_dm_task_node_form_alter(&$form, &$form_state, 
   if (isset($_POST['js']) || isset($_POST['ajax_html_ids'])) {
     $form['actions']['submit']['#submit'][] = '_create_task_submit';
   }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function digital_maintenance_form_comment_node_dm_task_form_alter(&$form, &$form_state, $form_id) {
+  $form['actions']['submit']['#ajax'] = array(
+    'callback' => 'dm_ajax_comments_submit_js',
+    'wrapper' => $form['#id'],
+    'method' => 'replace',
+    'effect' => 'fade',
+  );
+}
+
+function dm_ajax_comments_submit_js($form, &$form_state) {
+  // Return the actual form if it contains errors.
+  if (form_get_errors()) {
+    return $form;
+  }
+  //ajax_comments_remove_status();
+  $comment = $form_state['comment'];
+  //$comment_build = comment_view($comment, $node);
+  //$comment_output = drupal_render($comment_build);
+  $new_comment = views_embed_view('node_comments', 'attachment_1', $comment->cid);
+  //append new comment to top of comments
+  $commands[] = ajax_command_prepend('.dm-view-node-comments-wrapper', $new_comment);
+  //remove comment form
+  $commands[] = ajax_command_remove('#dm-comment-form-new .comment-form');
+  $output = array('#type' => 'ajax', '#commands' => $commands);
+  return $output;
 }
 
 

@@ -201,3 +201,36 @@ function _dm_generate_pdf_annual_overview() {
     return;
   }
 }
+
+function _dm_task_posts($node) {
+  ctools_include('ajax');
+  $output = ctools_ajax_text_button(t('Add new comment'), 'dm_comment/nojs/'. $node->nid, t('Post comment'));
+  //$comments = drupal_render(comment_node_page_additions($node));
+  $comments = '<div class="dm-comments-wrapper"><h4>comments:</h4>'. 
+    '<div class="dm-view-node-comments-wrapper">'. views_embed_view('node_comments', 'default', $node->nid) .'</div></div>';
+  $output .= '<div id="dm-comment-form-new"></div>'. $comments;
+  $output .= '<div class="dm-attachments-wrapper">'. render(field_view_field('node', $node, 'field_dm_attachments', 'file_table')) .'</div>';
+  return $output;
+}
+
+function ctools_ajax_post_comment($ajax, $node) {
+  if ($ajax) {
+    ctools_include('ajax');
+    $commands = array();
+    $form_build = drupal_get_form("comment_node_{$node->type}_form", (object) array('nid' => $node->nid));
+    /*
+    $form_build['actions']['cancel'] = array(
+      '#markup' => '<a id=\'ajax-comments-reply-' . $pid . '\' class=\'ajax-comments-reply-cancel\' href="#' . $form_build['#id'] . '">' . t('Cancel') . '</a>', 
+      '#weight' => 21, 
+    );  
+    */
+    $form = drupal_render($form_build);
+    $commands[] = ajax_command_html('#dm-comment-form-new', $form);
+    print ajax_render($commands); 
+    exit;
+
+  }
+  else {
+    return NULL;
+  }
+}

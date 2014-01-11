@@ -77,5 +77,6 @@ features[variable][] = node_options_dm_task
 features[variable][] = node_preview_dm_task
 features[variable][] = node_submitted_dm_task
 features[views_view][] = dm_task_list_row
+features[views_view][] = node_comments
 features[views_view][] = tasks_annual_overview
 features_exclude[field_base][body] = body
