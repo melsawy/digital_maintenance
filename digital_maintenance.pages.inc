@@ -213,6 +213,14 @@ function _dm_task_posts($node) {
   return $output;
 }
 
+function _dm_task_execution($node) {
+  module_load_include('inc', 'node', 'node.pages');
+  $form = node_add('dm_task_execution'); 
+  $output = views_embed_view('dm_execution', 'default', $node->nid);
+  $output .= drupal_render($form);
+  return $output;
+}
+
 function ctools_ajax_post_comment($ajax, $node) {
   if ($ajax) {
     ctools_include('ajax');

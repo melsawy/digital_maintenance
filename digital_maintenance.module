@@ -62,6 +62,15 @@ function digital_maintenance_menu() {
     'type' => MENU_LOCAL_TASK,
     'file' => 'digital_maintenance.pages.inc',
   );
+  $items['node/%node/execution'] = array(
+    'title' => t('Execution'),
+    'page callback' => '_dm_task_execution',
+    'page arguments' => array(1),
+    'access callback' => '_dm_show_task_tabs',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'digital_maintenance.pages.inc',
+  );
   $items['dm_comment/%ctools_js/%node'] = array(
     'title' => t('Post comment'),
     'page callback' => 'ctools_ajax_post_comment',
@@ -118,6 +127,12 @@ function digital_maintenance_form_comment_node_dm_task_form_alter(&$form, &$form
     'method' => 'replace',
     'effect' => 'fade',
   );
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function digital_maintenance_form_dm_task_execution_node_form_alter(&$form, &$form_state, $form_id) {
 }
 
 function dm_ajax_comments_submit_js($form, &$form_state) {
