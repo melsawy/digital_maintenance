@@ -216,7 +216,7 @@ function _dm_task_posts($node) {
 function _dm_task_execution($node) {
   module_load_include('inc', 'node', 'node.pages');
   $form = node_add('dm_task_execution'); 
-  $output = views_embed_view('dm_execution', 'default', $node->nid);
+  $output = '<div class="dm-execution-list-wrapper">'. views_embed_view('dm_execution', 'default', $node->nid) .'</div>';
   $output .= drupal_render($form);
   return $output;
 }

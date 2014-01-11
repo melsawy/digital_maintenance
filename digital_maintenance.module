@@ -133,6 +133,38 @@ function digital_maintenance_form_comment_node_dm_task_form_alter(&$form, &$form
  * Implements hook_form_FORM_ID_alter().
  */
 function digital_maintenance_form_dm_task_execution_node_form_alter(&$form, &$form_state, $form_id) {
+  if (arg(0) == 'node' && is_numeric(arg(1))) {
+    $form['task_nid'] = array(
+      '#value' => arg(1),
+      '#type' => 'hidden',
+    );
+  }
+  $form['actions']['submit']['#ajax'] = array(
+    'callback' => 'mymodule_node_form_js_submit',
+    'wrapper' => 'node-dm_task_execution-form',
+    'method' => 'replace',
+    'effect' => 'fade',
+  );
+}
+
+function mymodule_node_form_js_submit($form, &$form_state) {
+  $commands[] = ajax_command_remove('#messages');
+  $commands[] = ajax_command_before('.node-dm_task_execution-form', '<div id="messages">' . theme('status_messages') . '</div>');
+  if ($form_state['values']['nid']) {
+    $task_nid = $form_state['values']['task_nid'];
+    if ($task_nid) {
+      //relate execution to current task
+      $node = node_load($task_nid);
+      $node->field_dm_execution[LANGUAGE_NONE][] = array('target_id' => $form_state['values']['nid']);
+      node_save($node);
+      //reload execution list
+      $task_execution = views_embed_view('dm_execution', 'default', $task_nid);
+      $commands[] = ajax_command_replace('.dm-execution-list-wrapper .view-content', $task_execution);
+    }
+    //rebuild form.
+  }
+  $output = array('#type' => 'ajax', '#commands' => $commands);
+  return $output;
 }
 
 function dm_ajax_comments_submit_js($form, &$form_state) {
