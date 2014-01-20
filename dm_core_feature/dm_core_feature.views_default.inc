@@ -212,6 +212,13 @@ function dm_core_feature_views_default_views() {
   $handler->display->display_options['fields']['field_dm_task_status']['exclude'] = TRUE;
   $handler->display->display_options['fields']['field_dm_task_status']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['field_dm_task_status']['type'] = 'list_key';
+  /* Field: Content: Month */
+  $handler->display->display_options['fields']['field_dm_month_to_perform_task']['id'] = 'field_dm_month_to_perform_task';
+  $handler->display->display_options['fields']['field_dm_month_to_perform_task']['table'] = 'field_data_field_dm_month_to_perform_task';
+  $handler->display->display_options['fields']['field_dm_month_to_perform_task']['field'] = 'field_dm_month_to_perform_task';
+  $handler->display->display_options['fields']['field_dm_month_to_perform_task']['label'] = '';
+  $handler->display->display_options['fields']['field_dm_month_to_perform_task']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_dm_month_to_perform_task']['element_label_colon'] = FALSE;
   /* Field: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
@@ -227,18 +234,17 @@ function dm_core_feature_views_default_views() {
   $handler->display->display_options['fields']['field_dm_maintenance_cost']['field'] = 'field_dm_maintenance_cost';
   $handler->display->display_options['fields']['field_dm_maintenance_cost']['label'] = '';
   $handler->display->display_options['fields']['field_dm_maintenance_cost']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['field_dm_maintenance_cost']['alter']['text'] = '<span class="dm-task-status dm-task-status-[field_dm_task_status]"></span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_maintenance_cost]) </span>
+  $handler->display->display_options['fields']['field_dm_maintenance_cost']['alter']['text'] = ' <span class="dm-task-status dm-task-status-[field_dm_task_status]"></span> <span class="dm-task-month">[field_dm_month_to_perform_task]</span><span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_maintenance_cost]) </span>
 ';
   $handler->display->display_options['fields']['field_dm_maintenance_cost']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['field_dm_maintenance_cost']['settings'] = array(
     'thousand_separator' => '.',
     'prefix_suffix' => 1,
   );
-  /* Sort criterion: Content: Post date */
-  $handler->display->display_options['sorts']['created']['id'] = 'created';
-  $handler->display->display_options['sorts']['created']['table'] = 'node';
-  $handler->display->display_options['sorts']['created']['field'] = 'created';
-  $handler->display->display_options['sorts']['created']['order'] = 'DESC';
+  /* Sort criterion: Content: Month (field_dm_month_to_perform_task) */
+  $handler->display->display_options['sorts']['field_dm_month_to_perform_task_value']['id'] = 'field_dm_month_to_perform_task_value';
+  $handler->display->display_options['sorts']['field_dm_month_to_perform_task_value']['table'] = 'field_data_field_dm_month_to_perform_task';
+  $handler->display->display_options['sorts']['field_dm_month_to_perform_task_value']['field'] = 'field_dm_month_to_perform_task_value';
   /* Contextual filter: Content: Year to perform task (field_dm_year_to_perform_task) */
   $handler->display->display_options['arguments']['field_dm_year_to_perform_task_tid']['id'] = 'field_dm_year_to_perform_task_tid';
   $handler->display->display_options['arguments']['field_dm_year_to_perform_task_tid']['table'] = 'field_data_field_dm_year_to_perform_task';
@@ -294,6 +300,13 @@ return \'all\';';
   $handler->display->display_options['fields']['field_dm_task_status']['exclude'] = TRUE;
   $handler->display->display_options['fields']['field_dm_task_status']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['field_dm_task_status']['type'] = 'list_key';
+  /* Field: Content: Month */
+  $handler->display->display_options['fields']['field_dm_month_to_perform_task']['id'] = 'field_dm_month_to_perform_task';
+  $handler->display->display_options['fields']['field_dm_month_to_perform_task']['table'] = 'field_data_field_dm_month_to_perform_task';
+  $handler->display->display_options['fields']['field_dm_month_to_perform_task']['field'] = 'field_dm_month_to_perform_task';
+  $handler->display->display_options['fields']['field_dm_month_to_perform_task']['label'] = '';
+  $handler->display->display_options['fields']['field_dm_month_to_perform_task']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_dm_month_to_perform_task']['element_label_colon'] = FALSE;
   /* Field: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
@@ -309,7 +322,7 @@ return \'all\';';
   $handler->display->display_options['fields']['field_dm_subsequent_cost']['field'] = 'field_dm_subsequent_cost';
   $handler->display->display_options['fields']['field_dm_subsequent_cost']['label'] = '';
   $handler->display->display_options['fields']['field_dm_subsequent_cost']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['field_dm_subsequent_cost']['alter']['text'] = '<span class="dm-task-status dm-task-status-[field_dm_task_status]"></span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_subsequent_cost]) </span> <span class="dm-task-type"> | Maintenance </span>';
+  $handler->display->display_options['fields']['field_dm_subsequent_cost']['alter']['text'] = '<span class="dm-task-status dm-task-status-[field_dm_task_status]"></span> <span class="dm-task-month">[field_dm_month_to_perform_task]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_subsequent_cost]) </span> <span class="dm-task-type"> | Maintenance </span>';
   $handler->display->display_options['fields']['field_dm_subsequent_cost']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['field_dm_subsequent_cost']['settings'] = array(
     'thousand_separator' => '.',
@@ -346,6 +359,13 @@ return \'all\';';
   $handler->display->display_options['fields']['field_dm_task_status']['exclude'] = TRUE;
   $handler->display->display_options['fields']['field_dm_task_status']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['field_dm_task_status']['type'] = 'list_key';
+  /* Field: Content: Month */
+  $handler->display->display_options['fields']['field_dm_month_to_perform_task']['id'] = 'field_dm_month_to_perform_task';
+  $handler->display->display_options['fields']['field_dm_month_to_perform_task']['table'] = 'field_data_field_dm_month_to_perform_task';
+  $handler->display->display_options['fields']['field_dm_month_to_perform_task']['field'] = 'field_dm_month_to_perform_task';
+  $handler->display->display_options['fields']['field_dm_month_to_perform_task']['label'] = '';
+  $handler->display->display_options['fields']['field_dm_month_to_perform_task']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_dm_month_to_perform_task']['element_label_colon'] = FALSE;
   /* Field: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
@@ -361,7 +381,7 @@ return \'all\';';
   $handler->display->display_options['fields']['nid']['field'] = 'nid';
   $handler->display->display_options['fields']['nid']['label'] = '';
   $handler->display->display_options['fields']['nid']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['nid']['alter']['text'] = '<span class="dm-task-status dm-task-status-[field_dm_task_status]"></span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">(0) </span> <span class="dm-task-type"> | Inspection </span>';
+  $handler->display->display_options['fields']['nid']['alter']['text'] = '<span class="dm-task-status dm-task-status-[field_dm_task_status]"></span> <span class="dm-task-month">[field_dm_month_to_perform_task]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">(0) </span> <span class="dm-task-type"> | Inspection </span>';
   $handler->display->display_options['fields']['nid']['element_label_colon'] = FALSE;
   $handler->display->display_options['defaults']['arguments'] = FALSE;
   /* Contextual filter: Content: Nid */
@@ -388,14 +408,14 @@ return \'all\';';
     t('Sort by'),
     t('Asc'),
     t('Desc'),
-    t('<span class="dm-task-status dm-task-status-[field_dm_task_status]"></span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_maintenance_cost]) </span>
+    t(' <span class="dm-task-status dm-task-status-[field_dm_task_status]"></span> <span class="dm-task-month">[field_dm_month_to_perform_task]</span><span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_maintenance_cost]) </span>
 '),
     t('All'),
     t('Tasks'),
     t('MTasks'),
-    t('<span class="dm-task-status dm-task-status-[field_dm_task_status]"></span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_subsequent_cost]) </span> <span class="dm-task-type"> | Maintenance </span>'),
+    t('<span class="dm-task-status dm-task-status-[field_dm_task_status]"></span> <span class="dm-task-month">[field_dm_month_to_perform_task]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">([field_dm_subsequent_cost]) </span> <span class="dm-task-type"> | Maintenance </span>'),
     t('ITasks'),
-    t('<span class="dm-task-status dm-task-status-[field_dm_task_status]"></span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">(0) </span> <span class="dm-task-type"> | Inspection </span>'),
+    t('<span class="dm-task-status dm-task-status-[field_dm_task_status]"></span> <span class="dm-task-month">[field_dm_month_to_perform_task]</span> <span class="dm-task-title"> [title] </span> <span class="dm-task-cost">(0) </span> <span class="dm-task-type"> | Inspection </span>'),
   );
   $export['dm_task_list_row'] = $view;
 

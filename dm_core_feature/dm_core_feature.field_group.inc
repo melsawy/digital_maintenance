@@ -21,7 +21,7 @@ function dm_core_feature_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'Show advanced',
-    'weight' => '6',
+    'weight' => '5',
     'children' => array(
       0 => 'field_dm_omfang',
       1 => 'field_dm_materiale',

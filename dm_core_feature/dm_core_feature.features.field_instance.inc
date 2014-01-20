@@ -55,7 +55,7 @@ function dm_core_feature_field_default_field_instances() {
         'summary_rows' => 5,
       ),
       'type' => 'text_textarea_with_summary',
-      'weight' => 1,
+      'weight' => 3,
     ),
   );
 
@@ -156,7 +156,7 @@ function dm_core_feature_field_default_field_instances() {
         'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
       ),
       'type' => 'options_select',
-      'weight' => 3,
+      'weight' => 0,
     ),
   );
 
@@ -410,6 +410,45 @@ function dm_core_feature_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'node-dm_task-field_dm_month_to_perform_task'
+  $field_instances['node-dm_task-field_dm_month_to_perform_task'] = array(
+    'bundle' => 'dm_task',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'list',
+        'settings' => array(),
+        'type' => 'list_default',
+        'weight' => 20,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_dm_month_to_perform_task',
+    'label' => 'Month',
+    'required' => 1,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'options',
+      'settings' => array(
+        'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
+      ),
+      'type' => 'options_select',
+      'weight' => 9,
+    ),
+  );
+
   // Exported field_instance: 'node-dm_task-field_dm_omfang'
   $field_instances['node-dm_task-field_dm_omfang'] = array(
     'bundle' => 'dm_task',
@@ -489,7 +528,7 @@ function dm_core_feature_field_default_field_instances() {
         'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
       ),
       'type' => 'options_buttons',
-      'weight' => 7,
+      'weight' => 6,
     ),
   );
 
@@ -533,49 +572,7 @@ function dm_core_feature_field_default_field_instances() {
         'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
       ),
       'type' => 'options_onoff',
-      'weight' => 8,
-    ),
-  );
-
-  // Exported field_instance: 'node-dm_task-field_dm_sub_category'
-  $field_instances['node-dm_task-field_dm_sub_category'] = array(
-    'bundle' => 'dm_task',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'default' => array(
-        'label' => 'above',
-        'module' => 'text',
-        'settings' => array(),
-        'type' => 'text_default',
-        'weight' => 2,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_dm_sub_category',
-    'label' => 'Sub category title',
-    'required' => 0,
-    'settings' => array(
-      'text_processing' => 0,
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'text',
-      'settings' => array(
-        'maxlength_js' => 0,
-        'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
-        'size' => 40,
-      ),
-      'type' => 'text_textfield',
-      'weight' => 5,
+      'weight' => 7,
     ),
   );
 
@@ -608,7 +605,7 @@ function dm_core_feature_field_default_field_instances() {
     'entity_type' => 'node',
     'field_name' => 'field_dm_sub_category_prefix',
     'label' => 'Sub category',
-    'required' => 0,
+    'required' => 1,
     'settings' => array(
       'max' => '',
       'min' => '',
@@ -623,7 +620,7 @@ function dm_core_feature_field_default_field_instances() {
         'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
       ),
       'type' => 'number',
-      'weight' => 4,
+      'weight' => 1,
     ),
   );
 
@@ -678,7 +675,11 @@ function dm_core_feature_field_default_field_instances() {
   // Exported field_instance: 'node-dm_task-field_dm_task_status'
   $field_instances['node-dm_task-field_dm_task_status'] = array(
     'bundle' => 'dm_task',
-    'default_value' => NULL,
+    'default_value' => array(
+      0 => array(
+        'value' => 1,
+      ),
+    ),
     'deleted' => 0,
     'description' => '',
     'display' => array(
@@ -699,7 +700,7 @@ function dm_core_feature_field_default_field_instances() {
     'entity_type' => 'node',
     'field_name' => 'field_dm_task_status',
     'label' => 'Task status',
-    'required' => 0,
+    'required' => 1,
     'settings' => array(
       'user_register_form' => FALSE,
     ),
@@ -836,7 +837,7 @@ function dm_core_feature_field_default_field_instances() {
         'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
       ),
       'type' => 'options_select',
-      'weight' => 9,
+      'weight' => 8,
     ),
   );
 
@@ -1045,13 +1046,13 @@ function dm_core_feature_field_default_field_instances() {
   t('Inspection interval');
   t('Maintenance interval');
   t('Materiale');
+  t('Month');
   t('Omfang');
   t('Payment status');
   t('Price');
   t('Priority');
   t('Scaffolding needed?');
   t('Sub category');
-  t('Sub category title');
   t('Subsequent maintenance cost ');
   t('Task description');
   t('Task status');

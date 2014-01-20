@@ -94,11 +94,11 @@ function _dm_show_task_tabs($node) {
 */
 function digital_maintenance_form_dm_task_node_form_alter(&$form, &$form_state, $form_id) {
   $form['field_dm_sub_category_prefix']['#prefix'] = '<div class="container-inline dm-group-subcategory-fields">';
-  $form['field_dm_sub_category']['#suffix'] = '</div>';
-  $form['field_dm_sub_category'][LANGUAGE_NONE][0]['value']['#title'] = NULL;
+  $form['title']['#suffix'] = '</div>';
   //Hide type/title fields and set their values via hook_node_presave().
   //@see digital_maintenance_node_presave().
   $form['field_dm_task_type']['#access'] = FALSE;
+  $form['field_dm_execution']['#access'] = FALSE;
   //$form['title']['#required'] = FALSE;
   //$form['title']['#access'] = FALSE;
   //Set allowed values for year to perform task +10 from current year.

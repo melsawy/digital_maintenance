@@ -58,26 +58,26 @@ function dm_core_feature_field_default_field_bases() {
     'module' => 'list',
     'settings' => array(
       'allowed_values' => array(
-        1 => 'TAGVÆRK',
-        2 => 'KÆLDER / FUNDERING',
-        3 => 'FACADER / SOKKEL',
-        4 => 'VINDUER',
-        5 => 'UDVENDIGE DØRE',
-        6 => 'TRAPPER',
-        7 => 'PORTE / GENNEMGANGE',
-        8 => 'ETAGEADSKILLELSER',
-        9 => 'WC / BAD',
-        10 => 'KØKKENER',
-        11 => 'VARMEANLÆG',
-        12 => 'AFLØB',
-        13 => 'KLOAK',
-        14 => 'VANDINSTALLATION',
-        15 => 'GASINSTALLATION',
-        16 => 'VENTILATION',
-        17 => 'EL / SVAGSTRØM',
-        18 => 'ØVRIGE OMBYGNINGSARBEJDER',
-        19 => 'PRIVATE FRIAREALER',
-        20 => 'BYGGEPLADS OG UFORUDSETE UDGIFTER',
+        1 => '1.TAGVÆRK',
+        2 => '2.KÆLDER / FUNDERING',
+        3 => '3.FACADER / SOKKEL',
+        4 => '4.VINDUER',
+        5 => '5.UDVENDIGE DØRE',
+        6 => '6.TRAPPER',
+        7 => '7.PORTE / GENNEMGANGE',
+        8 => '8.ETAGEADSKILLELSER',
+        9 => '9.WC / BAD',
+        10 => '10.KØKKENER',
+        11 => '11.VARMEANLÆG',
+        12 => '12.AFLØB',
+        13 => '13.KLOAK',
+        14 => '14.VANDINSTALLATION',
+        15 => '15.GASINSTALLATION',
+        16 => '16.VENTILATION',
+        17 => '17.EL / SVAGSTRØM',
+        18 => '18.ØVRIGE OMBYGNINGSARBEJDER',
+        19 => '19.PRIVATE FRIAREALER',
+        20 => '20.BYGGEPLADS OG UFORUDSETE UDGIFTER',
       ),
       'allowed_values_function' => '',
     ),
@@ -334,6 +334,42 @@ function dm_core_feature_field_default_field_bases() {
     'type' => 'text_long',
   );
 
+  // Exported field_base: 'field_dm_month_to_perform_task'
+  $field_bases['field_dm_month_to_perform_task'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_dm_month_to_perform_task',
+    'foreign keys' => array(),
+    'indexes' => array(
+      'value' => array(
+        0 => 'value',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'list',
+    'settings' => array(
+      'allowed_values' => array(
+        0 => 'Jan',
+        1 => 'Feb',
+        2 => 'Mar',
+        3 => 'Apr',
+        4 => 'May',
+        5 => 'Jun',
+        6 => 'Jul',
+        7 => 'Aug',
+        8 => 'Sep',
+        9 => 'Oct',
+        10 => 'Nov',
+        11 => 'Dec',
+      ),
+      'allowed_values_function' => '',
+    ),
+    'translatable' => 0,
+    'type' => 'list_integer',
+  );
+
   // Exported field_base: 'field_dm_omfang'
   $field_bases['field_dm_omfang'] = array(
     'active' => 1,
@@ -438,35 +474,6 @@ function dm_core_feature_field_default_field_bases() {
     ),
     'translatable' => 0,
     'type' => 'list_boolean',
-  );
-
-  // Exported field_base: 'field_dm_sub_category'
-  $field_bases['field_dm_sub_category'] = array(
-    'active' => 1,
-    'cardinality' => 1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_dm_sub_category',
-    'foreign keys' => array(
-      'format' => array(
-        'columns' => array(
-          'format' => 'format',
-        ),
-        'table' => 'filter_format',
-      ),
-    ),
-    'indexes' => array(
-      'format' => array(
-        0 => 'format',
-      ),
-    ),
-    'locked' => 0,
-    'module' => 'text',
-    'settings' => array(
-      'max_length' => 255,
-    ),
-    'translatable' => 0,
-    'type' => 'text',
   );
 
   // Exported field_base: 'field_dm_sub_category_prefix'
