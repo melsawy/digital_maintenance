@@ -209,8 +209,66 @@ function _dm_task_posts($node) {
   $comments = '<div class="dm-comments-wrapper"><h4>comments:</h4>'. 
     '<div class="dm-view-node-comments-wrapper">'. views_embed_view('node_comments', 'default', $node->nid) .'</div></div>';
   $output .= '<div id="dm-comment-form-new"></div>'. $comments;
-  $output .= '<div class="dm-attachments-wrapper">'. render(field_view_field('node', $node, 'field_dm_attachments', 'file_table')) .'</div>';
+  $output .= '<div id="dm-attachments-wrapper">'. render(field_view_field('node', $node, 'field_dm_attachments', 'file_table')) .'</div>';
+  $form = drupal_get_form('dm_task_post_uploadfile');
+  return $output . drupal_render($form);
+}
+
+function dm_task_post_uploadfile($form, &$form_state) {
+  //Add upload filed
+  if (arg(0) == 'node' && is_numeric(arg(1))) {
+    $form['task_nid'] = array(
+      '#value' => arg(1),
+      '#type' => 'hidden',
+    );
+  }
+  $form['post_file'] = array(
+    '#type' => 'file',
+  );
+  $form['upload'] = array(
+    '#type' => 'submit',
+    '#value' => 'upload',
+    //'#submit' => array('upload_image'),
+    '#ajax'=> array(
+      'callback'=>'upload_image',
+      'wrapper'=> 'dm-attachments-wrapper',
+      'method'=> 'replace',
+      'effect'=> 'fade',
+    ),
+  );
+  return $form;
+}  
+
+function upload_image($form, $form_state) {
+  $file = file_save_upload('post_file', 
+    array('file_validate_extensions' => array('png gif jpg jpeg')), "public://", $replace = FILE_EXISTS_RENAME);
+  if ($file) {
+    $file->status=FILE_STATUS_PERMANENT;
+    file_save($file);
+    $file->display = 0;
+    $task_nid = $form_state['values']['task_nid'];
+    if ($task_nid) {
+      //relate execution to current task
+      $node = node_load($task_nid);
+      $node->field_dm_attachments[LANGUAGE_NONE][] = (array)$file;
+      node_save($node);
+      $files = '<div id="dm-attachments-wrapper">'. render(field_view_field('node', $node, 'field_dm_attachments', 'file_table')) .'</div>';
+      $commands[] = ajax_command_replace('#dm-attachments-wrapper', $files);
+      //rebuild form
+      $new_form_state = array();
+      $new_form_state['rebuild'] = TRUE;
+      $new_form_state['input'] = array();
+      $new_form_build = drupal_build_form($form['#form_id'], $new_form_state);
+      $new_form_output = drupal_render($new_form_build);
+      $commands[] = ajax_command_replace('#' . $form['#id'], $new_form_output);
+    }
+  }
+  else {
+    drupal_set_message('No file uploaded.');
+  }
+  $output = array('#type' => 'ajax', '#commands' => $commands);
   return $output;
+  //return $form['im-container'];
 }
 
 function _dm_task_execution($node) {
