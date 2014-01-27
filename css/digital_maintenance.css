@@ -187,3 +187,31 @@ span.dm-task-priority-0 {
 div.dm-generate-pdf {
   float: right;
 }
+.node-type-dm-task .field-name-field-dm-year-to-perform-task,
+.node-type-dm-task .field-name-field-dm-month-to-perform-task,
+.node-type-dm-task .field-name-field-dm-maintenance-interval {
+  float: left;
+  width: 50%;
+}
+.node-type-dm-task div.field {
+  padding: 5px 0px;
+}
+.dm-post-file{
+  padding-top: 25px;
+}
+.dm-post-file a,
+.dm-post-comment a {
+  float: right;
+  background: url("images/add.png") no-repeat scroll 0 0 transparent;
+  padding: 2px 22px;
+}
+.dm-view-node-comments-wrapper .views-field-comment-body {
+  padding: 10px 0px;
+  color: #c9c9c9;
+}
+.dm-comments-wrapper {
+  border-bottom: 2px solid #ebebeb;
+}
+#node_dm_task_full_group_whole_task .field-name-field-dm-attachments {
+  display: none;
+}

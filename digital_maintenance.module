@@ -71,12 +71,12 @@ function digital_maintenance_menu() {
     'type' => MENU_LOCAL_TASK,
     'file' => 'digital_maintenance.pages.inc',
   );
-  $items['dm_comment/%ctools_js/%node'] = array(
-    'title' => t('Post comment'),
-    'page callback' => 'ctools_ajax_post_comment',
+  $items['dm_post/%ctools_js/%node/%'] = array(
+    'title' => t('Task Post'),
+    'page callback' => 'ctools_ajax_dm_post',
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
-    'page arguments' => array(1, 2),
+    'page arguments' => array(1, 2, 3),
     'file' => 'digital_maintenance.pages.inc',
   );
   return $items;
@@ -335,7 +335,9 @@ function digital_maintenance_block_view($delta = '') {
 }
 
 /** Blocks Content */
-
+/**
+ *
+ */
 function _dm_show_top_links() {
   //Add dm css/js
   drupal_add_css(drupal_get_path('module', 'digital_maintenance') . '/css/digital_maintenance.css');
@@ -679,7 +681,6 @@ function _dm_get_maintenance_cost($year = 'ALL') {
   }
   return array();
 }
-
 
 /**
  * return HTML to simplify prority theming.

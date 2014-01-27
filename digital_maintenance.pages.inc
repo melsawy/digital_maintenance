@@ -204,24 +204,25 @@ function _dm_generate_pdf_annual_overview() {
 
 function _dm_task_posts($node) {
   ctools_include('ajax');
-  $output = ctools_ajax_text_button(t('Add new comment'), 'dm_comment/nojs/'. $node->nid, t('Post comment'));
+  $output = '<div class="dm-post-comment">' . 
+    ctools_ajax_text_button(t('Add new comment'), 'dm_post/nojs/'. $node->nid .'/comment', t('Add new comment')) .'</div>';
   //$comments = drupal_render(comment_node_page_additions($node));
-  $comments = '<div class="dm-comments-wrapper"><h4>comments:</h4>'. 
+  $comments = '<div class="dm-comments-wrapper"><h4>'. t('Comments :') . '</h4>'. 
     '<div class="dm-view-node-comments-wrapper">'. views_embed_view('node_comments', 'default', $node->nid) .'</div></div>';
   $output .= '<div id="dm-comment-form-new"></div>'. $comments;
+  $output .= '<div class="dm-post-file">' . 
+    ctools_ajax_text_button(t('Add new file'), 'dm_post/nojs/'. $node->nid .'/file', t('Add new file')) .'</div>';
+  $output .= '<div id="dm-file-form-new"></div>';
   $output .= '<div id="dm-attachments-wrapper">'. render(field_view_field('node', $node, 'field_dm_attachments', 'file_table')) .'</div>';
-  $form = drupal_get_form('dm_task_post_uploadfile');
-  return $output . drupal_render($form);
+  return $output;
 }
 
-function dm_task_post_uploadfile($form, &$form_state) {
+function dm_task_post_uploadfile($form, &$form_state, $nid) {
   //Add upload filed
-  if (arg(0) == 'node' && is_numeric(arg(1))) {
     $form['task_nid'] = array(
-      '#value' => arg(1),
+      '#value' => $nid,
       '#type' => 'hidden',
     );
-  }
   $form['post_file'] = array(
     '#type' => 'file',
   );
@@ -254,21 +255,11 @@ function upload_image($form, $form_state) {
       node_save($node);
       $files = '<div id="dm-attachments-wrapper">'. render(field_view_field('node', $node, 'field_dm_attachments', 'file_table')) .'</div>';
       $commands[] = ajax_command_replace('#dm-attachments-wrapper', $files);
-      //rebuild form
-      $new_form_state = array();
-      $new_form_state['rebuild'] = TRUE;
-      $new_form_state['input'] = array();
-      $new_form_build = drupal_build_form($form['#form_id'], $new_form_state);
-      $new_form_output = drupal_render($new_form_build);
-      $commands[] = ajax_command_replace('#' . $form['#id'], $new_form_output);
+      $commands[] = ajax_command_remove('#dm-file-form-new #dm-task-post-uploadfile');
     }
-  }
-  else {
-    drupal_set_message('No file uploaded.');
   }
   $output = array('#type' => 'ajax', '#commands' => $commands);
   return $output;
-  //return $form['im-container'];
 }
 
 function _dm_task_execution($node) {
@@ -279,19 +270,26 @@ function _dm_task_execution($node) {
   return $output;
 }
 
-function ctools_ajax_post_comment($ajax, $node) {
+function ctools_ajax_dm_post($ajax, $node, $type) {
   if ($ajax) {
     ctools_include('ajax');
     $commands = array();
-    $form_build = drupal_get_form("comment_node_{$node->type}_form", (object) array('nid' => $node->nid));
-    /*
-    $form_build['actions']['cancel'] = array(
-      '#markup' => '<a id=\'ajax-comments-reply-' . $pid . '\' class=\'ajax-comments-reply-cancel\' href="#' . $form_build['#id'] . '">' . t('Cancel') . '</a>', 
-      '#weight' => 21, 
-    );  
-    */
-    $form = drupal_render($form_build);
-    $commands[] = ajax_command_html('#dm-comment-form-new', $form);
+    if ($type == 'comment') {
+      $form_build = drupal_get_form("comment_node_{$node->type}_form", (object) array('nid' => $node->nid));
+      /*
+      $form_build['actions']['cancel'] = array(
+        '#markup' => '<a class=\'ajax-comments-reply-cancel\' href="#">' . t('Cancel') . '</a>', 
+        '#weight' => 21, 
+      );
+      */  
+      $form = drupal_render($form_build);
+      $commands[] = ajax_command_html('#dm-comment-form-new', $form);
+    }
+    elseif ($type == 'file') {
+      $form_build = drupal_get_form('dm_task_post_uploadfile', $node->nid);
+      $form = drupal_render($form_build);
+      $commands[] = ajax_command_html('#dm-file-form-new', $form);
+    }
     print ajax_render($commands); 
     exit;
 
