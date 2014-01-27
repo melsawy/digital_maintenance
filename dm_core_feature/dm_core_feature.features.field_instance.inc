@@ -18,11 +18,11 @@ function dm_core_feature_field_default_field_instances() {
     'description' => '',
     'display' => array(
       'default' => array(
-        'label' => 'hidden',
+        'label' => 'above',
         'module' => 'text',
         'settings' => array(),
         'type' => 'text_default',
-        'weight' => 0,
+        'weight' => 7,
       ),
       'teaser' => array(
         'label' => 'hidden',
@@ -36,7 +36,7 @@ function dm_core_feature_field_default_field_instances() {
     ),
     'entity_type' => 'node',
     'field_name' => 'body',
-    'label' => 'Task description',
+    'label' => 'Description',
     'required' => 0,
     'settings' => array(
       'display_summary' => 0,
@@ -70,7 +70,7 @@ function dm_core_feature_field_default_field_instances() {
         'module' => 'file',
         'settings' => array(),
         'type' => 'file_table',
-        'weight' => 11,
+        'weight' => 29,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -133,7 +133,7 @@ function dm_core_feature_field_default_field_instances() {
         'module' => 'list',
         'settings' => array(),
         'type' => 'list_default',
-        'weight' => 1,
+        'weight' => 25,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -169,12 +169,9 @@ function dm_core_feature_field_default_field_instances() {
     'display' => array(
       'default' => array(
         'label' => 'above',
-        'module' => 'entityreference',
-        'settings' => array(
-          'link' => FALSE,
-        ),
-        'type' => 'entityreference_label',
-        'weight' => 19,
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 15,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -213,7 +210,7 @@ function dm_core_feature_field_default_field_instances() {
         'module' => 'list',
         'settings' => array(),
         'type' => 'list_default',
-        'weight' => 7,
+        'weight' => 27,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -252,7 +249,7 @@ function dm_core_feature_field_default_field_instances() {
         'module' => 'list',
         'settings' => array(),
         'type' => 'list_default',
-        'weight' => 18,
+        'weight' => 5,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -296,7 +293,7 @@ function dm_core_feature_field_default_field_instances() {
           'thousand_separator' => ' ',
         ),
         'type' => 'number_integer',
-        'weight' => 10,
+        'weight' => 1,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -339,7 +336,7 @@ function dm_core_feature_field_default_field_instances() {
         'module' => 'list',
         'settings' => array(),
         'type' => 'list_default',
-        'weight' => 8,
+        'weight' => 4,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -378,7 +375,7 @@ function dm_core_feature_field_default_field_instances() {
         'module' => 'text',
         'settings' => array(),
         'type' => 'text_default',
-        'weight' => 4,
+        'weight' => 23,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -422,7 +419,7 @@ function dm_core_feature_field_default_field_instances() {
         'module' => 'list',
         'settings' => array(),
         'type' => 'list_default',
-        'weight' => 20,
+        'weight' => 2,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -461,7 +458,7 @@ function dm_core_feature_field_default_field_instances() {
         'module' => 'text',
         'settings' => array(),
         'type' => 'text_default',
-        'weight' => 3,
+        'weight' => 22,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -502,9 +499,8 @@ function dm_core_feature_field_default_field_instances() {
     'display' => array(
       'default' => array(
         'label' => 'above',
-        'module' => 'list',
         'settings' => array(),
-        'type' => 'list_default',
+        'type' => 'hidden',
         'weight' => 12,
       ),
       'teaser' => array(
@@ -548,7 +544,7 @@ function dm_core_feature_field_default_field_instances() {
         'module' => 'list',
         'settings' => array(),
         'type' => 'list_default',
-        'weight' => 16,
+        'weight' => 28,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -593,7 +589,7 @@ function dm_core_feature_field_default_field_instances() {
           'thousand_separator' => ' ',
         ),
         'type' => 'number_decimal',
-        'weight' => 14,
+        'weight' => 26,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -641,7 +637,7 @@ function dm_core_feature_field_default_field_instances() {
           'thousand_separator' => ' ',
         ),
         'type' => 'number_integer',
-        'weight' => 9,
+        'weight' => 3,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -685,10 +681,9 @@ function dm_core_feature_field_default_field_instances() {
     'display' => array(
       'default' => array(
         'label' => 'above',
-        'module' => 'list',
         'settings' => array(),
-        'type' => 'list_default',
-        'weight' => 17,
+        'type' => 'hidden',
+        'weight' => 10,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -728,10 +723,9 @@ function dm_core_feature_field_default_field_instances() {
     'display' => array(
       'default' => array(
         'label' => 'above',
-        'module' => 'list',
         'settings' => array(),
-        'type' => 'list_default',
-        'weight' => 15,
+        'type' => 'hidden',
+        'weight' => 14,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -770,7 +764,7 @@ function dm_core_feature_field_default_field_instances() {
         'module' => 'text',
         'settings' => array(),
         'type' => 'text_default',
-        'weight' => 5,
+        'weight' => 24,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -813,8 +807,8 @@ function dm_core_feature_field_default_field_instances() {
         'label' => 'above',
         'module' => 'taxonomy',
         'settings' => array(),
-        'type' => 'taxonomy_term_reference_link',
-        'weight' => 13,
+        'type' => 'taxonomy_term_reference_plain',
+        'weight' => 0,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1054,7 +1048,6 @@ function dm_core_feature_field_default_field_instances() {
   t('Scaffolding needed?');
   t('Sub category');
   t('Subsequent maintenance cost ');
-  t('Task description');
   t('Task status');
   t('Type');
   t('Year to perform task');

@@ -47,6 +47,7 @@ features[field_base][] = field_dm_task_type
 features[field_base][] = field_dm_udf_relse
 features[field_base][] = field_dm_year_to_perform_task
 features[field_group][] = group_dm_show_advanced|node|dm_task|form
+features[field_group][] = group_whole_task|node|dm_task|default
 features[field_instance][] = node-dm_task-body
 features[field_instance][] = node-dm_task-field_dm_attachments
 features[field_instance][] = node-dm_task-field_dm_category
