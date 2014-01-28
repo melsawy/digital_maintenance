@@ -28,8 +28,8 @@ function dm_core_feature_views_default_views() {
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
-  $handler->display->display_options['pager']['type'] = 'full';
-  $handler->display->display_options['pager']['options']['items_per_page'] = '10';
+  $handler->display->display_options['pager']['type'] = 'none';
+  $handler->display->display_options['pager']['options']['offset'] = '0';
   $handler->display->display_options['style_plugin'] = 'table';
   $handler->display->display_options['style_options']['columns'] = array(
     'title' => 'title',
@@ -120,6 +120,7 @@ function dm_core_feature_views_default_views() {
   $handler->display->display_options['fields']['field_dm_payment_status']['field'] = 'field_dm_payment_status';
   $handler->display->display_options['fields']['field_dm_payment_status']['relationship'] = 'field_dm_execution_target_id';
   $handler->display->display_options['fields']['field_dm_payment_status']['label'] = 'Paid';
+  $handler->display->display_options['fields']['field_dm_payment_status']['element_class'] = 'dm-[field_dm_payment_status]';
   /* Field: Content: Description */
   $handler->display->display_options['fields']['body']['id'] = 'body';
   $handler->display->display_options['fields']['body']['table'] = 'field_data_body';
@@ -134,7 +135,6 @@ function dm_core_feature_views_default_views() {
   $handler->display->display_options['sorts']['created']['id'] = 'created';
   $handler->display->display_options['sorts']['created']['table'] = 'node';
   $handler->display->display_options['sorts']['created']['field'] = 'created';
-  $handler->display->display_options['sorts']['created']['order'] = 'DESC';
   /* Contextual filter: Content: Nid */
   $handler->display->display_options['arguments']['nid']['id'] = 'nid';
   $handler->display->display_options['arguments']['nid']['table'] = 'node';
@@ -165,13 +165,6 @@ function dm_core_feature_views_default_views() {
     t('Sort by'),
     t('Asc'),
     t('Desc'),
-    t('Items per page'),
-    t('- All -'),
-    t('Offset'),
-    t('« first'),
-    t('‹ previous'),
-    t('next ›'),
-    t('last »'),
     t('field_dm_execution'),
     t('Actor'),
     t('Date'),

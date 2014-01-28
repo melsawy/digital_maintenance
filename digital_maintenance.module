@@ -99,6 +99,7 @@ function digital_maintenance_form_dm_task_node_form_alter(&$form, &$form_state, 
   //@see digital_maintenance_node_presave().
   $form['field_dm_task_type']['#access'] = FALSE;
   $form['field_dm_execution']['#access'] = FALSE;
+  $form['field_dm_attachments']['#access'] = FALSE;
   //$form['title']['#required'] = FALSE;
   //$form['title']['#access'] = FALSE;
   //Set allowed values for year to perform task +10 from current year.
@@ -138,16 +139,36 @@ function digital_maintenance_form_dm_task_execution_node_form_alter(&$form, &$fo
       '#value' => arg(1),
       '#type' => 'hidden',
     );
+    $form['actions']['submit']['#submit'][] = 'dm_execution_submit';
   }
+  /*
   $form['actions']['submit']['#ajax'] = array(
-    'callback' => 'mymodule_node_form_js_submit',
+    'callback' => 'dm_execution_node_form_js_submit',
     'wrapper' => 'node-dm_task_execution-form',
     'method' => 'replace',
     'effect' => 'fade',
   );
+   */
 }
 
-function mymodule_node_form_js_submit($form, &$form_state) {
+/**
+ * Attach execution to current task
+ */
+function dm_execution_submit($form, &$form_state) {
+  if ($form_state['values']['nid']) {
+    $task_nid = $form_state['values']['task_nid'];
+    if ($task_nid) {
+      //relate execution to current task
+      $node = node_load($task_nid);
+      $node->field_dm_execution[LANGUAGE_NONE][] = array('target_id' => $form_state['values']['nid']);
+      node_save($node);
+    }
+    $form_state['redirect'] = 'node/'. $task_nid .'/execution';
+  }
+}
+/**
+ * Submit execution via ajax
+function dm_execution_node_form_js_submit($form, &$form_state) {
   $commands[] = ajax_command_remove('#messages');
   $commands[] = ajax_command_before('.node-dm_task_execution-form', '<div id="messages">' . theme('status_messages') . '</div>');
   if ($form_state['values']['nid']) {
@@ -166,6 +187,7 @@ function mymodule_node_form_js_submit($form, &$form_state) {
   $output = array('#type' => 'ajax', '#commands' => $commands);
   return $output;
 }
+ */
 
 function dm_ajax_comments_submit_js($form, &$form_state) {
   // Return the actual form if it contains errors.

@@ -205,6 +205,8 @@ div.dm-generate-pdf {
   background: url("images/add.png") no-repeat scroll 0 0 transparent;
   padding: 2px 22px;
 }
+
+.page-node-execution td.dm-execution-desc,
 .dm-view-node-comments-wrapper .views-field-comment-body {
   padding: 10px 0px;
   color: #c9c9c9;
@@ -214,4 +216,29 @@ div.dm-generate-pdf {
 }
 #node_dm_task_full_group_whole_task .field-name-field-dm-attachments {
   display: none;
+}
+.page-node-execution div.form-wrapper,
+.page-node-execution div.form-item {
+  display: inline-block;
+  width: 270px;
+  height: 100px;
+  margin: 1em;
+}
+.page-node-execution div.form-type-textarea,
+.page-node-execution div.field-type-datestamp {
+  height: 157px;
+}
+.page-node-execution div.form-type-textarea {
+  width: 450px;
+}
+.page-node-execution tr.even {
+  background-color: #f7f7f7;
+}
+.page-node-execution td.dm-Unpaid {
+  background: url("images/unpaid.png") no-repeat scroll 15px 8px transparent;
+  text-indent: -1000px;
+}
+.page-node-execution td.dm-Paid {
+  background: url("images/paid.png") no-repeat scroll 15px 8px transparent;
+  text-indent: -10000px;
 }
