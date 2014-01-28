@@ -242,7 +242,7 @@ function dm_task_post_uploadfile($form, &$form_state, $nid) {
 
 function upload_image($form, $form_state) {
   $file = file_save_upload('post_file', 
-    array('file_validate_extensions' => array('png gif jpg jpeg')), "public://", $replace = FILE_EXISTS_RENAME);
+    array('file_validate_extensions' => array('txt png jpg pdf doc')), "public://", $replace = FILE_EXISTS_RENAME);
   if ($file) {
     $file->status=FILE_STATUS_PERMANENT;
     file_save($file);

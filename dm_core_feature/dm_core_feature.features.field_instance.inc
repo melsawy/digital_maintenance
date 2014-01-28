@@ -22,7 +22,7 @@ function dm_core_feature_field_default_field_instances() {
         'module' => 'text',
         'settings' => array(),
         'type' => 'text_default',
-        'weight' => 7,
+        'weight' => 6,
       ),
       'teaser' => array(
         'label' => 'hidden',
@@ -69,8 +69,8 @@ function dm_core_feature_field_default_field_instances() {
         'label' => 'hidden',
         'module' => 'file',
         'settings' => array(),
-        'type' => 'file_table',
-        'weight' => 29,
+        'type' => 'file_default',
+        'weight' => 8,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -171,7 +171,7 @@ function dm_core_feature_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 15,
+        'weight' => 12,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -501,7 +501,7 @@ function dm_core_feature_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 12,
+        'weight' => 10,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -683,7 +683,7 @@ function dm_core_feature_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 10,
+        'weight' => 9,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -725,7 +725,7 @@ function dm_core_feature_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 14,
+        'weight' => 11,
       ),
       'teaser' => array(
         'label' => 'above',

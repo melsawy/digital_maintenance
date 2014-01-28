@@ -705,6 +705,20 @@ function _dm_get_maintenance_cost($year = 'ALL') {
 }
 
 /**
+ * Implements of hook_node_view().
+ */
+function digital_maintenance_node_view($node, $view_mode, $langcode) {
+  if ($node->type == 'dm_task') {
+    //hide comments and links
+    unset($node->content['field_tags']);
+    unset($node->content['links']);
+    unset($node->content['comments']);
+    //hide attachments to render it on post tab.
+    unset($node->content['field_dm_attachments']);
+  }
+}
+
+/**
  * return HTML to simplify prority theming.
  */
 function _dm_priority_html($p) {

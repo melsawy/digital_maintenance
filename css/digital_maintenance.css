@@ -214,9 +214,6 @@ div.dm-generate-pdf {
 .dm-comments-wrapper {
   border-bottom: 2px solid #ebebeb;
 }
-#node_dm_task_full_group_whole_task .field-name-field-dm-attachments {
-  display: none;
-}
 .page-node-execution div.form-wrapper,
 .page-node-execution div.form-item {
   display: inline-block;

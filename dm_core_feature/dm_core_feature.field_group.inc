@@ -51,16 +51,15 @@ function dm_core_feature_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'View whole task',
-    'weight' => '8',
+    'weight' => '7',
     'children' => array(
       0 => 'field_dm_category',
       1 => 'field_dm_omfang',
       2 => 'field_dm_materiale',
       3 => 'field_dm_udf_relse',
       4 => 'field_dm_expected_lifetime',
-      5 => 'field_dm_attachments',
-      6 => 'field_dm_sub_category_prefix',
-      7 => 'field_dm_scaffolding_needed',
+      5 => 'field_dm_sub_category_prefix',
+      6 => 'field_dm_scaffolding_needed',
     ),
     'format_type' => 'fieldset',
     'format_settings' => array(
