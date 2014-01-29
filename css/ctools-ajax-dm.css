@@ -6,6 +6,12 @@ div.ctools-sample-modal-content {
 	padding:0;
 	text-align:left;
 }
+div.ctools-sample-modal-content .form-item label,
+div.ctools-sample-modal-content .form-item label.option {
+  float: left;
+  width: 15em;
+  text-align:left;
+}
 div.ctools-sample-modal-content .modal-scroll{
 	overflow:hidden;
 	overflow-y:auto;
