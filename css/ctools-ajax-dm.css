@@ -19,6 +19,9 @@ div.ctools-sample-modal-content .modal-scroll{
 div.ctools-sample-modal-content #popups-overlay {
   background-color:transparent;
 }
+div.ctools-sample-modal-content .vertical-tabs {
+  display: none;
+}
 div.ctools-sample-modal-content #popups-loading {
   width:248px;
   position:absolute;
