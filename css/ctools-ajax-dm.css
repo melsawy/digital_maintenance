@@ -12,12 +12,24 @@ div.ctools-sample-modal-content .form-item label.option {
   width: 15em;
   text-align:left;
 }
+div.ctools-sample-modal-content #edit-field-dm-priority .controls{
+  margin-right: 0px;
+}
+div.ctools-sample-modal-content #edit-field-dm-priority-und div{
+  display: inline-block;
+  width: auto;
+}
 div.ctools-sample-modal-content .modal-scroll{
 	overflow:hidden;
 	overflow-y:auto;
 }
 div.ctools-sample-modal-content #popups-overlay {
   background-color:transparent;
+}
+div.ctools-sample-modal-content #edit-field-dm-priority-und .form-type-radio {
+  display: inline-block;
+  margin-right: 12px;
+  width: auto;
 }
 div.ctools-sample-modal-content .vertical-tabs {
   display: none;
