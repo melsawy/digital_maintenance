@@ -83,7 +83,7 @@ function digital_maintenance_menu() {
 }
 
 function _dm_show_task_tabs($node) {
-  if ($node->type == 'dm_task') {
+  if ($node->type == 'dm_task' && node_access('update', $node)) {
     return TRUE;
   }
   return FALSE;

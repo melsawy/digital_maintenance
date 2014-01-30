@@ -992,7 +992,11 @@ function dm_core_feature_field_default_field_instances() {
   // Exported field_instance: 'node-dm_task_execution-field_dm_payment_status'
   $field_instances['node-dm_task_execution-field_dm_payment_status'] = array(
     'bundle' => 'dm_task_execution',
-    'default_value' => NULL,
+    'default_value' => array(
+      0 => array(
+        'value' => 1,
+      ),
+    ),
     'deleted' => 0,
     'description' => '',
     'display' => array(
