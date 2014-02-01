@@ -6,6 +6,9 @@ div.ctools-sample-modal-content {
 	padding:0;
 	text-align:left;
 }
+div.ctools-sample-modal-content #edit-field-dm-priority .controls label.control-labe {
+  width: auto;
+}
 div.ctools-sample-modal-content .form-item label,
 div.ctools-sample-modal-content .form-item label.option {
   float: left;
@@ -16,9 +19,6 @@ div.ctools-sample-modal-content #edit-field-dm-priority .controls{
   margin-left: 0px;
   margin-right: 5px;
   float: right;
-}
-div.ctools-sample-modal-content #edit-field-dm-priority .controls label.control-labe {
-  width: auto;
 }
 div.ctools-sample-modal-content #edit-field-dm-priority-und div{
   display: inline-block;
