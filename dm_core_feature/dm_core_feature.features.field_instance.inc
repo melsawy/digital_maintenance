@@ -572,54 +572,6 @@ function dm_core_feature_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-dm_task-field_dm_sub_category_prefix'
-  $field_instances['node-dm_task-field_dm_sub_category_prefix'] = array(
-    'bundle' => 'dm_task',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'default' => array(
-        'label' => 'above',
-        'module' => 'number',
-        'settings' => array(
-          'decimal_separator' => '.',
-          'prefix_suffix' => TRUE,
-          'scale' => 2,
-          'thousand_separator' => ' ',
-        ),
-        'type' => 'number_decimal',
-        'weight' => 26,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_dm_sub_category_prefix',
-    'label' => 'Sub category',
-    'required' => 1,
-    'settings' => array(
-      'max' => '',
-      'min' => '',
-      'prefix' => '',
-      'suffix' => '',
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 0,
-      'module' => 'number',
-      'settings' => array(
-        'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
-      ),
-      'type' => 'number',
-      'weight' => 1,
-    ),
-  );
-
   // Exported field_instance: 'node-dm_task-field_dm_subsequent_cost'
   $field_instances['node-dm_task-field_dm_subsequent_cost'] = array(
     'bundle' => 'dm_task',
@@ -707,48 +659,6 @@ function dm_core_feature_field_default_field_instances() {
       ),
       'type' => 'options_select',
       'weight' => 17,
-    ),
-  );
-
-  // Exported field_instance: 'node-dm_task-field_dm_task_type'
-  $field_instances['node-dm_task-field_dm_task_type'] = array(
-    'bundle' => 'dm_task',
-    'default_value' => array(
-      0 => array(
-        'value' => 0,
-      ),
-    ),
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'default' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 11,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_dm_task_type',
-    'label' => 'Type',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'options',
-      'settings' => array(
-        'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
-      ),
-      'type' => 'options_select',
-      'weight' => 16,
     ),
   );
 
@@ -1050,10 +960,8 @@ function dm_core_feature_field_default_field_instances() {
   t('Price');
   t('Priority');
   t('Scaffolding needed?');
-  t('Sub category');
   t('Subsequent maintenance cost ');
   t('Task status');
-  t('Type');
   t('Year to perform task');
   t('udførelse');
 

@@ -476,24 +476,6 @@ function dm_core_feature_field_default_field_bases() {
     'type' => 'list_boolean',
   );
 
-  // Exported field_base: 'field_dm_sub_category_prefix'
-  $field_bases['field_dm_sub_category_prefix'] = array(
-    'active' => 1,
-    'cardinality' => 1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_dm_sub_category_prefix',
-    'foreign keys' => array(),
-    'indexes' => array(),
-    'locked' => 0,
-    'module' => 'number',
-    'settings' => array(
-      'decimal_separator' => '.',
-    ),
-    'translatable' => 0,
-    'type' => 'number_float',
-  );
-
   // Exported field_base: 'field_dm_subsequent_cost'
   $field_bases['field_dm_subsequent_cost'] = array(
     'active' => 1,
@@ -530,32 +512,6 @@ function dm_core_feature_field_default_field_bases() {
         1 => 'Not started',
         2 => 'In progress',
         3 => 'Finished',
-      ),
-      'allowed_values_function' => '',
-    ),
-    'translatable' => 0,
-    'type' => 'list_integer',
-  );
-
-  // Exported field_base: 'field_dm_task_type'
-  $field_bases['field_dm_task_type'] = array(
-    'active' => 1,
-    'cardinality' => 1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_dm_task_type',
-    'foreign keys' => array(),
-    'indexes' => array(
-      'value' => array(
-        0 => 'value',
-      ),
-    ),
-    'locked' => 0,
-    'module' => 'list',
-    'settings' => array(
-      'allowed_values' => array(
-        0 => 'Maintenance',
-        1 => 'Inspection',
       ),
       'allowed_values_function' => '',
     ),

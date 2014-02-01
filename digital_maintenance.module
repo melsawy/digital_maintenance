@@ -93,11 +93,8 @@ function _dm_show_task_tabs($node) {
 * Implements hook_form_FORM_ID_alter().
 */
 function digital_maintenance_form_dm_task_node_form_alter(&$form, &$form_state, $form_id) {
-  #$form['field_dm_sub_category_prefix']['#prefix'] = '<div class="container-inline dm-group-subcategory-fields">';
-  #$form['title']['#suffix'] = '</div>';
   //Hide type/title fields and set their values via hook_node_presave().
   //@see digital_maintenance_node_presave().
-  $form['field_dm_task_type']['#access'] = FALSE;
   $form['field_dm_execution']['#access'] = FALSE;
   $form['field_dm_attachments']['#access'] = FALSE;
   //$form['title']['#required'] = FALSE;
@@ -275,15 +272,6 @@ function digital_maintenance_views_pre_render(&$view) {
  */
 function digital_maintenance_node_validate($node, $form, &$form_state) {
   if ($node->type == 'dm_task') {
-    //Validation for sub category to be on format [$category_value].[value]
-    $cat = $node->field_dm_category[LANGUAGE_NONE][0]['value'];
-    $subcat_prefix = $node->field_dm_sub_category_prefix[LANGUAGE_NONE][0]['value'];
-    if(!empty($cat) && !empty($subcat_prefix)) {
-      $prefix_values = explode('.', $subcat_prefix);
-      if (count($prefix_values) < 2 || $prefix_values[0] != $cat) {
-        form_set_error('field_dm_sub_category_prefix', t('Sub category value should be on format @value.[value].', array('@value' => $cat)));
-      }
-    }
     //Validation for Maintenance/Inspection tasks
     $minterval = $node->field_dm_maintenance_interval[LANGUAGE_NONE][0]['value'];
     if ($minterval) {
@@ -294,29 +282,6 @@ function digital_maintenance_node_validate($node, $form, &$form_state) {
       if (!$node->field_dm_subsequent_cost[LANGUAGE_NONE][0]['value']) {
         form_set_error('field_dm_subsequent_cost', t('Subsequent maintenance cost field is required'));
       }
-    }
-  }
-}
-
-/**
- * Implements of hook_node_presave().
- */
-function digital_maintenance_node_presave($node) {
-  if ($node->type == 'dm_task') {
-    //Set unique node title value [category + current timestamp]
-    //$field = field_info_field('field_dm_category');
-    //$allowed_values = list_allowed_values($field);
-    //$node->title = $allowed_values[$node->field_dm_category[LANGUAGE_NONE][0]['value']];
-    //Set task type based on maintenance interval field.
-    if (isset($node->field_dm_maintenance_interval[LANGUAGE_NONE][0])) {
-      //Task is Maintenance
-      $node->field_dm_task_type[LANGUAGE_NONE][0]['value'] = 0;
-    }
-    else {
-      //Task is Inspection
-      $node->field_dm_task_type[LANGUAGE_NONE][0]['value'] = 1;
-      //Remove costs as task is Inspection.
-      $node->field_dm_maintenance_cost[LANGUAGE_NONE][0]['value'] = $node->field_dm_subsequent_cost[LANGUAGE_NONE][0]['value'] = 0;
     }
   }
 }
@@ -491,14 +456,12 @@ function _dm_show_cost_overxyears($years = array()) {
   $query->addField('td', 'name', 'year');
   $query->addField('mc', 'field_dm_maintenance_cost_value', 'mcost');
   $query->addField('fc', 'field_dm_category_value', 'category');
-  $query->addField('cp', 'field_dm_sub_category_prefix_value', 'category_prefix');
   $query->addField('fp', 'field_dm_priority_value', 'priority');
   $query->addField('sc', 'field_dm_subsequent_cost_value', 'scost'); 
   $query->join('field_data_field_dm_category', 'fc', 'n.nid = fc.entity_id');
   $query->join('field_data_field_dm_year_to_perform_task', 'pt', 'n.nid = pt.entity_id');
   $query->join('taxonomy_term_data', 'td', 'td.tid = pt.field_dm_year_to_perform_task_tid');
   $query->join('field_data_field_dm_maintenance_cost', ' mc', 'n.nid = mc.entity_id');
-  $query->join('field_data_field_dm_sub_category_prefix', 'cp', 'n.nid = cp.entity_id');
   $query->join('field_data_field_dm_priority', 'fp', 'n.nid = fp.entity_id');
   $query->join('field_data_field_dm_maintenance_interval', 'mi', 'n.nid = mi.entity_id');
   $query->join('field_data_field_dm_subsequent_cost', 'sc', 'n.nid = sc.entity_id');
@@ -535,7 +498,7 @@ function _dm_show_cost_overxyears($years = array()) {
     foreach ($result as $data) {
       $row = array();
       $sum = 0;
-      $title = '<div class="dm-cat-prefix"></div>'. $data->category_prefix .' '. $data->title;
+      $title = '<div class="dm-cat-prefix"></div>'. $data->title;
       $priority = _dm_priority_html($data->priority);
       foreach ($mheader as $hdata) {
         $year = $hdata['data'];
