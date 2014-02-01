@@ -101,6 +101,7 @@ span.dm-task-status-3 {
   vertical-align: middle;
   width: auto;
   color: #595959;
+  float: none;
 }
 .page-dm-annual-overview .view-filters select {
   color: #86B300;
@@ -117,7 +118,8 @@ span.dm-task-status-3 {
   border: 0px;
   width: 28px;
   height: 27px;
-  margin-top: -11px;
+  margin-top: -3px;
+  float: none;
 }
 .pane-digital-maintenance-dm-expense .dm-expense-container {
   text-align: center;
