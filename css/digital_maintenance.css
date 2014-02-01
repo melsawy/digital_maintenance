@@ -1,4 +1,3 @@
-
 ul.dm-top-links {
   background-color: #1F1F1F;
   height: 77px;
@@ -100,21 +99,21 @@ span.dm-task-status-3 {
   top: -30px;
 }
 .pane-digital-maintenance-dm-expense .dm-expense-container {
-  background-color: #aaca41;
   text-align: center;
   width: 225px;
   text-transform: uppercase;
   color: #FFF;
+  padding-top: 56px;
 }
 .pane-digital-maintenance-dm-expense .dm-graph-container {
   float: right;
-  margin-right: 75px;
   display: table;
 }
 .pane-digital-maintenance-dm-expense .dm-graph-container div {
   display: table-cell;
 }
 ul.dm-expense-data {
+  background-color: #aaca41;
   margin: 0px;
 }
 ul.dm-expense-data li {
@@ -158,12 +157,12 @@ table.dm-oxy-tasks-budget thead tr {
 }
 
 table.dm-oxy-tasks-budget tr.dm-category-title td {
-  background-color: #D1D1D1;
+  background-color: #D1D1D1 !important;
 }
 
 table.dm-oxy-tasks-budget tr.dm-oxy-total-row td.dm-overalltotal,
 table.dm-oxy-tasks-budget tr td.dm-sum-task {
-  background-color: #a9cf22;
+  background-color: #a9cf22 !important;
   color: #FFF;
   text-align: center;
 }

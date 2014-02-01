@@ -454,9 +454,9 @@ function _dm_show_expense() {
   //AVG VALUE
   $avg = array_sum($cost)/$x_year;
   $items[] = '<div class="dm-expense-value">' . ceil($avg) . '</div><div class="dm-expense-text">'. t('Average annual expense') . '</div>';
-  $pdf_link = l(t('Generate PDF'), 'dm_pdf/budget/'. $syear);
+  //$pdf_link = l(t('Generate PDF'), 'dm_pdf/budget/'. $syear);
   $output = '';
-  $output .= '<div class="dm-generate-pdf">'. $pdf_link .'</div>';
+  //$output .= '<div class="dm-generate-pdf">'. $pdf_link .'</div>';
   $output .= '<div class="dm-graph-container">' . dm_draw_x_year_graph($cost, $syear, $eyear) .'</div>';
   $output .= '<div class="dm-expense-container">' .
     theme('item_list', array('items' => $items, 'title' => '', 'attributes' => array('class' => 'dm-expense-data'))) .'</div>';
@@ -530,7 +530,7 @@ function _dm_show_cost_overxyears($years = array()) {
     $row = array();
     $row[] = array('data' => $allowed_values[$key], 'colspan' => count($header) - 1);
     $row[] = array('data' => '', 'class' => array('dm-sum-task-empty'));
-    $rows[] = array('data' => $row, 'class' => array('dm-category-title'));
+    $rows[] = array('data' => $row, 'no_striping' => TRUE, 'class' => array('dm-category-title'));
     //add category tasks.
     foreach ($result as $data) {
       $row = array();
@@ -599,18 +599,16 @@ function dm_draw_x_year_graph($data, $syear, $eyear) {
       //'curveType' => "function",
       'forceIFrame' => FALSE,
       'title' => '',
-      'width' => 600,
+      'width' => 750,
       'height' => 355,
       'colors' => array('#87B200'),
     )
   );
   draw_chart($settings);
-  $prev = ctools_ajax_text_button(t('Prev'), 'dm_graph/nojs/prev/'. $syear, t('Show Graph"'));
-  $next = ctools_ajax_text_button(t('Next'), 'dm_graph/nojs/next/'. $eyear, t('Show Graph"'));
+  //$prev = ctools_ajax_text_button(t('Prev'), 'dm_graph/nojs/prev/'. $syear, t('Show Graph"'));
+  //$next = ctools_ajax_text_button(t('Next'), 'dm_graph/nojs/next/'. $eyear, t('Show Graph"'));
   return '
-    <div>'. $prev .'</div>
     <div id="area_chart"></div>
-    <div>'. $next .'</div>
     ';
 }
 
