@@ -240,14 +240,30 @@ function digital_maintenance_form_views_exposed_form_alter(&$form, &$form_state)
   //will alter views query to add this value to query
   //@see digital_maintenance_views_query_alter().
   if ($form['#id'] == 'views-exposed-form-tasks-annual-overview-page') {
-    $form['#prefix'] = '<div class="container-inline">';
-    $form['#suffix'] = '</div>';
-    $form['name']['#size'] = 5;
-    $form['to_year'] = array(
-      '#type' => 'textfield', 
-      '#title' => t('To'),
-      '#size' => 5,
+    //Get years options
+    $query = db_select('taxonomy_vocabulary', 'tv');
+    $query->join('taxonomy_term_data', 'td', 'tv.vid = td.vid');
+    $query->fields('td', array('name'));
+    $query->condition('tv.machine_name', 'dm_year_to_perform_task');
+    $query->orderBy('td.name');
+    $options = $query->execute()->fetchAllKeyed(0, 0);
+    $options = array('' => '- Select a value -') + $options;
+    $form['name'] = array(
+      '#type' => 'select',
+      '#options' => $options,
     );
+    $form['to_year'] = array(
+      '#type' => 'select', 
+      '#title' => t('To'),
+      '#options' => $options,
+    );
+    drupal_add_js('jQuery(function() {
+      jQuery(".form-item-to-year").insertAfter(".views-widget-filter-name");
+      jQuery(".views-widget-per-page").insertBefore(".views-widget-filter-name");
+      jQuery("#edit-items-per-page").change(function() {
+        jQuery("#views-exposed-form-tasks-annual-overview-page").submit();
+          });
+     });', 'inline');
   }
 }
 

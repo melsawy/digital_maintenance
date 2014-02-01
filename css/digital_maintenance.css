@@ -81,9 +81,28 @@ span.dm-task-status-3 {
 }
 .page-dm-annual-overview .view-filters {
   color: #595959;
+  float: right;
 }
-.page-dm-annual-overview .view-filters input {
+.page-dm-annual-overview .view-content {
+  clear: both;
+}
+.page-dm-annual-overview .views-exposed-widgets div {
+  display: inline-block;
+  float: none ;
+  margin-right: 3px;
+  padding: 0;
+}
+.page-dm-annual-overview .views-exposed-widgets label {
+  display: inline-block;
+  font-weight: normal;
+  padding-right: 5px;
+  vertical-align: middle;
+}
+.page-dm-annual-overview .view-filters select {
   color: #86B300;
+}
+.page-dm-annual-overview div.views-widget-per-page {
+  margin-right: 100px;
 }
 .page-dm-annual-overview #edit-submit-tasks-annual-overview {
   background: url("images/apply.png") no-repeat scroll 0 0 transparent;
@@ -92,11 +111,7 @@ span.dm-task-status-3 {
   border: 0px;
   width: 28px;
   height: 27px;
-  margin-top: -26px;
-}
-.page-dm-annual-overview .form-item-to-year {
-  position: relative;
-  top: -30px;
+  margin-top: -11px;
 }
 .pane-digital-maintenance-dm-expense .dm-expense-container {
   text-align: center;
