@@ -419,12 +419,12 @@ function _dm_show_expense() {
   //AVG VALUE
   $avg = array_sum($cost)/$x_year;
   $items[] = '<div class="dm-expense-value">' . ceil($avg) . '</div><div class="dm-expense-text">'. t('Average annual expense') . '</div>';
-  //$pdf_link = l(t('Generate PDF'), 'dm_pdf/budget/'. $syear);
+  $pdf_link = l(t('Generate PDF'), 'dm_pdf/budget/'. $syear);
   $output = '';
-  //$output .= '<div class="dm-generate-pdf">'. $pdf_link .'</div>';
   $output .= '<div class="dm-graph-container">' . dm_draw_x_year_graph($cost, $syear, $eyear) .'</div>';
   $output .= '<div class="dm-expense-container">' .
     theme('item_list', array('items' => $items, 'title' => '', 'attributes' => array('class' => 'dm-expense-data'))) .'</div>';
+  $output .= '<div class="dm-generate-pdf">'. $pdf_link .'</div>';
   return $output;
 }
 
