@@ -210,9 +210,9 @@ div.dm-generate-pdf {
   clear: both;
   margin-bottom: 10px;
 }
-.node-type-dm-task .field-name-field-dm-year-to-perform-task,
-.node-type-dm-task .field-name-field-dm-month-to-perform-task,
-.node-type-dm-task .field-name-field-dm-maintenance-interval {
+.node-type-dm-task .node-dm-task .field-name-field-dm-year-to-perform-task,
+.node-type-dm-task .node-dm-task .field-name-field-dm-month-to-perform-task,
+.node-type-dm-task .node-dm-task .field-name-field-dm-maintenance-interval {
   float: left;
   width: 50%;
 }
