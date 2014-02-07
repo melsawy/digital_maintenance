@@ -416,6 +416,7 @@ function dm_core_feature_field_default_field_bases() {
       'allowed_values' => array(
         0 => 'Paid',
         1 => 'Unpaid',
+        2 => 'Offer',
       ),
       'allowed_values_function' => '',
     ),
