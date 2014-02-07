@@ -6,8 +6,12 @@ div.ctools-sample-modal-content {
 	padding:0;
 	text-align:left;
 }
-div.ctools-sample-modal-content .form-item label.control-label {
-  width: auto !important;
+
+div.ctools-sample-modal-content #edit-body #edit-body-und-0-value {
+  width: 90%;
+}
+div.ctools-sample-modal-content #edit-field-dm-priority-und .control-label {
+  width: auto;
 }
 div.ctools-sample-modal-content .resizable-textarea {
   margin-left: 0px;
@@ -16,7 +20,7 @@ div.ctools-sample-modal-content .resizable-textarea {
 div.ctools-sample-modal-content .form-item label,
 div.ctools-sample-modal-content .form-item label.option {
   float: left;
-  width: 15em;
+  width: 14.3em;
   text-align:left;
 }
 div.ctools-sample-modal-content #edit-field-dm-priority .controls{
