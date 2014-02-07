@@ -79,9 +79,13 @@ span.dm-task-status-2 {
 span.dm-task-status-3 {
   background: green;
 }
+.page-dm-annual-overview .view-header {
+  float: right;
+  padding-bottom: 10px;
+}
 .page-dm-annual-overview .view-filters {
   color: #595959;
-  float: right;
+  clear: both;
 }
 .page-dm-annual-overview .view-content {
   clear: both;
@@ -108,8 +112,7 @@ span.dm-task-status-3 {
   width: auto;
 }
 .page-dm-annual-overview div.views-widget-per-page {
-  margin-right: 100px;
-  width: auto;
+  width: 45%;
 }
 .page-dm-annual-overview #edit-submit-tasks-annual-overview {
   background: url("images/apply.png") no-repeat scroll 0 0 transparent;
@@ -237,14 +240,16 @@ div.dm-generate-pdf {
 .dm-comments-wrapper {
   border-bottom: 2px solid #ebebeb;
 }
-.page-node-execution #dm-task-execution-node-form div.form-wrapper,
-.page-node-execution #dm-task-execution-node-form div.form-item {
+.page-node-execution #dm-task-execution-node-form div.form-item-title,
+.page-node-execution #dm-task-execution-node-form div#edit-field-dm-maintenance-cost,
+.page-node-execution #dm-task-execution-node-form div#edit-field-dm-payment-status,
+.page-node-execution #dm-task-execution-node-form div#edit-field-dm-date {
   display: inline-block;
   width: 270px;
   margin-right: 1em;
 }
-.page-node-execution #dm-task-execution-node-form div.form-type-textarea {
-  width: 550px;
+.page-node-execution #dm-task-execution-node-form div#edit-field-dm-payment-status select {
+  width: auto;
 }
 .page-node-execution #dm-task-execution-node-form .vertical-tabs {
   display: none;
