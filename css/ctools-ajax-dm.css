@@ -6,8 +6,8 @@ div.ctools-sample-modal-content {
 	padding:0;
 	text-align:left;
 }
-div.ctools-sample-modal-content #edit-field-dm-priority .controls label.control-labe {
-  width: auto;
+div.ctools-sample-modal-content .form-item label.control-label {
+  width: auto !important;
 }
 div.ctools-sample-modal-content .form-item label,
 div.ctools-sample-modal-content .form-item label.option {
