@@ -94,9 +94,11 @@ function _dm_show_task_tabs($node) {
 */
 function digital_maintenance_form_dm_task_node_form_alter(&$form, &$form_state, $form_id) {
   //Hide type/title fields and set their values via hook_node_presave().
-  //@see digital_maintenance_node_presave().
   $form['field_dm_execution']['#access'] = FALSE;
-  $form['field_dm_attachments']['#access'] = FALSE;
+  if ($form['nid']['#value']) {
+    //show attached files on create task
+    $form['field_dm_attachments']['#access'] = FALSE;
+  }
   //$form['title']['#required'] = FALSE;
   //$form['title']['#access'] = FALSE;
   //Set allowed values for year to perform task +10 from current year.
