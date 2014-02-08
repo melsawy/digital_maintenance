@@ -58,8 +58,7 @@ function dm_core_feature_field_group_info() {
       2 => 'field_dm_materiale',
       3 => 'field_dm_udf_relse',
       4 => 'field_dm_expected_lifetime',
-      5 => 'field_dm_sub_category_prefix',
-      6 => 'field_dm_scaffolding_needed',
+      5 => 'field_dm_scaffolding_needed',
     ),
     'format_type' => 'fieldset',
     'format_settings' => array(

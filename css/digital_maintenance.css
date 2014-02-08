@@ -257,6 +257,9 @@ div.dm-generate-pdf {
 .page-node-execution .view-dm-execution tr.even {
   background-color: #f7f7f7;
 }
+.page-node-execution .view-dm-execution .table-striped tbody > tr:nth-child(2n+1) > td {
+  background-color: none;
+}
 .page-node-execution .view-dm-execution td.dm-Unpaid {
   background: url("images/unpaid.png") no-repeat scroll 15px 8px transparent;
   text-indent: -10000em;

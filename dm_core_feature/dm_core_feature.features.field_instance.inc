@@ -69,7 +69,7 @@ function dm_core_feature_field_default_field_instances() {
         'label' => 'hidden',
         'module' => 'file',
         'settings' => array(),
-        'type' => 'file_default',
+        'type' => 'file_table',
         'weight' => 8,
       ),
       'teaser' => array(
