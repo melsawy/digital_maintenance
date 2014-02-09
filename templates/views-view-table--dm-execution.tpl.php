@@ -44,7 +44,7 @@
         <?php endforeach; ?>
       </tr>
       <tr <?php if ($row_classes[$row_count]) { print 'class="' . implode(' ', $row_classes[$row_count]) .'"';  } ?>>
-       <td colspan="4" class="dm-execution-desc"><?php print $desc; ?></td>
+       <td colspan="<?php print count($rows); ?>" class="dm-execution-desc"><?php print $desc; ?></td>
       </tr>
     <?php endforeach; ?>
   </tbody>
