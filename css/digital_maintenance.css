@@ -258,7 +258,7 @@ div.dm-generate-pdf {
   background-color: #f7f7f7;
 }
 .page-node-execution .view-dm-execution tr.odd td {
-  background-color: white !important;
+  background-color: white;
 }
 .page-node-execution .view-dm-execution td.dm-Unpaid {
   background: url("images/unpaid.png") no-repeat scroll 15px 8px transparent;

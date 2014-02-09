@@ -76,12 +76,60 @@ function dm_core_feature_views_default_views() {
       'empty_column' => 1,
     ),
   );
+  /* Header: Global: Text area */
+  $handler->display->display_options['header']['area']['id'] = 'area';
+  $handler->display->display_options['header']['area']['table'] = 'views';
+  $handler->display->display_options['header']['area']['field'] = 'area';
+  $handler->display->display_options['header']['area']['label'] = 'Ctools modal includes';
+  $handler->display->display_options['header']['area']['content'] = '<?php
+ ctools_include(\'ajax\');
+  ctools_include(\'modal\');
+  ctools_modal_add_js();
+  $sample_style = array(
+    \'ctools-dm-style\' => array(
+      \'modalSize\' => array(
+        \'contentRight\' => 25,
+        \'contentBottom\' => 45,
+        \'type\' => \'fixed\',
+        \'width\' => 500,
+        \'height\' => 500,
+        \'addWidth\' => 20,
+        \'addHeight\' => 0,
+      ),
+      \'modalOptions\' => array(
+        \'opacity\' => .5,
+        \'background-color\' => \'#000\',
+      ),
+      \'animation\' => \'fadeIn\',
+      \'modalTheme\' => \'CToolsSampleModal\',
+      \'throbber\' => theme(\'image\', array(\'path\' => ctools_image_path(\'ajax-loader.gif\', \'digital_maintenance\'), \'alt\' => t(\'Loading...\'), \'title\' => t(\'Loading\'))),
+    ),
+  );  
+        
+  drupal_add_js($sample_style, \'setting\');
+  ctools_add_js(\'ctools-ajax-dm\', \'digital_maintenance\');
+  ctools_add_css(\'ctools-ajax-dm\', \'digital_maintenance\');
+?>';
+  $handler->display->display_options['header']['area']['format'] = 'php_code';
   /* Relationship: Entity Reference: Referenced Entity */
   $handler->display->display_options['relationships']['field_dm_execution_target_id']['id'] = 'field_dm_execution_target_id';
   $handler->display->display_options['relationships']['field_dm_execution_target_id']['table'] = 'field_data_field_dm_execution';
   $handler->display->display_options['relationships']['field_dm_execution_target_id']['field'] = 'field_dm_execution_target_id';
   $handler->display->display_options['relationships']['field_dm_execution_target_id']['label'] = 'field_dm_execution';
   $handler->display->display_options['relationships']['field_dm_execution_target_id']['required'] = TRUE;
+  /* Field: Content: Nid */
+  $handler->display->display_options['fields']['nid']['id'] = 'nid';
+  $handler->display->display_options['fields']['nid']['table'] = 'node';
+  $handler->display->display_options['fields']['nid']['field'] = 'nid';
+  $handler->display->display_options['fields']['nid']['relationship'] = 'field_dm_execution_target_id';
+  $handler->display->display_options['fields']['nid']['label'] = '';
+  $handler->display->display_options['fields']['nid']['alter']['alter_text'] = TRUE;
+  $handler->display->display_options['fields']['nid']['alter']['text'] = 'Edit';
+  $handler->display->display_options['fields']['nid']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['nid']['alter']['path'] = 'edit_node/nojs/[nid]';
+  $handler->display->display_options['fields']['nid']['alter']['alt'] = 'Edit';
+  $handler->display->display_options['fields']['nid']['alter']['link_class'] = 'ctools-use-modal ctools-modal-ctools-dm-style';
+  $handler->display->display_options['fields']['nid']['element_label_colon'] = FALSE;
   /* Field: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
@@ -165,7 +213,38 @@ function dm_core_feature_views_default_views() {
     t('Sort by'),
     t('Asc'),
     t('Desc'),
+    t('Ctools modal includes'),
+    t('<?php
+ ctools_include(\'ajax\');
+  ctools_include(\'modal\');
+  ctools_modal_add_js();
+  $sample_style = array(
+    \'ctools-dm-style\' => array(
+      \'modalSize\' => array(
+        \'contentRight\' => 25,
+        \'contentBottom\' => 45,
+        \'type\' => \'fixed\',
+        \'width\' => 500,
+        \'height\' => 500,
+        \'addWidth\' => 20,
+        \'addHeight\' => 0,
+      ),
+      \'modalOptions\' => array(
+        \'opacity\' => .5,
+        \'background-color\' => \'#000\',
+      ),
+      \'animation\' => \'fadeIn\',
+      \'modalTheme\' => \'CToolsSampleModal\',
+      \'throbber\' => theme(\'image\', array(\'path\' => ctools_image_path(\'ajax-loader.gif\', \'digital_maintenance\'), \'alt\' => t(\'Loading...\'), \'title\' => t(\'Loading\'))),
+    ),
+  );  
+        
+  drupal_add_js($sample_style, \'setting\');
+  ctools_add_js(\'ctools-ajax-dm\', \'digital_maintenance\');
+  ctools_add_css(\'ctools-ajax-dm\', \'digital_maintenance\');
+?>'),
     t('field_dm_execution'),
+    t('Edit'),
     t('Actor'),
     t('Date'),
     t('Price'),

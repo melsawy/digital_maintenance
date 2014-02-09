@@ -262,6 +262,30 @@ function upload_image($form, $form_state) {
   return $output;
 }
 
+function ctools_ajax_modal_edit($ajax, $node) {
+  global $user;
+  if (!$ajax) return "Javascript required";
+  ctools_include('node.pages', 'node', '');
+  ctools_include('modal');
+  ctools_include('ajax');
+  $form_state = array(
+    'title' => t('Edit Execution'),
+    'ajax' => TRUE,
+  );
+  $form_state['build_info']['args'] = array($node);
+  // change this to your type node form
+  $output = ctools_modal_form_wrapper($node->type . '_node_form', $form_state);
+  // This means the form has been exectued
+  if (!empty($form_state['executed'])) {
+    $output = array();
+    // Close the modal and reload page
+    $output[] = ctools_modal_command_dismiss();
+    $output[] = ctools_ajax_command_reload();
+  }
+  print ajax_render($output);
+  exit;
+}
+
 function _dm_task_execution($node) {
   module_load_include('inc', 'node', 'node.pages');
   $form = node_add('dm_task_execution'); 
