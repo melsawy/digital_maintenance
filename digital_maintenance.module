@@ -88,6 +88,13 @@ function digital_maintenance_menu() {
     'page arguments' => array(1, 2),
     'file' => 'digital_maintenance.pages.inc',
   );
+  $items['dm_task/update_status'] = array(
+    'title' => t('Update task status'),
+    'page callback' => '_dm_update_task_status',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'digital_maintenance.pages.inc',
+  ); 
   return $items;
 }
 
@@ -722,3 +729,14 @@ function _dm_priority_html($p) {
   return implode('', $output);
 }
 
+function _dm_task_status($node) {
+  $form['dm_task_status'] = array(
+    '#type' => 'select',
+    '#title' => t('Task status'),
+    '#options' => array(1 => t('Not started'), 2 => t('In progress'), 3 => t('Finished')),
+    '#value' => $node->field_dm_task_status[LANGUAGE_NONE][0]['value'],
+    '#prefix' => '<div class="container-inline dm-task-progress" data-nid="'. $node->nid .'">',
+    '#suffix' => '</div>',
+  );
+  return drupal_render($form);
+}

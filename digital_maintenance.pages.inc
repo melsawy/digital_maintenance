@@ -204,7 +204,9 @@ function _dm_generate_pdf_annual_overview() {
 
 function _dm_task_posts($node) {
   ctools_include('ajax');
-  $output = '<div class="dm-post-comment">' . 
+  $output = '';
+  $output .= _dm_task_status($node);
+  $output .= '<div class="dm-post-comment">' . 
     ctools_ajax_text_button(t('Add new comment'), 'dm_post/nojs/'. $node->nid .'/comment', t('Add new comment')) .'</div>';
   //$comments = drupal_render(comment_node_page_additions($node));
   $comments = '<div class="dm-comments-wrapper"><h4>'. t('Comments :') . '</h4>'. 
@@ -288,8 +290,10 @@ function ctools_ajax_modal_edit($ajax, $node) {
 
 function _dm_task_execution($node) {
   module_load_include('inc', 'node', 'node.pages');
-  $form = node_add('dm_task_execution'); 
-  $output = '<div class="dm-execution-list-wrapper">'. views_embed_view('dm_execution', 'default', $node->nid) .'</div>';
+  $form = node_add('dm_task_execution');
+  $output = '';
+  $output .= _dm_task_status($node);
+  $output .= '<div class="dm-execution-list-wrapper">'. views_embed_view('dm_execution', 'default', $node->nid) .'</div>';
   $output .= drupal_render($form);
   return $output;
 }
@@ -321,4 +325,13 @@ function ctools_ajax_dm_post($ajax, $node, $type) {
   else {
     return NULL;
   }
+}
+
+function _dm_update_task_status() {
+  $nid = $_POST['nid'];
+  $status = $_POST['status'];
+  $node = node_load($nid);
+  $node->field_dm_task_status[LANGUAGE_NONE][0]['value'] = $status;
+  node_save($node);
+  drupal_json_output('SUCCESS');
 }

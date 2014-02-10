@@ -65,6 +65,21 @@ jQuery(function() {
     jQuery(location).attr('href',url);
   });
 
+  //Change task status
+  jQuery('.dm-task-progress .form-select').change(function() {
+    var task_status = jQuery(this).val();
+    var task_nid = jQuery('.dm-task-progress').attr('data-nid');
+    jQuery.ajax({
+      type: "POST",
+      dataType: 'json',
+      data: {'nid' : task_nid, 'status' : task_status},
+      url: "/dm_task/update_status",
+      success: function (data) {
+        alert('Updated task status.');
+      },
+    });
+  });
+
 });
 
 function _sm_tasks_row() {
