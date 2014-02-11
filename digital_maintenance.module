@@ -729,14 +729,58 @@ function _dm_priority_html($p) {
   return implode('', $output);
 }
 
-function _dm_task_status($node) {
+function dm_update_task_status_form($form, &$form_state, $node) {
+  $form['task_nid'] = array(
+    '#value' => $node->nid,
+    '#type' => 'hidden',
+  );
   $form['dm_task_status'] = array(
     '#type' => 'select',
     '#title' => t('Task status'),
     '#options' => array(1 => t('Not started'), 2 => t('In progress'), 3 => t('Finished')),
     '#value' => $node->field_dm_task_status[LANGUAGE_NONE][0]['value'],
-    '#prefix' => '<div class="container-inline dm-task-progress" data-nid="'. $node->nid .'">',
+    '#prefix' => '<div class="dm-task-progress" data-nid="'. $node->nid .'">',
     '#suffix' => '</div>',
   );
-  return drupal_render($form);
+  $form['dm_task_comment'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Task comment'),
+    '#attributes' => array('placeholder' => t('You should add a comment before change task to complete status.')),
+    '#prefix' => '<div class="dm-task-comment hidden" data-nid="'. $node->nid .'">',
+    '#suffix' => '</div>',
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+  );
+  return $form;
 }
+
+function dm_update_task_status_form_validate($form, &$form_state) {
+  // Validation logic.
+}
+
+function dm_update_task_status_form_submit($form, &$form_state) {
+  $nid = $form_state['values']['task_nid'];
+  $status = 3;//$form_state['values']['dm_task_status'];
+  $node = node_load($nid);
+  $node->field_dm_task_status[LANGUAGE_NONE][0]['value'] = $status;
+  node_save($node);
+  //add a comment.
+  global $user;
+  $comment = new stdClass();
+  $comment->nid = $nid; 
+  $comment->cid = 0; 
+  $comment->pid = 0; 
+  $comment->uid = $user->uid;
+  $comment->mail = $user->mail;
+  $comment->name = $user->name; 
+  $comment->is_anonymous = 0;
+  $comment->status = COMMENT_PUBLISHED;
+  $comment->language = LANGUAGE_NONE;
+  $comment->subject = 'Comment subject'; 
+  $comment->comment_body[$comment->language][0]['value'] = $form_state['values']['dm_task_comment']; 
+  comment_submit($comment); // saving a comment
+  comment_save($comment);
+}
+

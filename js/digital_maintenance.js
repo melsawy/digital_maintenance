@@ -68,16 +68,24 @@ jQuery(function() {
   //Change task status
   jQuery('.dm-task-progress .form-select').change(function() {
     var task_status = jQuery(this).val();
+    if (task_status == 3) {
+      jQuery('.dm-task-comment').removeClass('hidden');
+    }
+    else {
+      jQuery('.dm-task-comment').addClass('hidden');
+    }
+    /*
     var task_nid = jQuery('.dm-task-progress').attr('data-nid');
     jQuery.ajax({
       type: "POST",
       dataType: 'json',
       data: {'nid' : task_nid, 'status' : task_status},
-      url: "/dm_task/update_status",
+      url: "/boligweb/dm_task/update_status",
       success: function (data) {
         alert('Updated task status.');
       },
     });
+    */
   });
 
 });
