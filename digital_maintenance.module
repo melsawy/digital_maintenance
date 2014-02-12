@@ -730,15 +730,20 @@ function _dm_priority_html($p) {
 }
 
 function dm_update_task_status_form($form, &$form_state, $node) {
+  $default_value = $node->field_dm_task_status[LANGUAGE_NONE][0]['value'];
   $form['task_nid'] = array(
     '#value' => $node->nid,
+    '#type' => 'hidden',
+  );
+  $form['task_old_status'] = array(
+    '#value' => $default_value,
     '#type' => 'hidden',
   );
   $form['dm_task_status'] = array(
     '#type' => 'select',
     '#title' => t('Task status'),
     '#options' => array(1 => t('Not started'), 2 => t('In progress'), 3 => t('Finished')),
-    '#value' => $node->field_dm_task_status[LANGUAGE_NONE][0]['value'],
+    '#default_value' => $default_value,
     '#prefix' => '<div class="dm-task-progress">',
     '#suffix' => '</div>',
   );
@@ -757,12 +762,18 @@ function dm_update_task_status_form($form, &$form_state, $node) {
 }
 
 function dm_update_task_status_form_validate($form, &$form_state) {
-  // Validation logic.
+  $values  = $form_state['values'];
+  if ($values['dm_task_status'] == $values['task_old_status']) {
+    form_set_error('dm_task_status', t('You should change task status to new one.'));
+  }
+  elseif ($values['dm_task_status'] == 3 && empty($values['dm_task_comment'])) {
+    form_set_error('dm_task_comment', t('You should add comment before change task to FINISHED state.'));
+  }
 }
 
 function dm_update_task_status_form_submit($form, &$form_state) {
   $nid = $form_state['values']['task_nid'];
-  $status = 3;//$form_state['values']['dm_task_status'];
+  $status = $form_state['values']['dm_task_status'];
   $node = node_load($nid);
   $node->field_dm_task_status[LANGUAGE_NONE][0]['value'] = $status;
   node_save($node);
@@ -778,7 +789,7 @@ function dm_update_task_status_form_submit($form, &$form_state) {
   $comment->is_anonymous = 0;
   $comment->status = COMMENT_PUBLISHED;
   $comment->language = LANGUAGE_NONE;
-  $comment->subject = 'Comment subject'; 
+  //$comment->subject = 'Comment subject'; 
   $comment->comment_body[$comment->language][0]['value'] = $form_state['values']['dm_task_comment']; 
   comment_submit($comment); // saving a comment
   comment_save($comment);
