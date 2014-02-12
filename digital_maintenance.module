@@ -739,14 +739,14 @@ function dm_update_task_status_form($form, &$form_state, $node) {
     '#title' => t('Task status'),
     '#options' => array(1 => t('Not started'), 2 => t('In progress'), 3 => t('Finished')),
     '#value' => $node->field_dm_task_status[LANGUAGE_NONE][0]['value'],
-    '#prefix' => '<div class="dm-task-progress" data-nid="'. $node->nid .'">',
+    '#prefix' => '<div class="dm-task-progress">',
     '#suffix' => '</div>',
   );
   $form['dm_task_comment'] = array(
     '#type' => 'textarea',
-    '#title' => t('Task comment'),
+    '#cols' => 30,
     '#attributes' => array('placeholder' => t('You should add a comment before change task to complete status.')),
-    '#prefix' => '<div class="dm-task-comment hidden" data-nid="'. $node->nid .'">',
+    '#prefix' => '<div class="dm-task-comment">',
     '#suffix' => '</div>',
   );
   $form['submit'] = array(

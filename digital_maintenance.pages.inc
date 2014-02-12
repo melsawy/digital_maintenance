@@ -292,7 +292,7 @@ function _dm_task_execution($node) {
   module_load_include('inc', 'node', 'node.pages');
   $form = node_add('dm_task_execution');
   $output = '';
-  $output .= drupal_render(drupal_get_form('dm_update_task_status_form', $node));
+  $output .= '<div class="dm-task-inprogress-update">'. drupal_render(drupal_get_form('dm_update_task_status_form', $node)) .'</div>';
   $output .= '<div class="dm-execution-list-wrapper">'. views_embed_view('dm_execution', 'default', $node->nid) .'</div>';
   $output .= drupal_render($form);
   return $output;

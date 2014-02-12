@@ -268,3 +268,9 @@ div.dm-generate-pdf {
   background: url("images/paid.png") no-repeat scroll 15px 8px transparent;
   text-indent: -10000em;
 }
+.dm-task-inprogress-update div {
+  display: inline-block;
+  margin-right: 4px;
+  vertical-align: middle;
+  width: auto;
+}

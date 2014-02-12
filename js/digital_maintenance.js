@@ -66,6 +66,7 @@ jQuery(function() {
   });
 
   //Change task status
+    /*
   jQuery('.dm-task-progress .form-select').change(function() {
     var task_status = jQuery(this).val();
     if (task_status == 3) {
@@ -74,7 +75,6 @@ jQuery(function() {
     else {
       jQuery('.dm-task-comment').addClass('hidden');
     }
-    /*
     var task_nid = jQuery('.dm-task-progress').attr('data-nid');
     jQuery.ajax({
       type: "POST",
@@ -85,8 +85,8 @@ jQuery(function() {
         alert('Updated task status.');
       },
     });
-    */
   });
+    */
 
 });
 
