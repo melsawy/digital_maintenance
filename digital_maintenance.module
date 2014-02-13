@@ -338,6 +338,11 @@ function digital_maintenance_node_validate($node, $form, &$form_state) {
 function digital_maintenance_block_info() {
   $blocks['dm_top_menu_links'] = array(
     'info' => t('Show Digital Maintenance Links'),
+    'status' => 1,
+    'region' => 'header',
+    'weight' => 100,
+    'visibility' => BLOCK_VISIBILITY_PHP,
+    'pages' => '<?php return _dm_top_menu_links_block_visibility(); ?>',
   );
   $blocks['dm_expense'] = array(
     'info' => t('Show Expense'),
@@ -797,26 +802,46 @@ function dm_update_task_status_form_validate($form, &$form_state) {
 }
 
 function dm_update_task_status_form_submit($form, &$form_state) {
+  //change task status.
   $nid = $form_state['values']['task_nid'];
   $status = $form_state['values']['dm_task_status'];
   $node = node_load($nid);
   $node->field_dm_task_status[LANGUAGE_NONE][0]['value'] = $status;
   node_save($node);
-  //add a comment.
-  global $user;
-  $comment = new stdClass();
-  $comment->nid = $nid; 
-  $comment->cid = 0; 
-  $comment->pid = 0; 
-  $comment->uid = $user->uid;
-  $comment->mail = $user->mail;
-  $comment->name = $user->name; 
-  $comment->is_anonymous = 0;
-  $comment->status = COMMENT_PUBLISHED;
-  $comment->language = LANGUAGE_NONE;
-  $comment->subject = ''; 
-  $comment->comment_body[$comment->language][0]['value'] = $form_state['values']['dm_task_comment']; 
-  comment_submit($comment); // saving a comment
-  comment_save($comment);
+  //add a comment if exist.
+  if (isset($form_state['values']['dm_task_comment'])) {
+    global $user;
+    $comment = new stdClass();
+    $comment->nid = $nid; 
+    $comment->cid = 0; 
+    $comment->pid = 0; 
+    $comment->uid = $user->uid;
+    $comment->mail = $user->mail;
+    $comment->name = $user->name; 
+    $comment->is_anonymous = 0;
+    $comment->status = COMMENT_PUBLISHED;
+    $comment->language = LANGUAGE_NONE;
+    $comment->subject = ''; 
+    $comment->comment_body[$comment->language][0]['value'] = $form_state['values']['dm_task_comment']; 
+    comment_submit($comment);
+    comment_save($comment);
+  }
+}
+
+/**
+ * Handle dm_top_menu_links visibility view
+ * show display on task list page and tasks node.
+ */
+function _dm_top_menu_links_block_visibility() {
+  if (arg(0) == 'dm-annual-overview') {
+    return TRUE;
+  }
+  if (arg(0) == 'node' && is_numeric(arg(1))) {
+    $node = node_load(arg(1));
+    if ($node->type == 'dm_task') {
+      return TRUE;
+    }
+  }
+  return FALSE;
 }
 
