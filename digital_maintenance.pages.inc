@@ -264,19 +264,26 @@ function upload_image($form, $form_state) {
   return $output;
 }
 
-function ctools_ajax_modal_edit($ajax, $node) {
+function ctools_ajax_modal_edit($ajax, $entity, $type) {
   global $user;
   if (!$ajax) return "Javascript required";
   ctools_include('node.pages', 'node', '');
   ctools_include('modal');
   ctools_include('ajax');
+  $title = ($type == 'node') ? t('Edit @title', array('@title' => $entity->title )) : t('Edit post');
   $form_state = array(
-    'title' => t('Edit @title', array('@title' => $node->title)),
+    'title' => $title,
     'ajax' => TRUE,
   );
-  $form_state['build_info']['args'] = array($node);
+  $form_state['build_info']['args'] = array($entity);
   // change this to your type node form
-  $output = ctools_modal_form_wrapper($node->type . '_node_form', $form_state);
+  if ($type == 'node') {
+    $output = ctools_modal_form_wrapper($entity->type . '_node_form', $form_state);
+  }
+  else {
+    $node = node_load($entity->nid);
+    $output = ctools_modal_form_wrapper("comment_node_{$node->type}_form", $form_state);
+  }
   // This means the form has been exectued
   if (!empty($form_state['executed'])) {
     $output = array();
