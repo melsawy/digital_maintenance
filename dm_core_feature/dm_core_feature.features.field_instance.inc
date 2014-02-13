@@ -431,7 +431,7 @@ function dm_core_feature_field_default_field_instances() {
     'entity_type' => 'node',
     'field_name' => 'field_dm_month_to_perform_task',
     'label' => 'Month',
-    'required' => 1,
+    'required' => 0,
     'settings' => array(
       'user_register_form' => FALSE,
     ),
