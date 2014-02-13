@@ -205,7 +205,7 @@ function _dm_generate_pdf_annual_overview() {
 function _dm_task_posts($node) {
   ctools_include('ajax');
   $output = '';
-  //$output .= _dm_task_status($node);
+  $output .= '<div class="dm-task-inprogress-update">'. drupal_render(drupal_get_form('dm_update_task_status_form', $node)) .'</div>';
   $output .= '<div class="dm-post-comment">' . 
     ctools_ajax_text_button(t('Add new comment'), 'dm_post/nojs/'. $node->nid .'/comment', t('Add new comment')) .'</div>';
   //$comments = drupal_render(comment_node_page_additions($node));
