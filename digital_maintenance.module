@@ -737,6 +737,7 @@ function _dm_priority_html($p) {
 function _dm_render_update_task_form() {
   $output = '<div class="dm-task-inprogress-update">'. drupal_render(drupal_get_form('dm_update_task_status_form', $node)) .'</div>';
   $output .= '<div class="dm-task-clear"></div>';
+  return $output;
 }
 
 function dm_update_task_status_form($form, &$form_state, $node) {
