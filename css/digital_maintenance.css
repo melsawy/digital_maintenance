@@ -87,6 +87,8 @@ span.dm-task-status-3 {
   color: #595959;
   clear: both;
 }
+.dm-execution-list-wrapper,
+.dm-post-comment,
 .page-dm-annual-overview .view-content {
   clear: both;
 }
@@ -271,6 +273,12 @@ div.dm-generate-pdf {
 .dm-task-inprogress-update div {
   display: inline-block;
   margin-right: 4px;
-  vertical-align: middle;
+  float: left;
+  width: auto;
+}
+.dm-task-inprogress-update #dm-update-task-status-form .controls {
+  margin-left: 5px;
+}
+.dm-task-inprogress-update #dm-update-task-status-form .control-label {
   width: auto;
 }
