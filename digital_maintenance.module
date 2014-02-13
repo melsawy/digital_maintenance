@@ -705,10 +705,12 @@ function _dm_get_maintenance_cost($year = 'ALL') {
 function digital_maintenance_node_view($node, $view_mode, $langcode) {
   if ($node->type == 'dm_task') {
     //add task inprogress form
-    $node->content['task_inprogress'] = array(
-      '#markup' => _dm_render_update_task_form(),
-      '#weight' => -100,
-    );
+    if ($view_mode == 'full') {
+      $node->content['task_inprogress'] = array(
+        '#markup' => _dm_render_update_task_form($node),
+        '#weight' => -100,
+      );
+    }
     //hide comments and links
     unset($node->content['field_tags']);
     unset($node->content['links']);
@@ -734,7 +736,7 @@ function _dm_priority_html($p) {
   return implode('', $output);
 }
 
-function _dm_render_update_task_form() {
+function _dm_render_update_task_form($node) {
   $output = '<div class="dm-task-inprogress-update">'. drupal_render(drupal_get_form('dm_update_task_status_form', $node)) .'</div>';
   $output .= '<div class="dm-task-clear"></div>';
   return $output;
