@@ -97,10 +97,12 @@ function digital_maintenance_menu() {
     'page arguments' => array(1, 2, 3),
     'file' => 'digital_maintenance.pages.inc',
   );
-  $items['dm_task/update_status'] = array(
+  $items['dm_update_status/%ctools_js/%node/%'] = array(
     'title' => t('Update task status'),
     'page callback' => '_dm_update_task_status',
-    'access callback' => TRUE,
+    'page arguments' => array(1, 2, 3),
+    'access callback' => 'node_access',
+    'access arguments' => array('update', 2),
     'type' => MENU_CALLBACK,
     'file' => 'digital_maintenance.pages.inc',
   ); 
@@ -754,12 +756,24 @@ function _dm_priority_html($p) {
 }
 
 function _dm_render_update_task_form($node) {
-  $output = '<div class="dm-task-inprogress-update">'. drupal_render(drupal_get_form('dm_update_task_status_form', $node)) .'</div>';
-  $output .= '<div class="dm-task-clear"></div>';
+  $default_value = $node->field_dm_task_status[LANGUAGE_NONE][0]['value'];
+  $form['dm_task_status'] = array(
+    '#type' => 'select',
+    '#title' => t('Task status'),
+    '#options' => array(1 => t('Not started'), 2 => t('In progress'), 3 => t('Finished')),
+    '#value' => $default_value,
+    '#prefix' => '<div class="dm-task-progress container-inline">',
+    '#suffix' => '</div>',
+  );
+
+  $update_link = l(t('update task'), "dm_update_status/nojs/{$node->nid}/$default_value", array('attributes' => array('class' => array('ctools-use-modal ctools-modal-ctools-dm-style'))));
+  $output = '<div class="dm-task-inprogress-update">'. $update_link . drupal_render($form) .'</div>';
   return $output;
 }
 
-function dm_update_task_status_form($form, &$form_state, $node) {
+function dm_update_task_status_form($form, &$form_state) {
+  $node = $form_state['task_node'];
+  $new_status = $form_state['task_new_status'];
   $default_value = $node->field_dm_task_status[LANGUAGE_NONE][0]['value'];
   $form['task_nid'] = array(
     '#value' => $node->nid,
@@ -773,14 +787,15 @@ function dm_update_task_status_form($form, &$form_state, $node) {
     '#type' => 'select',
     '#title' => t('Task status'),
     '#options' => array(1 => t('Not started'), 2 => t('In progress'), 3 => t('Finished')),
-    '#default_value' => $default_value,
+    '#default_value' => $new_status,
     '#prefix' => '<div class="dm-task-progress">',
     '#suffix' => '</div>',
   );
   $form['dm_task_comment'] = array(
     '#type' => 'textarea',
+    '#title' => t('Comment'),
     '#cols' => 30,
-    '#attributes' => array('placeholder' => t('You should add a comment before change task to complete status.')),
+    '#attributes' => array('placeholder' => t('type your comment.')),
     '#prefix' => '<div class="dm-task-comment">',
     '#suffix' => '</div>',
   );
@@ -795,9 +810,6 @@ function dm_update_task_status_form_validate($form, &$form_state) {
   $values  = $form_state['values'];
   if ($values['dm_task_status'] == $values['task_old_status']) {
     form_set_error('dm_task_status', t('You should change task status to new one.'));
-  }
-  elseif ($values['dm_task_status'] == 3 && empty($values['dm_task_comment'])) {
-    form_set_error('dm_task_comment', t('You should add comment before change task to FINISHED state.'));
   }
 }
 

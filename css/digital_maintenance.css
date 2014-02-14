@@ -271,15 +271,6 @@ div.dm-generate-pdf {
   background: url("images/paid.png") no-repeat scroll 15px 8px transparent;
   text-indent: -10000em;
 }
-.dm-task-inprogress-update div {
-  display: inline-block;
-  margin-right: 4px;
-  float: left;
-  width: auto;
-}
-.dm-task-inprogress-update #dm-update-task-status-form .controls {
-  margin-left: 5px;
-}
-.dm-task-inprogress-update #dm-update-task-status-form .control-label {
-  width: auto;
+.dm-task-inprogress-update a {
+  display: none;
 }

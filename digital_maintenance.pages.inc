@@ -334,11 +334,32 @@ function ctools_ajax_dm_post($ajax, $node, $type) {
   }
 }
 
-function _dm_update_task_status() {
-  $nid = $_POST['nid'];
-  $status = $_POST['status'];
-  $node = node_load($nid);
-  $node->field_dm_task_status[LANGUAGE_NONE][0]['value'] = $status;
-  node_save($node);
-  drupal_json_output('SUCCESS');
+/**
+ *
+ */
+function _dm_update_task_status($ajax, $node, $status) {
+  if ($ajax) {
+    ctools_include('modal');
+    ctools_include('ajax');
+    $form_state = array(
+      'title' => t('Update status'),
+      'ajax' => TRUE,
+    );
+    $form_state['task_node'] = $node;
+    $form_state['task_new_status'] = $status;
+    $output = ctools_modal_form_wrapper('dm_update_task_status_form', $form_state);
+    // This means the form has been exectued
+    if (!empty($form_state['executed'])) {
+      $output = array();
+      // Close the modal and reload page
+      $output[] = ctools_modal_command_dismiss();
+      $output[] = ctools_ajax_command_reload();
+    }
+    print ajax_render($output);
+    exit;
+
+  }
+  else {
+    return NULL;
+  }
 }
