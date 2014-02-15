@@ -254,6 +254,7 @@ div.dm-generate-pdf {
 .page-node-execution #dm-task-execution-node-form div#edit-field-dm-payment-status select {
   width: auto;
 }
+.dm-task-inprogress-update a,
 .page-node-execution #dm-task-execution-node-form .vertical-tabs {
   display: none;
 }
@@ -270,7 +271,4 @@ div.dm-generate-pdf {
 .page-node-execution .view-dm-execution td.dm-Paid {
   background: url("images/paid.png") no-repeat scroll 15px 8px transparent;
   text-indent: -10000em;
-}
-.dm-task-inprogress-update a {
-  display: none;
 }
