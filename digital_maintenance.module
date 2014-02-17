@@ -763,6 +763,9 @@ function _dm_render_update_task_form($node) {
     '#options' => array(1 => t('Not started'), 2 => t('In progress'), 3 => t('Finished')),
     '#value' => $default_value,
     '#prefix' => '<div class="dm-task-progress container-inline">',
+  );
+  $form['dm_tasklist'] = array(
+    '#markup' => l(t('Back to tasklist'), 'dm-annual-overview'),
     '#suffix' => '</div>',
   );
   // Create our own javascript that will be used to theme a modal.
@@ -787,7 +790,7 @@ function _dm_render_update_task_form($node) {
     ),
   );
   drupal_add_js($sample_style, 'setting');
-  $update_link = l(t('update task'), "dm_update_status/nojs/{$node->nid}/$default_value", array('attributes' => array('class' => array('ctools-use-modal ctools-modal-ctools-dm-style-small'))));
+  $update_link = l(t('update task'), "dm_update_status/nojs/{$node->nid}/$default_value", array('attributes' => array('class' => array('dm-update-status ctools-use-modal ctools-modal-ctools-dm-style-small'))));
   $output = '<div class="dm-task-inprogress-update">'. $update_link . drupal_render($form) .'</div>';
   return $output;
 }

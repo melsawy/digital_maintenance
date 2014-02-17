@@ -254,7 +254,7 @@ div.dm-generate-pdf {
 .page-node-execution #dm-task-execution-node-form div#edit-field-dm-payment-status select {
   width: auto;
 }
-.dm-task-inprogress-update a,
+.dm-task-inprogress-update a.dm-update-status,
 .page-node-execution #dm-task-execution-node-form .vertical-tabs {
   display: none;
 }

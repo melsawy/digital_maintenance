@@ -67,7 +67,7 @@ jQuery(function() {
 
   //Change task status
   jQuery('.dm-task-progress .form-select').change(function() {
-    jQuery('.dm-task-inprogress-update a').trigger('click');
+    jQuery('.dm-task-inprogress-update a.dm-update-status').trigger('click');
   });
 
 });
