@@ -670,7 +670,7 @@ function _dm_get_subsequent_cost($year, $type = 'mcost') {
     $query->join('field_data_field_dm_inspection_interval', 'ii', 'pt.entity_id = ii.entity_id');
     $query->addField('pt', 'entity_id', 'nid');
     $query->addExpression('MOD((:year - td.name), mi.field_dm_maintenance_interval_value)', 'mmod', array(':year' => $year));
-    //$query->addExpression('MOD((:year - td.name), ii.field_dm_inspection_interval_value)', 'imod', array(':year' => $year));
+    $query->addExpression('MOD((:year - td.name), ii.field_dm_inspection_interval_value)', 'imod', array(':year' => $year));
     $or = db_or();
     $or->where('MOD((:year - td.name), mi.field_dm_maintenance_interval_value) = 0', array(':year' => $year));
     $or->where('MOD((:year - td.name), ii.field_dm_inspection_interval_value) = 0', array(':year' => $year));
@@ -681,7 +681,7 @@ function _dm_get_subsequent_cost($year, $type = 'mcost') {
       if ($row->mmod == 0) {
         $mtasks[] = $row->nid;
       }
-      else {
+      if ($row->imod == 0) {
         $itasks[] = $row->nid;
       }
     }
