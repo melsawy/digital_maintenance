@@ -159,11 +159,14 @@ div.ctools-sample-modal-content .modal-loading-wrapper {
 	margin:0 auto;
 	margin-top:2%;
 }
-
 div.ctools-sample-modal-content tbody{
 	border:none;
 }
-
 div.ctools-sample-modal-content .modal-content .modal-throbber-wrapper img {
   margin-top: 100px;
 }
+div.ctools-sample-modal-content #dm-update-task-status-form a.ctools-close-modal {
+  float: right;
+  margin-right: 5px;
+}
+

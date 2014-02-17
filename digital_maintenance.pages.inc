@@ -392,16 +392,16 @@ function dm_update_task_status_form($form, &$form_state) {
     '#prefix' => '<div class="dm-task-comment">',
     '#suffix' => '</div>',
   );
-  $form['actions']['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save'),
-  );
   $form['actions']['cancel'] = array(
     '#markup' => l(t('Cancel'), '#',
     array ('attributes' => array(
       'class' => 'ctools-close-modal'),
     'external' => TRUE,
   )));
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
   return $form;
 }
 

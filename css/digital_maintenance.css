@@ -272,3 +272,9 @@ div.dm-generate-pdf {
   background: url("images/paid.png") no-repeat scroll 15px 8px transparent;
   text-indent: -10000em;
 }
+.node-type-dm-task a.dm-back-tasklist {
+  background-color: #1F1F1F;
+  cursor: pointer;
+  margin-left: 12px;
+  padding: 9px 8px 4px;
+}

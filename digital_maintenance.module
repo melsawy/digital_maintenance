@@ -765,7 +765,7 @@ function _dm_render_update_task_form($node) {
     '#prefix' => '<div class="dm-task-progress container-inline">',
   );
   $form['dm_tasklist'] = array(
-    '#markup' => l(t('Back to tasklist'), 'dm-annual-overview'),
+    '#markup' => l(t('Back to tasklist'), 'dm-annual-overview', array('attributes' => array('class' => array('dm-back-tasklist')))),
     '#suffix' => '</div>',
   );
   // Create our own javascript that will be used to theme a modal.
