@@ -363,3 +363,79 @@ function _dm_update_task_status($ajax, $node, $status) {
     return NULL;
   }
 }
+
+function dm_update_task_status_form($form, &$form_state) {
+  $node = $form_state['task_node'];
+  $new_status = $form_state['task_new_status'];
+  $default_value = $node->field_dm_task_status[LANGUAGE_NONE][0]['value'];
+  $form['task_nid'] = array(
+    '#value' => $node->nid,
+    '#type' => 'hidden',
+  );
+  $form['task_old_status'] = array(
+    '#value' => $default_value,
+    '#type' => 'hidden',
+  );
+  $form['dm_task_status'] = array(
+    '#type' => 'select',
+    '#title' => t('Task status'),
+    '#options' => array(1 => t('Not started'), 2 => t('In progress'), 3 => t('Finished')),
+    '#default_value' => $new_status,
+    '#prefix' => '<div class="dm-task-progress">',
+    '#suffix' => '</div>',
+  );
+  $form['dm_task_comment'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Comment'),
+    '#cols' => 30,
+    '#attributes' => array('placeholder' => t('type your comment.')),
+    '#prefix' => '<div class="dm-task-comment">',
+    '#suffix' => '</div>',
+  );
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
+  $form['actions']['cancel'] = array(
+    '#markup' => l(t('Cancel'), '#',
+    array ('attributes' => array(
+      'class' => 'ctools-close-modal'),
+    'external' => TRUE,
+  )));
+  return $form;
+}
+
+function dm_update_task_status_form_validate($form, &$form_state) {
+  $values  = $form_state['values'];
+  if ($values['dm_task_status'] == $values['task_old_status']) {
+    form_set_error('dm_task_status', t('You should change task status to new one.'));
+  }
+}
+
+function dm_update_task_status_form_submit($form, &$form_state) {
+  //change task status.
+  $nid = $form_state['values']['task_nid'];
+  $status = $form_state['values']['dm_task_status'];
+  $node = node_load($nid);
+  $node->field_dm_task_status[LANGUAGE_NONE][0]['value'] = $status;
+  node_save($node);
+  //add a comment if exist.
+  if (isset($form_state['values']['dm_task_comment'])) {
+    global $user;
+    $comment = new stdClass();
+    $comment->nid = $nid; 
+    $comment->cid = 0; 
+    $comment->pid = 0; 
+    $comment->uid = $user->uid;
+    $comment->mail = $user->mail;
+    $comment->name = $user->name; 
+    $comment->is_anonymous = 0;
+    $comment->status = COMMENT_PUBLISHED;
+    $comment->language = LANGUAGE_NONE;
+    $comment->subject = ''; 
+    $comment->comment_body[$comment->language][0]['value'] = $form_state['values']['dm_task_comment']; 
+    comment_submit($comment);
+    comment_save($comment);
+  }
+}
+
