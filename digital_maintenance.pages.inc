@@ -134,11 +134,13 @@ function ctools_ajax_cost_oxy($action, $lyear) {
     else {
       $cost = 0;
     }
+    $fcost = number_format($cost, 0, '.', '.');
     $total += $cost;
-    $output["'tr.data-nid-$nid td.data-year-$lyear'"] = "'<td class='data-year data-year-$year'>$cost</td>'";
+    $output["'tr.data-nid-$nid td.data-year-$lyear'"] = "'<td class='data-year data-year-$year'>$fcost</td>'";
   }
   //add Total for col.
-  $output["'tr.dm-oxy-total-row td.data-year-$lyear'"] = "'<td class='data-year data-year-$year'>$total</td>'";
+  $ftotal = number_format($total, 0, '.', '.');
+  $output["'tr.dm-oxy-total-row td.data-year-$lyear'"] = "'<td class='data-year data-year-$year'>$ftotal</td>'";
   drupal_json_output($output);
 }
 
