@@ -471,13 +471,16 @@ function _dm_show_expense() {
   //MAX VALUE
   $max = max($cost);
   $year = array_search($max, $cost);
+  $max = number_format($max, 0, '.', '.');
   $items[] = '<div class="dm-expense-value">' . $max . '</div><div class="dm-expense-text">'. t('Highest expense @year', array('@year' => $year)) . '</div>';
   //MIN VALUE
   $min = min($cost);
   $year = array_search($min, $cost);
+  $min = number_format($min, 0, '.', '.');
   $items[] = '<div class="dm-expense-value">' . $min . '</div><div class="dm-expense-text">'. t('Lowest expense @year', array('@year' => $year)) . '</div>';
   //AVG VALUE
   $avg = array_sum($cost)/$x_year;
+  $avg = number_format($avg, 0, '.', '.');
   $items[] = '<div class="dm-expense-value">' . ceil($avg) . '</div><div class="dm-expense-text">'. t('Average annual expense') . '</div>';
   $pdf_link = l(t('Generate PDF'), 'dm_pdf/budget/'. $syear);
   $output = '';
@@ -575,7 +578,8 @@ function _dm_show_cost_overxyears($years = array()) {
           $cost = 0;
         }
         $sum += $cost;
-        $row[] = array('data' => $cost, 'class' => array('data-year', 'data-year-'. $year));
+        $fcost = number_format($cost, 0, '.', '.');
+        $row[] = array('data' => $fcost, 'class' => array('data-year', 'data-year-'. $year));
         //add colsum
         if (isset($colsum[$year])) {
           $colsum[$year] = $colsum[$year] + $cost;
@@ -586,8 +590,9 @@ function _dm_show_cost_overxyears($years = array()) {
       }
       $total += $sum;
       array_unshift($row, $title, $priority, '');
+      $fsum = number_format($sum, 0, '.', '.');
       $row[] = '';
-      $row[] = array('data' => $sum, 'class' => array('dm-sum-task', 'dm-sum-nid-'.$data->nid));
+      $row[] = array('data' => $fsum, 'class' => array('dm-sum-task', 'dm-sum-nid-'.$data->nid));
       $rows[] = array('data' => $row, 'class' => array('data-task', 'data-nid-'. $data->nid));
     }
   }
@@ -596,11 +601,13 @@ function _dm_show_cost_overxyears($years = array()) {
   $row[] = array('data' => t('Total'), 'colspan' => 3, 'class' => array('dm-oxy-total-label'));
   foreach ($mheader as $hdata) {
     $year = $hdata['data'];
-    $row[] = array('data' => $colsum[$year], 'class' => array('data-year-'.$year));
+    $fcolsum = number_format($colsum[$year], 0, '.', '.');
+    $row[] = array('data' => $fcolsum, 'class' => array('data-year-'.$year));
   }
   //add total sum
+  $ftotal = number_format($total, 0, '.', '.');
   $row[] = '';
-  $row[] = array('data' => $total, 'class' => array('dm-overalltotal'));
+  $row[] = array('data' => $ftotal, 'class' => array('dm-overalltotal'));
   $rows[] = array('data' => $row, 'class' => array('dm-oxy-total-row'));
   $output = theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('class' => array('dm-oxy-tasks-budget'))));
   //$output .= theme('pager');
