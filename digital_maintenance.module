@@ -461,6 +461,13 @@ function _dm_show_expense() {
   $x_year = variable_get('dm_x_year_period', 7);
   $eyear = $syear + $x_year;
   $cost = _dm_years_cost_range($syear, $eyear);
+  if (!$cost) {
+    $link = l(t('click here'), "dm_createtask/nojs", array('attributes' => array('class' => array('dm-update-status ctools-use-modal ctools-modal-ctools-dm-style'))));
+    $output = '<div class="dm-empty-page">';
+    $output .= t("There is no tasks created on the system, !link to create first task.", array('!link' => $link));
+    $output .= '</div>';
+    return $output;
+  }
   //MAX VALUE
   $max = max($cost);
   $year = array_search($max, $cost);
@@ -529,6 +536,11 @@ function _dm_show_cost_overxyears($years = array()) {
     $year = $h['data'];
     $query->addExpression("MOD(($year - td.name), mi.field_dm_maintenance_interval_value)", "y_$year");
   }
+  //$results = $query->execute()->fetchAllAssoc('nid');
+  $results = $query->execute();
+  if (!$results->rowCount()) {
+    return NULL;
+  }
   $results = $query->execute()->fetchAllAssoc('nid');
   $oxy_nids = array_keys($results);
   drupal_add_js("var oxy_nids = ". json_encode(array_keys($results)) .";", 'inline');
@@ -551,7 +563,7 @@ function _dm_show_cost_overxyears($years = array()) {
     foreach ($result as $data) {
       $row = array();
       $sum = 0;
-      $title = '<div class="dm-cat-prefix"></div>'. $data->title;
+      $title = '<div class="dm-cat-prefix"></div>'. l($data->title, 'node/'. $data->nid);
       $priority = _dm_priority_html($data->priority);
       foreach ($mheader as $hdata) {
         $year = $hdata['data'];
@@ -635,6 +647,9 @@ function dm_draw_x_year_graph($data, $syear, $eyear) {
 function _dm_years_cost_range($syear, $eyear) {
   $cost = array();
   $mcost = _dm_get_maintenance_cost();
+  if (!count($mcost)) {
+    return FALSE;
+  }
   for ($i = $syear; $i < $eyear; $i++) {
     $scost = _dm_get_subsequent_cost($i);
     $y_cost = isset($mcost[$i]) ? $mcost[$i] : 0;
@@ -664,7 +679,13 @@ function _dm_get_subsequent_cost($year, $type = 'mcost') {
     $query->addExpression('SUM(sc.field_dm_subsequent_cost_value)', 'scost');
     $query->addExpression("GROUP_CONCAT(pt.entity_id SEPARATOR ',')", 'nids');
     $query->where('MOD((:year - td.name), mi.field_dm_maintenance_interval_value) = 0', array(':year' => $year));
-    $result = $query->execute()->fetchObject();
+    $resultc = $query->execute();
+    if ($resultc->rowCount()) {
+      $result = $query->execute()->fetchObject();
+    }
+    else {
+      $result = array();
+    }
   }
   else {
     $query->join('field_data_field_dm_inspection_interval', 'ii', 'pt.entity_id = ii.entity_id');
@@ -675,18 +696,24 @@ function _dm_get_subsequent_cost($year, $type = 'mcost') {
     $or->where('MOD((:year - td.name), mi.field_dm_maintenance_interval_value) = 0', array(':year' => $year));
     $or->where('MOD((:year - td.name), ii.field_dm_inspection_interval_value) = 0', array(':year' => $year));
     $query->condition($or);
-    $result = $query->execute()->fetchAll();
-    $mtasks = $itasks = array();
-    foreach ($result as $row) {
-      if ($row->mmod == 0) {
-        $mtasks[] = $row->nid;
+    $resultc = $query->execute();
+    if ($resultc->rowCount()) {
+      $result = $query->execute()->fetchAll();
+      $mtasks = $itasks = array();
+      foreach ($result as $row) {
+        if ($row->mmod == 0) {
+          $mtasks[] = $row->nid;
+        }
+        if ($row->imod == 0) {
+          $itasks[] = $row->nid;
+        }
       }
-      if ($row->imod == 0) {
-        $itasks[] = $row->nid;
-      }
+      $result['mtasks'] = $mtasks;
+      $result['itasks'] = $itasks;
     }
-    $result['mtasks'] = $mtasks;
-    $result['itasks'] = $itasks;
+    else {
+      $result['mtasks'] = $result['itasks'] = array();
+    }
   }
   return $result;
 }
@@ -707,6 +734,10 @@ function _dm_get_maintenance_cost($year = 'ALL') {
   if (isset($_GET['schaffolding'])) {
     $query->join('field_data_field_dm_scaffolding_needed', 'sn', 'ypt.entity_id = sn.entity_id');
     $query->condition('sn.field_dm_scaffolding_needed_value', 1);
+  }
+  $result = $query->execute();
+  if (!$result->rowCount()) {
+    return array();
   }
   $result = $query->execute()->fetchAllKeyed(0, 1);
   if ($year == 'ALL') {

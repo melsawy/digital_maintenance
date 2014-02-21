@@ -278,3 +278,8 @@ div.dm-generate-pdf {
   margin-left: 12px;
   padding: 9px 8px 4px;
 }
+div.dm-empty-page {
+  font-weight: bold;
+  padding: 55px 0 20px;
+  text-align: center;
+}
