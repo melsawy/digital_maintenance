@@ -12,6 +12,14 @@ function digital_maintenance_update_7001() {
   $current_year = date('Y');
   $end_year = $current_year + 20; 
   $vid = db_query("SELECT vid FROM {taxonomy_vocabulary} WHERE machine_name = 'dm_year_to_perform_task'")->fetchField();
+  if (!$vid) {
+    //vocabulary not created yet
+    $vocabulary = new stdClass();
+    $vocabulary->name = 'Year to perform task';
+    $vocabulary->machine_name = 'dm_year_to_perform_task';
+    taxonomy_vocabulary_save($vocabulary);
+    $vid = $vocabulary->vid;
+  }
   for ($current_year; $current_year <= $end_year ; $current_year++) {
     $term = new stdclass();
     $term->vid = $vid;

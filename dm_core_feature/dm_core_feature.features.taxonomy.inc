@@ -12,7 +12,7 @@ function dm_core_feature_taxonomy_default_vocabularies() {
     'dm_year_to_perform_task' => array(
       'name' => 'Year to perform task',
       'machine_name' => 'dm_year_to_perform_task',
-      'description' => '',
+      'description' => NULL,
       'hierarchy' => 0,
       'module' => 'taxonomy',
       'weight' => 0,
