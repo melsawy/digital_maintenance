@@ -108,105 +108,14 @@ function digital_maintenance_menu() {
   ); 
   $items['dm-task-list'] = array(
     'title' => t('Task List'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('_dm_tasklist_form'),
+    'page callback' => 'dm_show_tasklist',
+    //'page callback' => 'drupal_get_form',
+    //'page arguments' => array('_dm_tasklist_form'),
     'access callback' => TRUE,
     'type' => MENU_NORMAL_ITEM,
+    'file' => 'digital_maintenance.pages.inc',
   ); 
   return $items;
-}
-
-function _dm_tasklist_form($form, $form_state) {
-  //select years
-  $query = db_select('taxonomy_vocabulary', 'tv');
-  $query->join('taxonomy_term_data', 'td', 'tv.vid = td.vid');
-  $query->fields('td', array('tid', 'name'));
-  $query->condition('tv.machine_name', 'dm_year_to_perform_task');
-  $query->orderBy('td.name');
-  //$query = $query->extend('PagerDefault')->limit(5);
-  $results = $query->execute()->fetchAllKeyed(0, 1);
-  $header = array(
-    t('Category'),
-    t('Type'),
-    t('Title'),
-    t('Month'),
-    t('Price'),
-    t('Status'),
-    t('Last activity'),
-  );
-  $mcosts = _dm_get_maintenance_cost();
-  $options = array();
-  $field = field_info_field('field_dm_category');
-  $categories = list_allowed_values($field);
-  $field = field_info_field('field_dm_month_to_perform_task');
-  $months = list_allowed_values($field);
-  foreach($results as $tid => $tname) {
-    //add row for category
-    $row = array();
-    $row = array_fill(1, 6, '');
-    $row[0] = array('data' => $tname, 'class' => array('sawy-test'));
-    $row['#attributes'] = array('class' => array('dm-task-year'), 'data-year' => $tname);
-    $options["tid_$tid"] = $row;
-    _dm_generate_tasklist_rows($options, $tid, $tname, $categories, $months);
-    $scost = _dm_get_subsequent_cost($tname);
-    $total_cost = isset($mcosts[$tname]) ? $mcosts[$tname] : 0;
-    $total_cost += isset($scost->scost) ? $scost->scost : 0;
-    //add total price
-    $row = array();
-    $row = array_fill(0, 5, '');
-    $row[5] = '';
-    $row[6] = number_format($total_cost, 0, '.', '.');
-    $row['#attributes'] = array('class' => array('dm-task-totalcost'));
-    $options["tidc_$tid"] = $row;
-  }
-  $form['table'] = array(
-    '#type' => 'tableselect',
-    '#header' => $header,
-    '#options' => $options,
-    '#sticky' => TRUE,
-    '#empty' => t('No tasks found'),
-  );
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Submit'),
-  );
-  /*
-  $form['tuan_pager'] = array(
-    '#theme' => 'pager'
-  );
-   */
-  return $form;
-
-}
-
-function _dm_generate_tasklist_rows(&$options, $tid, $tname, $categories, $months) {
-  $display = array(
-    'block' => array('args' => $tid, 'type' => 'Maintenance', 'cost' => 'field_dm_maintenance_cost', 'key' => 'task'),
-    'attachment_1' => array('args' => $tname, 'type' => 'Maintenance', 'cost' => 'field_dm_subsequent_cost', 'key' => 'mtask'),
-    'attachment_2' => array('args' => $tname, 'type' => 'Inspection', 'key' => 'itask'),
-  );
-  //Add tasks which match year for perform tasks
-  foreach($display as $k => $v) {
-    $tasks = views_get_view_result('dm_task_list_row', $k, $v['args']);
-    foreach($tasks as $task) {
-      $row = array();
-      $row[] = $categories[$task->_field_data['nid']['entity']->field_dm_category[LANGUAGE_NONE][0]['value']];
-      $row[] = t($v['type']);
-      $row[] = l($task->node_title, 'node/'. $task->nid);
-      $row[] = $months[$task->_field_data['nid']['entity']->field_dm_month_to_perform_task[LANGUAGE_NONE][0]['value']];
-      if (isset($v['cost'])) {
-        $tcost = $task->_field_data['nid']['entity']->{$v['cost']}[LANGUAGE_NONE][0]['value'];
-        $row[] = number_format($tcost, 0, '.', '.');
-      }
-      $row[] = 0;
-      $row[] = $task->_field_data['nid']['entity']->field_dm_task_status[LANGUAGE_NONE][0]['value'];
-      $row[] = $task->node_comment_statistics_last_updated;
-      $row['#attributes'] = array('class' => array('dm-task-data', 'dm-task-year-'.$tname));
-      //generate option key
-      $key = "{$v['key']}_{$tname}_{$task->nid}";
-      $options[$key] = $row;//array('data' => $row, 'class' => array('mewlsawy-test'));
-    }
-  }
 }
 
 function _dm_show_task_tabs($node) {
