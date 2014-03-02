@@ -69,6 +69,12 @@ jQuery(function() {
   jQuery('.dm-task-progress .form-select').change(function() {
     jQuery('.dm-task-inprogress-update a.dm-update-status').trigger('click');
   });
+  //new tasklist
+  jQuery('tr.dm-task-totalcost .form-type-checkbox').hide();
+  jQuery('tr.dm-task-year .form-type-checkbox input').click(function() {
+    selector = 'tr.dm-task-year-' + jQuery(this).closest('tr').attr('data-year') + ' input';
+    jQuery(selector).attr('checked', jQuery(this).attr('checked'));
+  });
 
 });
 
