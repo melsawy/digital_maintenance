@@ -513,7 +513,7 @@ function dm_tasklist_form($form, $form_state, $status) {
   $query->fields('td', array('tid', 'name'));
   $query->condition('tv.machine_name', 'dm_year_to_perform_task');
   $query->orderBy('td.name');
-  //$query = $query->extend('PagerDefault')->limit(5);
+  $query = $query->extend('PagerDefault')->limit(10);
   $results = $query->execute()->fetchAllKeyed(0, 1);
   $header = array(
     t('Category'),
@@ -566,11 +566,9 @@ function dm_tasklist_form($form, $form_state, $status) {
     '#value' => t('Submit'),
     '#weight' => -99,
   );
-  /*
-  $form['tuan_pager'] = array(
+  $form['years_pager'] = array(
     '#theme' => 'pager'
   );
-   */
   return $form;
 
 }
@@ -605,7 +603,7 @@ function _dm_generate_tasklist_rows(&$options, $tid, $tname, $categories, $month
       $row[] = $categories[$task->_field_data['nid']['entity']->field_dm_category[LANGUAGE_NONE][0]['value']];
       $row[] = t($v['type']);
       $row[] = l($task->node_title, 'node/'. $task->nid);
-      $row[] = isset($task->_field_data['nid']['entity']->field_dm_month_to_perform_task[LANGUAGE_NONE][0]['value']) ? $months[$task->_field_data['nid']['entity']->field_dm_month_to_perform_task[LANGUAGE_NONE][0]['value']] : '';
+      $row[] = isset($task->_field_data['nid']['entity']->field_dm_month_to_perform_task[LANGUAGE_NONE][0]['value']) ? $months[$task->_field_data['nid']['entity']->field_dm_month_to_perform_task[LANGUAGE_NONE][0]['value']] : '-';
       if (isset($v['cost'])) {
         $tcost = $task->_field_data['nid']['entity']->{$v['cost']}[LANGUAGE_NONE][0]['value'];
         $row[] = number_format($tcost, 0, '.', '.');

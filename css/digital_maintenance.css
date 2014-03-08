@@ -323,7 +323,7 @@ div.dm-empty-page {
   background-color: #FFF;
 }
 
-#dm-tasklist-form .table tr.dm-task-year {
+#dm-tasklist-form .table tr.dm-task-year td{
   border-top: 1px solid #DEDEDE;
   border-bottom: 1px solid #DEDEDE;
 }
