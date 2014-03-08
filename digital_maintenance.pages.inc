@@ -446,23 +446,19 @@ function dm_show_tasklist() {
   //add header
   $field = field_info_field('field_dm_task_status');
   $status = list_allowed_values($field);
-  $items = array();
-  foreach($status as $key => $value) {
-    $items[] = '<span class="dm-task-status dm-task-status-'. $key .'"></span>'. t($value);
-  }
-  $output .= theme('item_list', array('items' => $items, 'title' => '', 'attributes' => array('class' => 'dm-tasklist-status')));
   //build-filter options
   $foptions = array();
   $foptions['items_per_page'] = isset($_GET['items_per_page']) ? $_GET['items_per_page'] : 10;
   $foptions['from_year'] = isset($_GET['from_year']) ? $_GET['from_year'] : '';
   $foptions['to_year'] = isset($_GET['to_year']) ? $_GET['to_year'] : '';
-  $filter = drupal_get_form('_dm_tasklist_filter_form', $foptions);
+  $foptions['status'] = $status;
+  $filter = drupal_get_form('dm_tasklist_filter_form', $foptions);
   $output .= drupal_render($filter);
-  $output .= drupal_render(drupal_get_form('_dm_tasklist_form', $status));
+  $output .= drupal_render(drupal_get_form('dm_tasklist_form', $status));
   return $output;
 }
 
-function _dm_tasklist_filter_form($form, &$form_state, $foptions) {
+function dm_tasklist_filter_form($form, &$form_state, $foptions) {
   $form['#method'] = 'get';
   $form['#action'] = '/boligweb/dm-task-list';
   $form['#attributes'] = array('class' => array('mymod-search'));
@@ -472,6 +468,15 @@ function _dm_tasklist_filter_form($form, &$form_state, $foptions) {
   $query->condition('tv.machine_name', 'dm_year_to_perform_task');
   $query->orderBy('td.name');
   $options = $query->execute()->fetchAllKeyed(0, 0);
+  $items = array();
+  foreach($foptions['status'] as $key => $value) {
+    $items[] = '<span class="dm-task-status dm-task-status-'. $key .'"></span>'. t($value);
+  }
+  $form['task_status'] = array(
+    '#prefix' => '<div class="task-status">',
+    '#markup' => theme('item_list', array('items' => $items, 'title' => '', 'attributes' => array('class' => 'dm-tasklist-status'))),
+    '#suffix' => '</div>',
+  );
   $options = array('' => '- Select a value -') + $options;
   $form['items_per_page'] = array(
     '#title' => t('Number of years'),
@@ -501,7 +506,7 @@ function _dm_unset_default_form_elements($form){
   unset($form['#build_id'], $form['form_build_id'], $form['form_id'], $form['form_token']);
   return $form;
 }
-function _dm_tasklist_form($form, $form_state, $status) {
+function dm_tasklist_form($form, $form_state, $status) {
   //select years
   $query = db_select('taxonomy_vocabulary', 'tv');
   $query->join('taxonomy_term_data', 'td', 'tv.vid = td.vid');
@@ -540,7 +545,7 @@ function _dm_tasklist_form($form, $form_state, $status) {
     $row = array();
     $row = array_fill(0, 5, '');
     $row[5] = '';
-    $row[6] = t('Total '). number_format($total_cost, 0, '.', '.');
+    $row[6] = '<span class="total-cost">'. t('Total @total', array('@total' => number_format($total_cost, 0, '.', '.'))) .'</span>';
     $row['#attributes'] = array('class' => array('dm-task-totalcost'));
     $options["tidc_$tid"] = $row;
   }

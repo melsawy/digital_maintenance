@@ -93,6 +93,12 @@ span.dm-task-status-3 {
 .page-dm-annual-overview .view-content {
   clear: both;
 }
+#dm-tasklist-filter-form ul.dm-tasklist-status li {
+  list-style: none;
+  float: left;
+  margin-right: 20px;
+}
+#dm-tasklist-filter-form div,
 .page-dm-annual-overview .views-exposed-widgets div {
   display: inline-block;
   float: none ;
@@ -100,6 +106,12 @@ span.dm-task-status-3 {
   padding: 0;
   margin-left: 0px;
 }
+#dm-tasklist-filter-form select {
+  background-color: #D9D9D9;
+  color: #FFF;
+}
+#dm-tasklist-filter-form label,
+#dm-tasklist-filter-form label.content-label,
 .page-dm-annual-overview .views-exposed-widgets label,
 .page-dm-annual-overview .views-exposed-widgets label.control-label {
   display: inline-block;
@@ -117,6 +129,7 @@ span.dm-task-status-3 {
 .page-dm-annual-overview div.views-widget-per-page {
   width: 48%;
 }
+#dm-tasklist-filter-form #edit-submit,
 .page-dm-annual-overview #edit-submit-tasks-annual-overview {
   background: url("images/apply.png") no-repeat scroll 0 0 transparent;
   border-radius: 0px;
@@ -282,4 +295,20 @@ div.dm-empty-page {
   font-weight: bold;
   padding: 55px 0 20px;
   text-align: center;
+}
+/**
+ * Task list page
+ */
+#dm-tasklist-form thead tr {
+  background-color: #E6E6E6;
+  color: #292929;
+  text-transform: uppercase;
+}
+
+#dm-tasklist-form span.total-cost {
+  background-color: #2C2C2C;
+  border-radius: 6px;
+  color: #FFFFFF;
+  font-weight: bold;
+  padding: 5px 10px;
 }
