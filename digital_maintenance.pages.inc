@@ -605,7 +605,7 @@ function _dm_generate_tasklist_rows(&$options, $tid, $tname, $categories, $month
       $row[] = $categories[$task->_field_data['nid']['entity']->field_dm_category[LANGUAGE_NONE][0]['value']];
       $row[] = t($v['type']);
       $row[] = l($task->node_title, 'node/'. $task->nid);
-      $row[] = $months[$task->_field_data['nid']['entity']->field_dm_month_to_perform_task[LANGUAGE_NONE][0]['value']];
+      $row[] = isset($task->_field_data['nid']['entity']->field_dm_month_to_perform_task[LANGUAGE_NONE][0]['value']) ? $months[$task->_field_data['nid']['entity']->field_dm_month_to_perform_task[LANGUAGE_NONE][0]['value']] : '';
       if (isset($v['cost'])) {
         $tcost = $task->_field_data['nid']['entity']->{$v['cost']}[LANGUAGE_NONE][0]['value'];
         $row[] = number_format($tcost, 0, '.', '.');
