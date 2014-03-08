@@ -443,19 +443,52 @@ function dm_update_task_status_form_submit($form, &$form_state) {
 
 function dm_show_tasklist() {
   $output = '';
-  $filter = drupal_get_form('_dm_tasklist_filter_form');
+  //add header
+  $field = field_info_field('field_dm_task_status');
+  $status = list_allowed_values($field);
+  $items = array();
+  foreach($status as $key => $value) {
+    $items[] = '<span class="dm-task-status dm-task-status-'. $key .'"></span>'. t($value);
+  }
+  $output .= theme('item_list', array('items' => $items, 'title' => '', 'attributes' => array('class' => 'dm-tasklist-status')));
+  //build-filter options
+  $foptions = array();
+  $foptions['items_per_page'] = isset($_GET['items_per_page']) ? $_GET['items_per_page'] : 10;
+  $foptions['from_year'] = isset($_GET['from_year']) ? $_GET['from_year'] : '';
+  $foptions['to_year'] = isset($_GET['to_year']) ? $_GET['to_year'] : '';
+  $filter = drupal_get_form('_dm_tasklist_filter_form', $foptions);
   $output .= drupal_render($filter);
-  $output .= drupal_render(drupal_get_form('_dm_tasklist_form'));
+  $output .= drupal_render(drupal_get_form('_dm_tasklist_form', $status));
   return $output;
 }
 
-function _dm_tasklist_filter_form($form, &$form_state) {
+function _dm_tasklist_filter_form($form, &$form_state, $foptions) {
   $form['#method'] = 'get';
   $form['#action'] = '/boligweb/dm-task-list';
   $form['#attributes'] = array('class' => array('mymod-search'));
-  $form['search'] = array(
-    '#type' => 'textfield',
-    '#size' => 20,
+  $query = db_select('taxonomy_vocabulary', 'tv');
+  $query->join('taxonomy_term_data', 'td', 'tv.vid = td.vid');
+  $query->fields('td', array('name'));
+  $query->condition('tv.machine_name', 'dm_year_to_perform_task');
+  $query->orderBy('td.name');
+  $options = $query->execute()->fetchAllKeyed(0, 0);
+  $options = array('' => '- Select a value -') + $options;
+  $form['items_per_page'] = array(
+    '#title' => t('Number of years'),
+    '#type' => 'select',
+    '#options' => drupal_map_assoc(array(5, 10, 20, 40, 60)) + array('all' => t('- All -')),
+    '#default_value' => $foptions['items_per_page'],
+  );
+  $form['from_year'] = array(
+    '#type' => 'select',
+    '#options' => $options,
+    '#default_value' => $foptions['from_year'],
+  );
+  $form['to_year'] = array(
+    '#type' => 'select', 
+    '#title' => t('To'),
+    '#options' => $options,
+    '#default_value' => $foptions['to_year'],
   );
   $form['#after_build'] = array('_dm_unset_default_form_elements');
   $form['submit'] = array(
@@ -468,7 +501,7 @@ function _dm_unset_default_form_elements($form){
   unset($form['#build_id'], $form['form_build_id'], $form['form_id'], $form['form_token']);
   return $form;
 }
-function _dm_tasklist_form($form, $form_state) {
+function _dm_tasklist_form($form, $form_state, $status) {
   //select years
   $query = db_select('taxonomy_vocabulary', 'tv');
   $query->join('taxonomy_term_data', 'td', 'tv.vid = td.vid');
@@ -507,7 +540,7 @@ function _dm_tasklist_form($form, $form_state) {
     $row = array();
     $row = array_fill(0, 5, '');
     $row[5] = '';
-    $row[6] = number_format($total_cost, 0, '.', '.');
+    $row[6] = t('Total '). number_format($total_cost, 0, '.', '.');
     $row['#attributes'] = array('class' => array('dm-task-totalcost'));
     $options["tidc_$tid"] = $row;
   }
@@ -518,9 +551,15 @@ function _dm_tasklist_form($form, $form_state) {
     '#sticky' => TRUE,
     '#empty' => t('No tasks found'),
   );
+  $form['status'] = array(
+    '#type' => 'select', 
+    '#options' => $status,
+    '#weight' => -1,
+  );
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Submit'),
+    '#weight' => -99,
   );
   /*
   $form['tuan_pager'] = array(
@@ -566,9 +605,11 @@ function _dm_generate_tasklist_rows(&$options, $tid, $tname, $categories, $month
         $tcost = $task->_field_data['nid']['entity']->{$v['cost']}[LANGUAGE_NONE][0]['value'];
         $row[] = number_format($tcost, 0, '.', '.');
       }
-      $row[] = 0;
-      $row[] = $task->_field_data['nid']['entity']->field_dm_task_status[LANGUAGE_NONE][0]['value'];
-      $row[] = $task->node_comment_statistics_last_updated;
+      else {
+        $row[] = 0;
+      }
+      $row[] = '<span class="dm-task-status dm-task-status-'. $task->_field_data['nid']['entity']->field_dm_task_status[LANGUAGE_NONE][0]['value']. '"></span>';
+      $row[] = date('d-m-Y', $task->node_comment_statistics_last_updated);
       $row['#attributes'] = array('class' => array('dm-task-data', 'dm-task-year-'.$tname));
       //generate option key
       $key = "{$v['key']}_{$tname}_{$task->nid}";
