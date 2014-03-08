@@ -109,6 +109,7 @@ span.dm-task-status-3 {
 #dm-tasklist-filter-form select {
   background-color: #D9D9D9;
   color: #FFF;
+  width: auto;
 }
 #dm-tasklist-filter-form label,
 #dm-tasklist-filter-form label.content-label,
@@ -311,4 +312,18 @@ div.dm-empty-page {
   color: #FFFFFF;
   font-weight: bold;
   padding: 5px 10px;
+}
+#dm-tasklist-form .table-bordered th, #dm-tasklist-form .table-bordered td {
+  border-left: none;
+}
+#dm-tasklist-form .table th, #dm-tasklist-form .table td {
+  border-top: none;
+}
+#dm-tasklist-form .table tr td {
+  background-color: #FFF;
+}
+
+#dm-tasklist-form .table tr.dm-task-year {
+  border-top: 1px solid #DEDEDE;
+  border-bottom: 1px solid #DEDEDE;
 }
