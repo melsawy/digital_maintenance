@@ -502,10 +502,19 @@ function dm_tasklist_filter_form($form, &$form_state, $foptions) {
   );
   return $form;
 }
+
+function dm_tasklist_filter_form_validate($form, &$form_state) {
+  $values  = $form_state['values'];
+  if ($values['to_year'] < $values['from_year']) {
+    form_set_error('to_year', t('TO year should be greater than FROM year.'));
+  }
+}
+
 function _dm_unset_default_form_elements($form){
   unset($form['#build_id'], $form['form_build_id'], $form['form_id'], $form['form_token']);
   return $form;
 }
+
 function dm_tasklist_form($form, $form_state, $status) {
   //select years
   $query = db_select('taxonomy_vocabulary', 'tv');
@@ -513,7 +522,17 @@ function dm_tasklist_form($form, $form_state, $status) {
   $query->fields('td', array('tid', 'name'));
   $query->condition('tv.machine_name', 'dm_year_to_perform_task');
   $query->orderBy('td.name');
-  $query = $query->extend('PagerDefault')->limit(10);
+  //apply filter conditions 
+  if (isset($_GET['from_year']) && $_GET['from_year']) {
+    $query->condition('td.name', $_GET['from_year'], '>=');
+  }
+  if (isset($_GET['to_year']) && $_GET['to_year']) {
+    $query->condition('td.name', $_GET['to_year'], '<=');
+  }
+  if (isset($_GET['items_per_page'])) {
+    $query = $query->extend('PagerDefault')->limit($_GET['items_per_page']);
+  }
+
   $results = $query->execute()->fetchAllKeyed(0, 1);
   $header = array(
     t('Category'),
@@ -558,6 +577,7 @@ function dm_tasklist_form($form, $form_state, $status) {
   );
   $form['status'] = array(
     '#type' => 'select', 
+    '#title' => t('Change status'),
     '#options' => $status,
     '#weight' => -1,
   );
@@ -573,7 +593,7 @@ function dm_tasklist_form($form, $form_state, $status) {
 
 }
 
-function _dm_tasklist_form_submit($form, &$form_state) {
+function dm_tasklist_form_submit($form, &$form_state) {
   $selected_items = array_filter($form_state['values']['table']);
   $nodes = array();
   foreach ($selected_items as $item) {
@@ -589,6 +609,7 @@ function _dm_tasklist_form_submit($form, &$form_state) {
   }
   drupal_set_message(t('Save selected tasks'));
 }
+
 function _dm_generate_tasklist_rows(&$options, $tid, $tname, $categories, $months) {
   $display = array(
     'block' => array('args' => $tid, 'type' => 'Maintenance', 'cost' => 'field_dm_maintenance_cost', 'key' => 'task'),
