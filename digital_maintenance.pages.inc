@@ -581,8 +581,7 @@ function dm_tasklist_form($form, $form_state, $status) {
     );
     $form['status'] = array(
       '#type' => 'select', 
-      '#title' => t('Change status'),
-      '#options' => $status,
+      '#options' => array('' => t('Change Status')) + $status,
       '#weight' => -1,
     );
     $form['submit'] = array(
@@ -616,6 +615,21 @@ function dm_tasklist_form($form, $form_state, $status) {
       $output,
       t('Change status'),
       t('cancel'));
+  }
+}
+
+/**
+ * Implements of hook_form_validate().
+ */
+function dm_tasklist_form_validate($form, &$form_state) {
+  if (!isset($form_state['storage']['confirm'])) {
+    $selected_items = array_filter($form_state['values']['table']);
+    if (!count($selected_items)) {
+      form_set_error('', t('You should select 1 item at least.'));
+    }
+    if (!$form_state['values']['status']) {
+      form_set_error('status', t('You should select new status for selected items.'));
+    }
   }
 }
 

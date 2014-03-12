@@ -109,8 +109,6 @@ function digital_maintenance_menu() {
   $items['dm-task-list'] = array(
     'title' => t('Task List'),
     'page callback' => 'dm_show_tasklist',
-    //'page callback' => 'drupal_get_form',
-    //'page arguments' => array('_dm_tasklist_form'),
     'access callback' => TRUE,
     'type' => MENU_NORMAL_ITEM,
     'file' => 'digital_maintenance.pages.inc',
