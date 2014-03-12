@@ -515,99 +515,137 @@ function _dm_unset_default_form_elements($form){
   return $form;
 }
 
+/**
+ * Build new task list page
+ */
 function dm_tasklist_form($form, $form_state, $status) {
-  //select years
-  $query = db_select('taxonomy_vocabulary', 'tv');
-  $query->join('taxonomy_term_data', 'td', 'tv.vid = td.vid');
-  $query->fields('td', array('tid', 'name'));
-  $query->condition('tv.machine_name', 'dm_year_to_perform_task');
-  $query->orderBy('td.name');
-  //apply filter conditions 
-  if (isset($_GET['from_year']) && $_GET['from_year']) {
-    $query->condition('td.name', $_GET['from_year'], '>=');
-  }
-  if (isset($_GET['to_year']) && $_GET['to_year']) {
-    $query->condition('td.name', $_GET['to_year'], '<=');
-  }
-  if (isset($_GET['items_per_page'])) {
-    $query = $query->extend('PagerDefault')->limit($_GET['items_per_page']);
-  }
+  if (!isset($form_state['storage']['confirm'])) { 
+    //select years
+    $query = db_select('taxonomy_vocabulary', 'tv');
+    $query->join('taxonomy_term_data', 'td', 'tv.vid = td.vid');
+    $query->fields('td', array('tid', 'name'));
+    $query->condition('tv.machine_name', 'dm_year_to_perform_task');
+    $query->orderBy('td.name');
+    //apply filter conditions 
+    if (isset($_GET['from_year']) && $_GET['from_year']) {
+      $query->condition('td.name', $_GET['from_year'], '>=');
+    }
+    if (isset($_GET['to_year']) && $_GET['to_year']) {
+      $query->condition('td.name', $_GET['to_year'], '<=');
+    }
+    if (isset($_GET['items_per_page'])) {
+      $query = $query->extend('PagerDefault')->limit($_GET['items_per_page']);
+    }
 
-  $results = $query->execute()->fetchAllKeyed(0, 1);
-  $header = array(
-    t('Category'),
-    t('Type'),
-    t('Title'),
-    t('Month'),
-    t('Price'),
-    t('Status'),
-    t('Last activity'),
-  );
-  $mcosts = _dm_get_maintenance_cost();
-  $options = array();
-  $field = field_info_field('field_dm_category');
-  $categories = list_allowed_values($field);
-  $field = field_info_field('field_dm_month_to_perform_task');
-  $months = list_allowed_values($field);
-  foreach($results as $tid => $tname) {
-    //add row for category
-    $row = array();
-    $row = array_fill(1, 6, '');
-    $row[0] = array('data' => $tname, 'class' => array('sawy-test'));
-    $row['#attributes'] = array('class' => array('dm-task-year'), 'data-year' => $tname);
-    $options["tid_$tid"] = $row;
-    _dm_generate_tasklist_rows($options, $tid, $tname, $categories, $months);
-    $scost = _dm_get_subsequent_cost($tname);
-    $total_cost = isset($mcosts[$tname]) ? $mcosts[$tname] : 0;
-    $total_cost += isset($scost->scost) ? $scost->scost : 0;
-    //add total price
-    $row = array();
-    $row = array_fill(0, 5, '');
-    $row[5] = '';
-    $row[6] = '<span class="total-cost">'. t('Total @total', array('@total' => number_format($total_cost, 0, '.', '.'))) .'</span>';
-    $row['#attributes'] = array('class' => array('dm-task-totalcost'));
-    $options["tidc_$tid"] = $row;
+    $results = $query->execute()->fetchAllKeyed(0, 1);
+    $header = array(
+      t('Category'),
+      t('Type'),
+      t('Title'),
+      t('Month'),
+      t('Price'),
+      t('Status'),
+      t('Last activity'),
+    );
+    $mcosts = _dm_get_maintenance_cost();
+    $options = array();
+    $field = field_info_field('field_dm_category');
+    $categories = list_allowed_values($field);
+    $field = field_info_field('field_dm_month_to_perform_task');
+    $months = list_allowed_values($field);
+    foreach($results as $tid => $tname) {
+      //add row for category
+      $row = array();
+      $row = array_fill(1, 6, '');
+      $row[0] = array('data' => $tname, 'class' => array('sawy-test'));
+      $row['#attributes'] = array('class' => array('dm-task-year'), 'data-year' => $tname);
+      $options["tid_$tid"] = $row;
+      _dm_generate_tasklist_rows($options, $tid, $tname, $categories, $months);
+      $scost = _dm_get_subsequent_cost($tname);
+      $total_cost = isset($mcosts[$tname]) ? $mcosts[$tname] : 0;
+      $total_cost += isset($scost->scost) ? $scost->scost : 0;
+      //add total price
+      $row = array();
+      $row = array_fill(0, 5, '');
+      $row[5] = '';
+      $row[6] = '<span class="total-cost">'. t('Total @total', array('@total' => number_format($total_cost, 0, '.', '.'))) .'</span>';
+      $row['#attributes'] = array('class' => array('dm-task-totalcost'));
+      $options["tidc_$tid"] = $row;
+    }
+    $form['table'] = array(
+      '#type' => 'tableselect',
+      '#header' => $header,
+      '#options' => $options,
+      '#sticky' => TRUE,
+      '#empty' => t('No tasks found'),
+    );
+    $form['status'] = array(
+      '#type' => 'select', 
+      '#title' => t('Change status'),
+      '#options' => $status,
+      '#weight' => -1,
+    );
+    $form['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Submit'),
+      '#weight' => -99,
+    );
+    $form['years_pager'] = array(
+      '#theme' => 'pager'
+    );
+    return $form;
   }
-  $form['table'] = array(
-    '#type' => 'tableselect',
-    '#header' => $header,
-    '#options' => $options,
-    '#sticky' => TRUE,
-    '#empty' => t('No tasks found'),
-  );
-  $form['status'] = array(
-    '#type' => 'select', 
-    '#title' => t('Change status'),
-    '#options' => $status,
-    '#weight' => -1,
-  );
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Submit'),
-    '#weight' => -99,
-  );
-  $form['years_pager'] = array(
-    '#theme' => 'pager'
-  );
-  return $form;
-
+  else {
+    //call confirm form before submit
+    $values = $form_state['values'];
+    $selected_items = array_filter($values['table']);
+    $nodes = $items = array();
+    foreach ($selected_items as $item) {
+      $value = explode('_', $item);
+      if (count($value) == 3 && !in_array($value[2], $nodes)) {
+        $nodes[] = $value[2];
+        $items[] = $form_state['complete form']['table']['#options'][$item][2];
+      }
+    }
+    $count = format_plural(count($items), 'task', 'tasks');
+    $output = theme('item_list', array('items' => $items, 'title' => t('You selected the following <strong>!count</strong>:', array('!count' => $count))));
+    return confirm_form(
+      $form,
+      t('Are you sure you want to change status for selected tasks?'),
+      'dm-task-list',
+      $output,
+      t('Change status'),
+      t('cancel'));
+  }
 }
 
+/**
+ * Implements of hook_form_submit().
+ */
 function dm_tasklist_form_submit($form, &$form_state) {
-  $selected_items = array_filter($form_state['values']['table']);
-  $nodes = array();
-  foreach ($selected_items as $item) {
-    $value = explode('_', $item);
-    if (count($value) == 3 && !in_array($value[2], $nodes)) {
-      $nodes[] = $value[2];
-      //save node with new status.
-      $status = 3;
-      $node = node_load($value[2]);
-      $node->field_dm_task_status[LANGUAGE_NONE][0]['value'] = $status;
-      node_save($node);
-    }
+  if (!isset($form_state['storage']['confirm'])) {
+    $form_state['storage']['confirm'] = TRUE;
+    $form_state['storage']['original_form'] = $form_state['values'];
+    $form_state['rebuild'] = TRUE;
   }
-  drupal_set_message(t('Save selected tasks'));
+  else {
+    $values = $form_state['storage']['original_form'];
+    $selected_items = array_filter($values['table']);
+    $status = $values['status'];
+    $nodes = array();
+    foreach ($selected_items as $item) {
+      $value = explode('_', $item);
+      //make sure that selected item is task.
+      if (count($value) == 3 && !in_array($value[2], $nodes)) {
+        $nodes[] = $value[2];
+        //save node with new status.
+        $node = node_load($value[2]);
+        $node->field_dm_task_status[LANGUAGE_NONE][0]['value'] = $status;
+        node_save($node);
+      }
+    }
+    drupal_goto('dm-task-list');
+  }
 }
 
 function _dm_generate_tasklist_rows(&$options, $tid, $tname, $categories, $months) {
