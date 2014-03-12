@@ -437,8 +437,8 @@ function _dm_show_top_links() {
   $form['dm_views'] = array(
     '#type' => 'select',
     '#title' => t('Views: '),
-    '#options' => array('dm-frontpage' => t('Budget'), 'dm-annual-overview' => t('Task list')),
-    '#value' => (arg(0) == 'node') ? 'dm-annual-overview' : arg(0),
+    '#options' => array('dm-frontpage' => t('Budget'), 'dm-task-list' => t('Task list')),
+    '#value' => (arg(0) == 'node') ? 'dm-task-list' : arg(0),
     '#prefix' => '<div class="container-inline dm-taskview-list">',
     '#suffix' => '</div>',
   );
@@ -810,7 +810,7 @@ function _dm_render_update_task_form($node) {
     '#prefix' => '<div class="dm-task-progress container-inline">',
   );
   $form['dm_tasklist'] = array(
-    '#markup' => l(t('Back to tasklist'), 'dm-annual-overview', array('attributes' => array('class' => array('dm-back-tasklist')))),
+    '#markup' => l(t('Back to tasklist'), 'dm-task-list', array('attributes' => array('class' => array('dm-back-tasklist')))),
     '#suffix' => '</div>',
   );
   // Create our own javascript that will be used to theme a modal.
@@ -845,7 +845,7 @@ function _dm_render_update_task_form($node) {
  * show display on task list page and tasks node.
  */
 function _dm_top_menu_links_block_visibility() {
-  if (arg(0) == 'dm-annual-overview' || arg(0) == 'dm-task-list') {
+  if (arg(0) == 'dm-task-list') {
     return TRUE;
   }
   if (arg(0) == 'node' && is_numeric(arg(1))) {
