@@ -460,7 +460,7 @@ function dm_show_tasklist() {
 
 function dm_tasklist_filter_form($form, &$form_state, $foptions) {
   $form['#method'] = 'get';
-  $form['#action'] = '/boligweb/dm-task-list';
+  $form['#action'] = '/dm-task-list';
   $form['#attributes'] = array('class' => array('mymod-search'));
   $query = db_select('taxonomy_vocabulary', 'tv');
   $query->join('taxonomy_term_data', 'td', 'tv.vid = td.vid');
