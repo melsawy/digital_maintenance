@@ -69,6 +69,7 @@ features[field_instance][] = node-dm_task_execution-field_dm_payment_status
 features[node][] = dm_task
 features[node][] = dm_task_execution
 features[taxonomy][] = dm_year_to_perform_task
+features[user_permission][] = access digital maintenance
 features[variable][] = comment_anonymous_dm_task
 features[variable][] = comment_anonymous_dm_task_execution
 features[variable][] = comment_default_mode_dm_task
