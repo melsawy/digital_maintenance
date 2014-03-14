@@ -694,4 +694,12 @@ function _dm_generate_tasklist_rows(&$options, $tid, $tname, $categories, $month
   }
 }
 
-
+/**
+ * show frontpage content
+ */
+function dm_show_frontpage() {
+  $output = '';
+  $output .= _dm_show_expense();
+  $output .= _dm_show_cost_overxyears();
+  return $output;
+}

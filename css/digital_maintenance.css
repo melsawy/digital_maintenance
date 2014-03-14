@@ -140,18 +140,18 @@ span.dm-task-status-3 {
   margin-top: -3px;
   float: none;
 }
-.pane-digital-maintenance-dm-expense .dm-expense-container {
+.dm-expense-container {
   text-align: center;
   width: 225px;
   text-transform: uppercase;
   color: #FFF;
   padding-top: 56px;
 }
-.pane-digital-maintenance-dm-expense .dm-graph-container {
+.dm-graph-container {
   float: right;
   display: table;
 }
-.pane-digital-maintenance-dm-expense .dm-graph-container div {
+.dm-graph-container div {
   display: table-cell;
 }
 ul.dm-expense-data {

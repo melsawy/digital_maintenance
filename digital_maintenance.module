@@ -9,7 +9,8 @@ function digital_maintenance_menu() {
   $items['dm_createtask/%ctools_js'] = array(
     'title' => t('Create Task'),
     'page callback' => 'ctools_ajax_modal_createtask',
-    'access callback' => TRUE,
+    'access callback' => 'user_access',
+    'access arguments' => array('access digital maintenance'),
     'type' => MENU_CALLBACK,
     'page arguments' => array(1),
     'file' => 'digital_maintenance.pages.inc',
@@ -18,14 +19,16 @@ function digital_maintenance_menu() {
     'title' => t('Calculate cost for specific year'),
     'page callback' => 'ctools_ajax_cost_oxy',
     'page arguments' => array(1, 2),
-    'access callback' => TRUE,
+    'access callback' => 'user_access',
+    'access arguments' => array('access digital maintenance'),
     'type' => MENU_CALLBACK,
     'file' => 'digital_maintenance.pages.inc',
   ); 
   $items['dm_masterdata/%ctools_js'] = array(
     'title' => t('Stamdata'),
     'page callback' => 'ctools_ajax_modal_stamdata',
-    'access callback' => TRUE,
+    'access callback' => 'user_access',
+    'access arguments' => array('access digital maintenance'),
     'type' => MENU_CALLBACK,
     'page arguments' => array(1),
     'file' => 'digital_maintenance.pages.inc',
@@ -33,7 +36,8 @@ function digital_maintenance_menu() {
   $items['dm_graph/%ctools_js/%/%'] = array(
     'title' => t('Show graph'),
     'page callback' => 'ctools_ajax_show_graph',
-    'access callback' => TRUE,
+    'access callback' => 'user_access',
+    'access arguments' => array('access digital maintenance'),
     'type' => MENU_CALLBACK,
     'page arguments' => array(1, 2, 3),
     'file' => 'digital_maintenance.pages.inc',
@@ -42,14 +46,16 @@ function digital_maintenance_menu() {
     'title' => t('Generate PDF'),
     'page callback' => '_dm_generate_pdf',
     'page arguments' => array(2),
-    'access callback' => TRUE,
+    'access callback' => 'user_access',
+    'access arguments' => array('access digital maintenance'),
     'type' => MENU_CALLBACK,
     'file' => 'digital_maintenance.pages.inc',
   );
   $items['dm_pdf/annual_overview'] = array(
     'title' => t('Generate PDF'),
     'page callback' => '_dm_generate_pdf_annual_overview',
-    'access callback' => TRUE,
+    'access callback' => 'user_access',
+    'access arguments' => array('access digital maintenance'),
     'type' => MENU_CALLBACK,
     'file' => 'digital_maintenance.pages.inc',
   );
@@ -74,9 +80,10 @@ function digital_maintenance_menu() {
   $items['dm_post/%ctools_js/%node/%'] = array(
     'title' => t('Task Post'),
     'page callback' => 'ctools_ajax_dm_post',
-    'access callback' => TRUE,
-    'type' => MENU_CALLBACK,
     'page arguments' => array(1, 2, 3),
+    'access callback' => 'user_access',
+    'access arguments' => array('access digital maintenance'),
+    'type' => MENU_CALLBACK,
     'file' => 'digital_maintenance.pages.inc',
   );
   $items['edit_node/%ctools_js/%node/%'] = array(
@@ -109,11 +116,20 @@ function digital_maintenance_menu() {
   $items['dm-task-list'] = array(
     'title' => t('Task List'),
     'page callback' => 'dm_show_tasklist',
-    'access callback' => TRUE,
+    'access callback' => 'user_access',
+    'access arguments' => array('access digital maintenance'),
     'type' => MENU_NORMAL_ITEM,
     'file' => 'digital_maintenance.pages.inc',
   ); 
-  return $items;
+  $items['dm-frontpage'] = array(
+    'title' => '',
+    'page callback' => 'dm_show_frontpage',
+    'access callback' => 'user_access',
+    'access arguments' => array('access digital maintenance'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'digital_maintenance.pages.inc',
+  ); 
+ return $items;
 }
 
 function _dm_show_task_tabs($node) {
@@ -121,6 +137,18 @@ function _dm_show_task_tabs($node) {
     return TRUE;
   }
   return FALSE;
+}
+
+/**
+ * Implements of hook_permission().
+ */
+function digital_maintenance_permission() {
+  return array(
+    'access digital maintenance' => array(
+      'title' => t('access digital maintenance'),
+      'description' => t('Access digital maintenance functions.'),
+    ),
+  );
 }
 
 /**
@@ -133,9 +161,6 @@ function digital_maintenance_form_dm_task_node_form_alter(&$form, &$form_state, 
     //show attached files on create task
     $form['field_dm_attachments']['#access'] = FALSE;
   }
-  //$form['title']['#required'] = FALSE;
-  //$form['title']['#access'] = FALSE;
-  //Set allowed values for year to perform task +10 from current year.
   $current_year = date('Y');
   $query = db_select('taxonomy_vocabulary', 'tv');
   $query->join('taxonomy_term_data', 'td', 'tv.vid = td.vid');
@@ -202,28 +227,6 @@ function dm_execution_submit($form, &$form_state) {
     $form_state['redirect'] = 'node/'. $task_nid .'/execution';
   }
 }
-/**
- * Submit execution via ajax
-function dm_execution_node_form_js_submit($form, &$form_state) {
-  $commands[] = ajax_command_remove('#messages');
-  $commands[] = ajax_command_before('.node-dm_task_execution-form', '<div id="messages">' . theme('status_messages') . '</div>');
-  if ($form_state['values']['nid']) {
-    $task_nid = $form_state['values']['task_nid'];
-    if ($task_nid) {
-      //relate execution to current task
-      $node = node_load($task_nid);
-      $node->field_dm_execution[LANGUAGE_NONE][] = array('target_id' => $form_state['values']['nid']);
-      node_save($node);
-      //reload execution list
-      $task_execution = views_embed_view('dm_execution', 'default', $task_nid);
-      $commands[] = ajax_command_replace('.dm-execution-list-wrapper .view-content', $task_execution);
-    }
-    //rebuild form.
-  }
-  $output = array('#type' => 'ajax', '#commands' => $commands);
-  return $output;
-}
- */
 
 function dm_ajax_comments_submit_js($form, &$form_state) {
   // Return the actual form if it contains errors.
@@ -248,13 +251,6 @@ function dm_ajax_comments_submit_js($form, &$form_state) {
  * Implements of hook_views_query_alter().
  */
 function digital_maintenance_views_query_alter(&$view, &$query) {
-  if ($view->name == 'tasks_annual_overview') {
-    //change exposed task list filter to be BETWEEN instead on original = operator.
-    if (isset($view->query->where[1]['conditions'][1])) {
-      $view->query->where[1]['conditions'][1]['operator'] = 'BETWEEN';
-      $view->query->where[1]['conditions'][1]['value'] = array($_GET['name'], $_GET['to_year']);
-    }
-  }
   if ($view->name == 'dm_task_list_row' && in_array($view->current_display, array('attachment_1', 'attachment_2'))) {
     $key_id = current(array_keys($view->query->where[0]['conditions'][0]['value']));
     $year = $view->query->where[0]['conditions'][0]['value'][$key_id];
@@ -267,58 +263,6 @@ function digital_maintenance_views_query_alter(&$view, &$query) {
     }
     $view->query->where[0]['conditions'][0]['field'] = "node.nid IN($key_id)";
     $view->query->where[0]['conditions'][0]['value'][$key_id] = $tasks_nids;
-  }
-}
-
-/**
- * Implements of hook_form_alter().
- */
-function digital_maintenance_form_views_exposed_form_alter(&$form, &$form_state) {
-  //alter exposed filter for task list view to add [to] field.
-  //original exposed filter expose on text filed
-  //will alter views query to add this value to query
-  //@see digital_maintenance_views_query_alter().
-  if ($form['#id'] == 'views-exposed-form-tasks-annual-overview-page') {
-    //Get years options
-    $query = db_select('taxonomy_vocabulary', 'tv');
-    $query->join('taxonomy_term_data', 'td', 'tv.vid = td.vid');
-    $query->fields('td', array('name'));
-    $query->condition('tv.machine_name', 'dm_year_to_perform_task');
-    $query->orderBy('td.name');
-    $options = $query->execute()->fetchAllKeyed(0, 0);
-    $options = array('' => '- Select a value -') + $options;
-    $form['name'] = array(
-      '#type' => 'select',
-      '#options' => $options,
-    );
-    $form['to_year'] = array(
-      '#type' => 'select', 
-      '#title' => t('To'),
-      '#options' => $options,
-    );
-    drupal_add_js('jQuery(function() {
-      jQuery(".form-item-to-year").insertAfter(".views-widget-filter-name");
-      jQuery(".views-widget-per-page").insertBefore(".views-widget-filter-name");
-      jQuery("#edit-items-per-page").change(function() {
-        jQuery("#views-exposed-form-tasks-annual-overview-page").submit();
-          });
-     });', 'inline');
-  }
-}
-
-/**
- * Implements of hook_views_pre_render().
- */
-function digital_maintenance_views_pre_render(&$view) {
-  if ($view->name == 'tasks_annual_overview') {
-    //override taxonomy description to list SUM on tasks cost.
-    $mcosts = _dm_get_maintenance_cost();
-    foreach($view->result as &$row) {
-      $scost = _dm_get_subsequent_cost($row->taxonomy_term_data_name);
-      $total_cost = isset($mcosts[$row->taxonomy_term_data_name]) ? $mcosts[$row->taxonomy_term_data_name] : 0;
-      $total_cost += isset($scost->scost) ? $scost->scost : 0;
-      $row->taxonomy_term_data_description = $total_cost;
-    }
   }
 }
 
@@ -353,12 +297,6 @@ function digital_maintenance_block_info() {
     'visibility' => BLOCK_VISIBILITY_PHP,
     'pages' => '<?php return _dm_top_menu_links_block_visibility(); ?>',
   );
-  $blocks['dm_expense'] = array(
-    'info' => t('Show Expense'),
-  );
-  $blocks['dm_cost_overxyears'] = array(
-    'info' => t('Show Cost over X years'),
-  );
   return $blocks;
 }
 
@@ -371,19 +309,13 @@ function digital_maintenance_block_view($delta = '') {
     case 'dm_top_menu_links':
       $block['content'] = _dm_show_top_links();
       break;
-    case 'dm_expense':
-      $block['content'] = _dm_show_expense();
-      break;
-    case 'dm_cost_overxyears':
-      $block['content'] = _dm_show_cost_overxyears();
-      break;
   }
   return $block;
 }
 
-/** Blocks Content */
 /**
- *
+ * add header for digital maintenance.
+ * include css/js here as this block will appear on all DM pages.
  */
 function _dm_show_top_links() {
   //Add dm css/js
@@ -398,13 +330,6 @@ function _dm_show_top_links() {
   $sample_style = array(
     'ctools-dm-style' => array(
       'modalSize' => array(
-        /*
-        'type' => 'scale',
-        'width' => .5,
-        'height' => '100%',
-        'addWidth' => 200,
-        'addHeight' => 0,
-         */
         // How much to remove from the inner content to make space for the
         // theming.
         'contentRight' => 25,
@@ -845,7 +770,7 @@ function _dm_render_update_task_form($node) {
  * show display on task list page and tasks node.
  */
 function _dm_top_menu_links_block_visibility() {
-  if (arg(0) == 'dm-task-list') {
+  if (in_array(arg(0), array('dm-task-list', 'dm-frontpage'))) {
     return TRUE;
   }
   if (arg(0) == 'node' && is_numeric(arg(1))) {
