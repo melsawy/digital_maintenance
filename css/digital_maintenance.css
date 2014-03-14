@@ -147,13 +147,6 @@ span.dm-task-status-3 {
   color: #FFF;
   padding-top: 56px;
 }
-.dm-graph-container {
-  float: right;
-  display: table;
-}
-.dm-graph-container div {
-  display: table-cell;
-}
 ul.dm-expense-data {
   background-color: #aaca41;
   margin: 0px;

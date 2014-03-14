@@ -416,10 +416,10 @@ function _dm_show_expense() {
   $items[] = '<div class="dm-expense-value">' . ceil($avg) . '</div><div class="dm-expense-text">'. t('Average annual expense') . '</div>';
   $pdf_link = l(t('Generate PDF'), 'dm_pdf/budget/'. $syear);
   $output = '';
-  $output .= '<div class="dm-graph-container">' . dm_draw_x_year_graph($cost, $syear, $eyear) .'</div>';
   $output .= '<div class="dm-expense-container">' .
     theme('item_list', array('items' => $items, 'title' => '', 'attributes' => array('class' => 'dm-expense-data'))) .'</div>';
-  $output .= '<div class="dm-generate-pdf">'. $pdf_link .'</div>';
+  $output .= '<div class="dm-graph-container">' . dm_draw_x_year_graph($cost, $syear, $eyear) .'</div>';
+  //$output .= '<div class="dm-generate-pdf">'. $pdf_link .'</div>';
   return $output;
 }
 
@@ -566,8 +566,10 @@ function dm_draw_x_year_graph($data, $syear, $eyear) {
       //'curveType' => "function",
       'forceIFrame' => FALSE,
       'title' => '',
-      'width' => 750,
+      'width' => 710,
       'height' => 355,
+      'left' => 0,
+      'top' => 0,
       'colors' => array('#87B200'),
     )
   );
