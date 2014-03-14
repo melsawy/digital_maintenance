@@ -557,27 +557,32 @@ function dm_tasklist_form($form, $form_state, $status) {
       //add row for category
       $row = array();
       $row = array_fill(1, 6, '');
-      $row[0] = array('data' => $tname, 'class' => array('sawy-test'));
+      $row[0] = array('data' => $tname, 'class' => array('class-test'));
       $row['#attributes'] = array('class' => array('dm-task-year'), 'data-year' => $tname);
       $options["tid_$tid"] = $row;
-      _dm_generate_tasklist_rows($options, $tid, $tname, $categories, $months);
-      $scost = _dm_get_subsequent_cost($tname);
-      $total_cost = isset($mcosts[$tname]) ? $mcosts[$tname] : 0;
-      $total_cost += isset($scost->scost) ? $scost->scost : 0;
-      //add total price
-      $row = array();
-      $row = array_fill(0, 5, '');
-      $row[5] = '';
-      $row[6] = '<span class="total-cost">'. t('Total @total', array('@total' => number_format($total_cost, 0, '.', '.'))) .'</span>';
-      $row['#attributes'] = array('class' => array('dm-task-totalcost'));
-      $options["tidc_$tid"] = $row;
+      $result_data =  _dm_generate_tasklist_rows($options, $tid, $tname, $categories, $months);
+      if ($result_data) {
+        $scost = _dm_get_subsequent_cost($tname);
+        $total_cost = isset($mcosts[$tname]) ? $mcosts[$tname] : 0;
+        $total_cost += isset($scost->scost) ? $scost->scost : 0;
+        //add total price
+        $row = array();
+        $row = array_fill(0, 5, '');
+        $row[5] = '';
+        $row[6] = '<span class="total-cost">'. t('Total @total', array('@total' => number_format($total_cost, 0, '.', '.'))) .'</span>';
+        $row['#attributes'] = array('class' => array('dm-task-totalcost'));
+        $options["tidc_$tid"] = $row;
+      }
+      else {
+        unset($options["tid_$tid"]);
+      }
     }
     $form['table'] = array(
       '#type' => 'tableselect',
       '#header' => $header,
       '#options' => $options,
       '#sticky' => TRUE,
-      '#empty' => t('No tasks found'),
+      '#empty' => t('No tasks found.'),
     );
     $form['status'] = array(
       '#type' => 'select', 
@@ -668,9 +673,14 @@ function _dm_generate_tasklist_rows(&$options, $tid, $tname, $categories, $month
     'attachment_1' => array('args' => $tname, 'type' => 'Maintenance', 'cost' => 'field_dm_subsequent_cost', 'key' => 'mtask'),
     'attachment_2' => array('args' => $tname, 'type' => 'Inspection', 'key' => 'itask'),
   );
+  $result_data = FALSE;
   //Add tasks which match year for perform tasks
   foreach($display as $k => $v) {
     $tasks = views_get_view_result('dm_task_list_row', $k, $v['args']);
+    if (count($tasks) && !$result_data) {
+      //add this condition to handle empty years.
+      $result_data = TRUE;
+    }
     foreach($tasks as $task) {
       $row = array();
       $row[] = $categories[$task->_field_data['nid']['entity']->field_dm_category[LANGUAGE_NONE][0]['value']];
@@ -689,9 +699,10 @@ function _dm_generate_tasklist_rows(&$options, $tid, $tname, $categories, $month
       $row['#attributes'] = array('class' => array('dm-task-data', 'dm-task-year-'.$tname));
       //generate option key
       $key = "{$v['key']}_{$tname}_{$task->nid}";
-      $options[$key] = $row;//array('data' => $row, 'class' => array('mewlsawy-test'));
+      $options[$key] = $row;
     }
   }
+  return $result_data;
 }
 
 /**
