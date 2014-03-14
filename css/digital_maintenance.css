@@ -329,3 +329,6 @@ div.dm-empty-page {
 #dm-tasklist-form select#edit-status {
   float: right;
 }
+.dm-schaffolding-yes {
+  color: red;
+}
